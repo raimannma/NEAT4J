@@ -249,6 +249,6 @@ public class Node {
                 '}';
     }
 
-    enum NodeType {HIDDEN, INPUT, OUTPUT, CONSTANT}
+    enum NodeType {HIDDEN, INPUT, OUTPUT}
 
 }

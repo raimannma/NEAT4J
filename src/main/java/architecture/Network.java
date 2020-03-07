@@ -334,7 +334,7 @@ public class Network {
         }
         if (this.dropout != 0) {
             this.nodes.stream()
-                    .filter(node -> node.type == Node.NodeType.HIDDEN || node.type == Node.NodeType.CONSTANT)
+                    .filter(node -> node.type == Node.NodeType.HIDDEN)
                     .forEach(node -> node.mask = 1 - this.dropout);
         }
         double error = 0;
@@ -349,20 +349,30 @@ public class Network {
 
     private double[] noTraceActivate(final double[] input) {
         final List<Double> output = new ArrayList<>();
-        for (int i = 0; i < this.nodes.size(); i++) {
-            if (this.nodes.get(i).type == Node.NodeType.INPUT) {
-                this.nodes.get(i).noTraceActivation(input[i]);
-            } else if (this.nodes.get(i).type == Node.NodeType.OUTPUT) {
-                output.add(this.nodes.get(i).noTraceActivation());
-            } else {
-                this.nodes.get(i).noTraceActivation();
+        int inputIndex = 0;
+        for (final Node node : this.nodes) {
+            switch (node.type) {
+                case INPUT:
+                    if (inputIndex < input.length) {
+                        node.noTraceActivation(input[inputIndex++]);
+                    } else {
+                        node.type = Node.NodeType.HIDDEN;
+                        node.noTraceActivation();
+                    }
+                    break;
+                case HIDDEN:
+                    node.noTraceActivation();
+                    break;
+                case OUTPUT:
+                    output.add(node.noTraceActivation());
+                    break;
             }
         }
         return output.stream().mapToDouble(i -> i).toArray();
     }
 
     public void mutate(final Mutation method) {
-        if (method == null) {
+        if (Arrays.stream(Mutation.ALL).noneMatch(meth -> meth == method)) {
             throw new RuntimeException("No (correct) mutate method given!");
         }
         final List<Connection> allConnections;
@@ -382,7 +392,7 @@ public class Network {
 
                 node = new Node(Node.NodeType.HIDDEN);
                 node.mutate(MOD_ACTIVATION);
-                final int minBound = Math.min(this.nodes.indexOf(connection.to), this.nodes.size() - this.output);
+                final int minBound = Math.max(0, Math.min(this.nodes.indexOf(connection.to), this.nodes.size() - this.output));
                 this.nodes.add(minBound, node);
 
                 final Connection newConn1 = this.connect(connection.from, node).get(0);
