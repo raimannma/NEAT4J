@@ -15,7 +15,10 @@ import static methods.Activation.LOGISTIC;
 
 public class Node {
 
-    final ConnectionList connections;
+    final List<Connection> in;
+    final List<Connection> out;
+    final List<Connection> gated;
+    Connection self;
     int index;
     Activation activationType;
     double bias;
@@ -39,8 +42,10 @@ public class Node {
         this.old = 0;
         this.mask = 1;
 
-        this.connections = new ConnectionList(this);
-
+        this.in = new ArrayList<>();
+        this.out = new ArrayList<>();
+        this.gated = new ArrayList<>();
+        this.self = new Connection(this, this, 0);
     }
 
     static Node fromJSON(final JsonObject jsonObject) {
@@ -60,24 +65,24 @@ public class Node {
         final double derivative = this.activationType.calc(this.state, true);
 
         final List<Node> nodes = new ArrayList<>();
-        final ArrayList<Double> influences = IntStream.range(0, this.connections.gated.size()).mapToObj(i -> 0.0).collect(Collectors.toCollection(ArrayList::new));
+        final ArrayList<Double> influences = IntStream.range(0, this.gated.size()).mapToObj(i -> 0.0).collect(Collectors.toCollection(ArrayList::new));
 
-        this.connections.gated.forEach(connection -> {
+        this.gated.forEach(connection -> {
             final Node node = connection.to;
             final int index = nodes.indexOf(node);
             if (index > -1) {
                 influences.set(index, influences.get(index) + connection.weight * connection.from.activation);
             } else {
                 nodes.add(node);
-                influences.add(node.connections.self.gater == null || !node.connections.self.gater.equals(this)
+                influences.add(node.self.gater == null || !node.self.gater.equals(this)
                         ? connection.weight * connection.from.activation
                         : connection.weight * connection.from.activation + node.old);
             }
             connection.gain = this.activation;
         });
 
-        for (final Connection connection : this.connections.in) {
-            connection.eligibility = this.connections.self.gain * this.connections.self.weight * connection.eligibility + connection.from.activation * connection.gain;
+        for (final Connection connection : this.in) {
+            connection.eligibility = this.self.gain * this.self.weight * connection.eligibility + connection.from.activation * connection.gain;
 
             for (int j = 0; j < nodes.size(); j++) {
                 final Node node = nodes.get(j);
@@ -85,7 +90,7 @@ public class Node {
                 final int index = connection.xTraceNodes.indexOf(node);
                 if (index > -1) {
                     connection.xTraceValues.set(index,
-                            node.connections.self.gain * node.connections.self.weight * connection.xTraceValues.get(index) +
+                            node.self.gain * node.self.weight * connection.xTraceValues.get(index) +
                                     derivative * connection.eligibility * influence);
                 } else {
                     connection.xTraceNodes.add(node);
@@ -97,8 +102,8 @@ public class Node {
     }
 
     private void updateState() {
-        this.state = this.connections.self.gain * this.connections.self.weight * this.state + this.bias;
-        this.connections.in.forEach(connection -> this.state += connection.from.activation * connection.weight * connection.gain);
+        this.state = this.self.gain * this.self.weight * this.state + this.bias;
+        this.in.forEach(connection -> this.state += connection.from.activation * connection.weight * connection.gain);
     }
 
     void activate(final double input) {
@@ -108,7 +113,7 @@ public class Node {
     double noTraceActivation() {
         this.updateState();
         this.activation = this.activationType.calc(this.state);
-        this.connections.gated.forEach(conn -> conn.gain = this.activation);
+        this.gated.forEach(conn -> conn.gain = this.activation);
         return this.activation;
     }
 
@@ -119,19 +124,19 @@ public class Node {
     List<Connection> connect(final Node target, final double weight) {
         final List<Connection> connections = new ArrayList<>();
         if (target == this) {
-            if (this.connections.self.weight == 0) {
-                this.connections.self.weight = weight;
+            if (this.self.weight == 0) {
+                this.self.weight = weight;
             }
-            connections.add(this.connections.self);
+            connections.add(this.self);
         } else {
-            Connection connection = this.connections.out.stream()
+            Connection connection = this.out.stream()
                     .filter(conn -> conn.to.equals(target))
                     .findAny()
                     .orElse(null);
             if (connection == null) {
                 connection = new Connection(this, target, weight);
-                target.connections.in.add(connection);
-                this.connections.out.add(connection);
+                target.in.add(connection);
+                this.out.add(connection);
                 connections.add(connection);
             } else {
                 connections.add(connection);
@@ -141,8 +146,8 @@ public class Node {
     }
 
     boolean isNotProjectingTo(final Node node) {
-        return (!this.equals(node) || this.connections.self.weight == 0)
-                && this.connections.out.stream().noneMatch(connection -> connection.to.equals(node));
+        return (!this.equals(node) || this.self.weight == 0)
+                && this.out.stream().noneMatch(connection -> connection.to.equals(node));
     }
 
     void disconnect(final Node node) {
@@ -150,12 +155,12 @@ public class Node {
     }
 
     void clear() {
-        for (final Connection connection : this.connections.in) {
+        for (final Connection connection : this.in) {
             connection.eligibility = 0;
             connection.xTraceNodes = new ArrayList<>();
             connection.xTraceValues = new ArrayList<>();
         }
-        this.connections.gated.forEach(connection -> connection.gain = 0);
+        this.gated.forEach(connection -> connection.gain = 0);
         this.old = 0;
         this.state = 0;
         this.activation = 0;
@@ -163,13 +168,13 @@ public class Node {
 
     private void disconnect(final Node node, final boolean twoSided) {
         if (this.equals(node)) {
-            this.connections.self.weight = 0;
+            this.self.weight = 0;
             return;
         }
-        for (final Connection connection : new ArrayList<>(this.connections.out)) {
+        for (final Connection connection : new ArrayList<>(this.out)) {
             if (connection.to.equals(node)) {
-                this.connections.out.remove(connection);
-                connection.to.connections.in.remove(connection);
+                this.out.remove(connection);
+                connection.to.in.remove(connection);
                 if (connection.gater != null) {
                     connection.gater.ungate(connection);
                 }
@@ -188,7 +193,7 @@ public class Node {
     private void ungate(final Connection[] connections) {
         for (int i = connections.length - 1; i >= 0; i--) {
             final Connection connection = connections[i];
-            this.connections.gated.remove(connection);
+            this.gated.remove(connection);
             connection.gater = null;
             connection.gain = 1;
         }
@@ -200,7 +205,7 @@ public class Node {
 
     private void gate(final Connection[] connections) {
         Arrays.stream(connections).forEach(connection -> connection.gater = this);
-        this.connections.gated.addAll(Arrays.asList(connections));
+        this.gated.addAll(Arrays.asList(connections));
     }
 
     void mutate(final Mutation method) {

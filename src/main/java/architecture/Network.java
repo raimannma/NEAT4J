@@ -220,12 +220,12 @@ public class Network {
             nodeJSON.addProperty("index", i);
             nodes.add(nodeJSON);
 
-            if (node.connections.self.weight != 0) {
-                final JsonObject connectionJSON = node.connections.self.toJSON();
+            if (node.self.weight != 0) {
+                final JsonObject connectionJSON = node.self.toJSON();
                 connectionJSON.addProperty("from", i);
                 connectionJSON.addProperty("to", i);
 
-                connectionJSON.addProperty("gater", node.connections.self.gater == null ? -1 : node.connections.self.gater.index);
+                connectionJSON.addProperty("gater", node.self.gater == null ? -1 : node.self.gater.index);
                 connections.add(connectionJSON);
             }
         }
@@ -433,8 +433,8 @@ public class Network {
             case SUB_CONN:
                 availableConns = new ArrayList<>();
                 for (final Connection conn : this.connections) {
-                    if (conn.from.connections.out.size() > 1
-                            && conn.to.connections.in.size() > 1
+                    if (conn.from.out.size() > 1
+                            && conn.to.in.size() > 1
                             && this.nodes.indexOf(conn.to) > this.nodes.indexOf(conn.from)) {
                         availableConns.add(conn);
                     }
@@ -467,7 +467,7 @@ public class Network {
                 this.nodes.get(index).mutate(method);
                 break;
             case ADD_SELF_CONN:
-                final List<Node> poss = IntStream.range(this.input, this.nodes.size()).mapToObj(this.nodes::get).filter(node1 -> node1.connections.self.weight == 0).collect(Collectors.toList());
+                final List<Node> poss = IntStream.range(this.input, this.nodes.size()).mapToObj(this.nodes::get).filter(node1 -> node1.self.weight == 0).collect(Collectors.toList());
                 if (poss.size() == 0) {
                     break;
                 }
@@ -528,8 +528,8 @@ public class Network {
             case SUB_BACK_CONN:
                 availableConns = new ArrayList<>();
                 for (final Connection connection1 : this.connections) {
-                    if (connection1.from.connections.out.size() > 1 &&
-                            connection1.to.connections.in.size() > 1 &&
+                    if (connection1.from.out.size() > 1 &&
+                            connection1.to.in.size() > 1 &&
                             this.nodes.indexOf(connection1.from) > this.nodes.indexOf(connection1.to)) {
                         availableConns.add(connection1);
                     }
@@ -586,8 +586,8 @@ public class Network {
         this.disconnect(node, node);
 
         final List<Node> inputs = new ArrayList<>();
-        for (int i = node.connections.in.size() - 1; i >= 0; i--) {
-            final Connection connection = node.connections.in.get(i);
+        for (int i = node.in.size() - 1; i >= 0; i--) {
+            final Connection connection = node.in.get(i);
             if (SUB_NODE.keepGates && connection.gater != null && !connection.gater.equals(node)) {
                 gaters.add(connection.gater);
             }
@@ -595,8 +595,8 @@ public class Network {
             this.disconnect(connection.from, node);
         }
         final List<Node> outputs = new ArrayList<>();
-        for (int i = node.connections.out.size() - 1; i >= 0; i--) {
-            final Connection connection = node.connections.out.get(i);
+        for (int i = node.out.size() - 1; i >= 0; i--) {
+            final Connection connection = node.out.get(i);
             if (SUB_NODE.keepGates && connection.gater != null && !connection.gater.equals(node)) {
                 gaters.add(connection.gater);
             }
@@ -618,8 +618,8 @@ public class Network {
             this.gate(gater, connections.get(connIndex));
             connections.remove(connIndex);
         }
-        for (int i = node.connections.gated.size() - 1; i >= 0; i--) {
-            this.ungate(node.connections.gated.get(i));
+        for (int i = node.gated.size() - 1; i >= 0; i--) {
+            this.ungate(node.gated.get(i));
         }
 
         this.disconnect(node, node);
