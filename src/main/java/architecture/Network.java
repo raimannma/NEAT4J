@@ -606,7 +606,7 @@ public class Network {
 
         final List<Connection> connections = new ArrayList<>();
         inputs.forEach(input -> outputs.stream()
-                .filter(output -> input.isNotProjectingTo(output))
+                .filter(input::isNotProjectingTo)
                 .map(output -> this.connect(input, output, 0).get(0))
                 .forEach(connections::add));
 
