@@ -282,12 +282,7 @@ public class Network {
                 double score = IntStream.range(0, amount)
                         .mapToDouble(i -> -genome.test(inputs, outputs, loss))
                         .sum()
-                        - growth * (genome.nodes.size()
-                        - genome.input
-                        - genome.output
-                        + genome.connections.size()
-                        + genome.gates.size()
-                );
+                        - growth * (genome.nodes.size() + genome.connections.size() + genome.gates.size() - genome.input - genome.output);
                 score = Double.isNaN(score) ? -Double.MAX_VALUE : score;
                 return score / amount;
             });
@@ -331,20 +326,15 @@ public class Network {
     private double test(final double[][] inputs, final double[][] outputs, final Loss loss) {
         if (loss == null) {
             return this.test(inputs, outputs);
-        }
-        if (this.dropout != 0) {
+        } else if (this.dropout != 0) {
             this.nodes.stream()
                     .filter(node -> node.type == Node.NodeType.HIDDEN)
                     .forEach(node -> node.mask = 1 - this.dropout);
         }
-        double error = 0;
-        for (int i = 0; i < inputs.length; i++) {
-            final double[] input = inputs[i];
-            final double[] target = outputs[i];
-            final double[] output = this.noTraceActivate(input);
-            error += loss.calc(target, output);
-        }
-        return error / inputs.length;
+        return IntStream.range(0, inputs.length)
+                .mapToDouble(i -> loss.calc(outputs[i], this.noTraceActivate(inputs[i])))
+                .sum()
+                / inputs.length;
     }
 
     private double[] noTraceActivate(final double[] input) {
@@ -375,6 +365,7 @@ public class Network {
         if (Arrays.stream(Mutation.ALL).noneMatch(meth -> meth == method)) {
             throw new RuntimeException("No (correct) mutate method given!");
         }
+
         final List<Connection> allConnections;
         int index;
         final Connection connection, randomConn;
@@ -392,8 +383,7 @@ public class Network {
 
                 node = new Node(Node.NodeType.HIDDEN);
                 node.mutate(MOD_ACTIVATION);
-                final int minBound = Math.max(0, Math.min(this.nodes.indexOf(connection.to), this.nodes.size() - this.output));
-                this.nodes.add(minBound, node);
+                this.nodes.add(Math.max(0, Math.min(this.nodes.indexOf(connection.to), this.nodes.size() - this.output)), node);
 
                 final Connection newConn1 = this.connect(connection.from, node).get(0);
                 final Connection newConn2 = this.connect(node, connection.to).get(0);
@@ -414,8 +404,7 @@ public class Network {
                 break;
             case ADD_CONN:
                 availableNodes = new ArrayList<>();
-                final int bound = this.nodes.size() - this.output;
-                for (int i = 0; i < bound; i++) {
+                for (int i = 0; i < this.nodes.size() - this.output; i++) {
                     node = this.nodes.get(i);
                     for (int j = Math.max(i + 1, this.input); j < this.nodes.size(); j++) {
                         node2 = this.nodes.get(j);
@@ -627,9 +616,7 @@ public class Network {
     }
 
     private void ungate(final Connection connection) {
-        if (connection != null
-                && connection.gater != null
-                && this.gates.remove(connection)) {
+        if (connection != null && connection.gater != null && this.gates.remove(connection)) {
             connection.gater.ungate(connection);
         }
     }
@@ -646,15 +633,20 @@ public class Network {
         final List<Double> output = new ArrayList<>();
 
         for (int i = 0; i < this.nodes.size(); i++) {
-            if (this.nodes.get(i).type == Node.NodeType.INPUT) {
-                this.nodes.get(i).activate(input[i]);
-            } else if (this.nodes.get(i).type == Node.NodeType.OUTPUT) {
-                output.add(this.nodes.get(i).activate());
-            } else {
-                if (training) {
-                    this.nodes.get(i).mask = Math.random() < this.dropout ? 0 : 1;
-                }
-                this.nodes.get(i).activate();
+            final Node node = this.nodes.get(i);
+            switch (node.type) {
+                case INPUT:
+                    node.activate(input[i]);
+                    break;
+                case HIDDEN:
+                    if (training) {
+                        node.mask = Math.random() < this.dropout ? 0 : 1;
+                    }
+                    node.activate();
+                    break;
+                case OUTPUT:
+                    output.add(node.activate());
+                    break;
             }
         }
         return output.stream().mapToDouble(i -> i).toArray();

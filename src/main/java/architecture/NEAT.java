@@ -21,7 +21,6 @@ class NEAT {
     private final int mutationAmount;
     private final int provenance;
     private final int elitism;
-    private final boolean fitnessPopulation;
     private final int maxGates;
     private final int maxConns;
     private final int maxNodes;
@@ -44,7 +43,6 @@ class NEAT {
         this.provenance = options.getProvenance();
         this.mutationRate = options.getMutationRate();
         this.mutationAmount = options.getMutationAmount();
-        this.fitnessPopulation = options.isFitnessPopulation();
         this.selection = options.getSelection();
         this.mutation = options.getMutations();
         this.template = options.getTemplate();
@@ -98,21 +96,10 @@ class NEAT {
     }
 
     private void evaluate() {
-        if (this.fitnessPopulation) {
-            if (this.clear) {
-                this.population.forEach(Network::clear);
-            }
-            for (final Network value : this.population) {
-                value.score = this.fitnessFunction.applyAsDouble(value);
-            }
-        } else {
-            for (final Network genome : this.population) {
-                if (this.clear) {
-                    genome.clear();
-                }
-                genome.score = this.fitnessFunction.applyAsDouble(genome);
-            }
+        if (this.clear) {
+            this.population.forEach(Network::clear);
         }
+        this.population.forEach(genome -> genome.score = this.fitnessFunction.applyAsDouble(genome));
     }
 
     private void sort() {
@@ -123,16 +110,15 @@ class NEAT {
         switch (this.selection) {
             case POWER:
                 if (this.population.get(0).score < this.population.get(1).score) {
-                    this.sort();
+                    this.population.sort((o1, o2) -> Double.compare(o2.score, o1.score));
                 }
                 return this.population.get((int) Math.floor(Math.pow(Math.random(), this.selection.power) * this.population.size()));
             case FITNESS_PROPORTIONATE:
                 double totalFitness = 0;
                 double minimalFitness = 0;
                 for (final Network network : this.population) {
-                    final double score = network.score;
-                    minimalFitness = Math.min(score, minimalFitness);
-                    totalFitness += score;
+                    minimalFitness = Math.min(network.score, minimalFitness);
+                    totalFitness += network.score;
                 }
 
                 minimalFitness = Math.abs(minimalFitness);
@@ -150,18 +136,12 @@ class NEAT {
                 if (this.selection.size > this.popSize) {
                     throw new RuntimeException("Your tournament size should be lower than the population size, please change methods.selection.TOURNAMENT.size");
                 }
-                final List<Network> individuals = new ArrayList<>();
-                for (int i = 0; i < this.selection.size; i++) {
-                    individuals.add(this.population.get((int) Math.floor(Math.random() * this.population.size())));
-                }
-                individuals.sort((o1, o2) -> Double.compare(o2.score, o1.score));
-
-                for (int i = 0; i < this.selection.size; i++) {
-                    if (Math.random() < this.selection.probability || i == this.selection.size - 1) {
-                        return individuals.get(i);
-                    }
-                }
-                break;
+                return IntStream.range(0, this.selection.size)
+                        .mapToObj(i -> this.population.get((int) Math.floor(Math.random() * this.population.size())))
+                        .sorted((o1, o2) -> Double.compare(o2.score, o1.score))
+                        .filter(net -> Math.random() < this.selection.probability)
+                        .findAny()
+                        .orElse(this.population.get(0));
         }
         return this.population.get(0);
     }
@@ -180,22 +160,16 @@ class NEAT {
     private Mutation selectMutationMethod(final Network genome) {
         final Mutation mutationMethod = this.mutation[(int) Math.floor(Math.random() * this.mutation.length)];
 
-        if (mutationMethod == Mutation.ADD_NODE && genome.nodes.size() >= this.maxNodes ||
-                mutationMethod == Mutation.ADD_CONN && genome.connections.size() >= this.maxConns ||
-                mutationMethod == Mutation.ADD_GATE && genome.gates.size() >= this.maxGates) {
-            return null;
-        } else {
-            return mutationMethod;
-        }
+        return (mutationMethod != Mutation.ADD_NODE || genome.nodes.size() < this.maxNodes)
+                && (mutationMethod != Mutation.ADD_CONN || genome.connections.size() < this.maxConns)
+                && (mutationMethod != Mutation.ADD_GATE || genome.gates.size() < this.maxGates)
+                ? mutationMethod
+                : null;
     }
 
     Network getFittest() {
-        if (Double.isNaN(this.population.get(this.population.size() - 1).score)) {
-            this.evaluate();
-        }
-        if (this.population.get(0).score < this.population.get(1).score) {
-            this.sort();
-        }
+        this.evaluate();
+        this.sort();
         return this.population.get(0);
     }
 
