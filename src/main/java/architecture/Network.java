@@ -541,8 +541,7 @@ public class Network {
 
     private void disconnect(final Node from, final Node to) {
         final List<Connection> connections = from.equals(to) ? this.selfConns : this.connections;
-        for (int i = 0; i < connections.size(); i++) {
-            final Connection connection = connections.get(i);
+        for (final Connection connection : connections) {
             if (connection.from.equals(from) && connection.to.equals(to)) {
                 if (connection.gater != null) {
                     this.ungate(connection);
