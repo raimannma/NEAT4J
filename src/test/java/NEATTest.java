@@ -1,4 +1,3 @@
-import architecture.DataEntry;
 import architecture.EvolveOptions;
 import architecture.Network;
 import architecture.Node;
@@ -29,87 +28,121 @@ public class NEATTest {
 
     @Test
     void testAND() {
-        final DataEntry[] trainingSet = new DataEntry[]{
-                new DataEntry(new double[]{0, 0}, new double[]{0}),
-                new DataEntry(new double[]{0, 1}, new double[]{0}),
-                new DataEntry(new double[]{1, 0}, new double[]{0}),
-                new DataEntry(new double[]{1, 1}, new double[]{1})
+        final double[][] inputs = new double[][]{
+                new double[]{0, 0},
+                new double[]{0, 1},
+                new double[]{1, 0},
+                new double[]{1, 1},
+        };
+        final double[][] outputs = new double[][]{
+                new double[]{0},
+                new double[]{0},
+                new double[]{0},
+                new double[]{1},
         };
 
         final Network network = new Network(2, 1);
-        learnSet(network, trainingSet);
+        learnSet(network, inputs, outputs);
     }
 
-    private static void learnSet(final Network network, final DataEntry[] set) {
+    private static void learnSet(final Network network, final double[][] inputs, final double[][] outputs) {
         final EvolveOptions options = new EvolveOptions();
         options.setMutations(Mutation.ALL);
         options.setPopulationSize(1000);
         options.setElitism(10);
         options.setMutationRate(0.7);
         options.setError(0.05);
-        assertTrue(network.evolve(set, options) <= 0.05);
+        assertTrue(network.evolve(inputs, outputs, options) <= 0.05);
     }
 
     @Test
     void testXOR() {
-        final DataEntry[] trainingSet = new DataEntry[]{
-                new DataEntry(new double[]{0, 0}, new double[]{0}),
-                new DataEntry(new double[]{0, 1}, new double[]{1}),
-                new DataEntry(new double[]{1, 0}, new double[]{1}),
-                new DataEntry(new double[]{1, 1}, new double[]{0})
+        final double[][] inputs = new double[][]{
+                new double[]{0, 0},
+                new double[]{0, 1},
+                new double[]{1, 0},
+                new double[]{1, 1},
+        };
+        final double[][] outputs = new double[][]{
+                new double[]{0},
+                new double[]{1},
+                new double[]{1},
+                new double[]{0},
         };
 
         final Network network = new Network(2, 1);
-        learnSet(network, trainingSet);
+        learnSet(network, inputs, outputs);
     }
 
     @Test
     void testXNOR() {
-        final DataEntry[] trainingSet = new DataEntry[]{
-                new DataEntry(new double[]{0, 0}, new double[]{1}),
-                new DataEntry(new double[]{0, 1}, new double[]{0}),
-                new DataEntry(new double[]{1, 0}, new double[]{0}),
-                new DataEntry(new double[]{1, 1}, new double[]{1})
+        final double[][] inputs = new double[][]{
+                new double[]{0, 0},
+                new double[]{0, 1},
+                new double[]{1, 0},
+                new double[]{1, 1},
+        };
+        final double[][] outputs = new double[][]{
+                new double[]{1},
+                new double[]{0},
+                new double[]{0},
+                new double[]{1},
         };
 
         final Network network = new Network(2, 1);
-        learnSet(network, trainingSet);
+        learnSet(network, inputs, outputs);
     }
 
     @Test
     void testNot() {
-        final DataEntry[] trainingSet = new DataEntry[]{
-                new DataEntry(new double[]{0}, new double[]{1}),
-                new DataEntry(new double[]{1}, new double[]{0})
+        final double[][] inputs = new double[][]{
+                new double[]{0},
+                new double[]{1},
+        };
+        final double[][] outputs = new double[][]{
+                new double[]{1},
+                new double[]{0},
         };
 
         final Network network = new Network(1, 1);
-        learnSet(network, trainingSet);
+        learnSet(network, inputs, outputs);
     }
 
     @Test
     void testNAND() {
-        final DataEntry[] trainingSet = new DataEntry[]{
-                new DataEntry(new double[]{0, 0}, new double[]{1}),
-                new DataEntry(new double[]{0, 1}, new double[]{1}),
-                new DataEntry(new double[]{1, 0}, new double[]{1}),
-                new DataEntry(new double[]{1, 1}, new double[]{0})
+        final double[][] inputs = new double[][]{
+                new double[]{0, 0},
+                new double[]{0, 1},
+                new double[]{1, 0},
+                new double[]{1, 1},
+        };
+        final double[][] outputs = new double[][]{
+                new double[]{1},
+                new double[]{1},
+                new double[]{1},
+                new double[]{0},
         };
 
         final Network network = new Network(2, 1);
-        learnSet(network, trainingSet);
+        learnSet(network, inputs, outputs);
     }
 
     @Test
     void testNOR() {
-        final DataEntry[] trainingSet = new DataEntry[]{
-                new DataEntry(new double[]{0, 0}, new double[]{1}),
-                new DataEntry(new double[]{0, 1}, new double[]{0}),
-                new DataEntry(new double[]{1, 0}, new double[]{0}),
-                new DataEntry(new double[]{1, 1}, new double[]{0})
+        final double[][] inputs = new double[][]{
+                new double[]{0, 0},
+                new double[]{0, 1},
+                new double[]{1, 0},
+                new double[]{1, 1},
+        };
+        final double[][] outputs = new double[][]{
+                new double[]{1},
+                new double[]{0},
+                new double[]{0},
+                new double[]{0},
         };
 
         final Network network = new Network(2, 1);
-        learnSet(network, trainingSet);
+        learnSet(network, inputs, outputs);
     }
 }

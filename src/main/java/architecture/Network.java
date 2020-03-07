@@ -255,15 +255,15 @@ public class Network {
                 '}';
     }
 
-    private double evolve(final DataEntry[] set) {
-        return this.evolve(set, new EvolveOptions());
+    private double evolve(final double[][] inputs, final double[][] outputs) {
+        return this.evolve(inputs, outputs, new EvolveOptions());
     }
 
-    public double evolve(final DataEntry[] set, final EvolveOptions options) {
+    public double evolve(final double[][] inputs, final double[][] outputs, final EvolveOptions options) {
         if (options == null) {
-            return this.evolve(set);
+            return this.evolve(inputs, outputs);
         }
-        if (set[0].input.length != this.input || set[0].output.length != this.output) {
+        if (inputs[0].length != this.input || outputs[0].length != this.output) {
             throw new RuntimeException("Dataset input/output size should be same as network input/output size!");
         }
 
@@ -281,7 +281,7 @@ public class Network {
 
         final ToDoubleFunction<Network> fitnesFunction = genome -> {
             double score = IntStream.range(0, amount)
-                    .mapToDouble(i -> -genome.test(Arrays.asList(set), loss))
+                    .mapToDouble(i -> -genome.test(inputs, outputs, loss))
                     .sum()
                     - growth * (genome.nodes.size()
                     - genome.input
@@ -324,13 +324,13 @@ public class Network {
         return -error;
     }
 
-    private double test(final List<DataEntry> testSet) {
-        return this.test(testSet, Loss.MSE);
+    private double test(final double[][] inputs, final double[][] outputs) {
+        return this.test(inputs, outputs, Loss.MSE);
     }
 
-    private double test(final List<DataEntry> set, final Loss loss) {
+    private double test(final double[][] inputs, final double[][] outputs, final Loss loss) {
         if (loss == null) {
-            return this.test(set);
+            return this.test(inputs, outputs);
         }
         if (this.dropout != 0) {
             this.nodes.stream()
@@ -338,13 +338,13 @@ public class Network {
                     .forEach(node -> node.mask = 1 - this.dropout);
         }
         double error = 0;
-        for (final DataEntry dataEntry : set) {
-            final double[] input = dataEntry.input;
-            final double[] target = dataEntry.output;
+        for (int i = 0; i < inputs.length; i++) {
+            final double[] input = inputs[i];
+            final double[] target = outputs[i];
             final double[] output = this.noTraceActivate(input);
             error += loss.calc(target, output);
         }
-        return error / set.size();
+        return error / inputs.length;
     }
 
     private double[] noTraceActivate(final double[] input) {
