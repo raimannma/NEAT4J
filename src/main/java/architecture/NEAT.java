@@ -32,27 +32,22 @@ class NEAT {
     List<Network> population;
     private int popSize;
 
-    NEAT(final int input, final int output, final ToDoubleFunction<Network> fitnesFunction, final EvolveOptions options) {
+    NEAT(final int input, final int output, final EvolveOptions options) {
         this.input = input;
         this.output = output;
-        this.fitnessFunction = fitnesFunction;
 
+        this.fitnessFunction = options.getFitnessFunction();
         this.equal = options.isEqual();
         this.clear = options.getClear();
-
         this.popSize = options.getPopulationSize();
         this.elitism = options.getElitism();
         this.provenance = options.getProvenance();
         this.mutationRate = options.getMutationRate();
         this.mutationAmount = options.getMutationAmount();
-
         this.fitnessPopulation = options.isFitnessPopulation();
-
         this.selection = options.getSelection();
         this.mutation = options.getMutations();
-
         this.template = options.getTemplate();
-
         this.maxNodes = options.getMaxNodes();
         this.maxConns = options.getMaxConns();
         this.maxGates = options.getMaxGates();

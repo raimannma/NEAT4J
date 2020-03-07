@@ -4,8 +4,11 @@ import methods.Loss;
 import methods.Mutation;
 import methods.Selection;
 
+import java.util.function.ToDoubleFunction;
+
 public class EvolveOptions {
     private boolean fitnessPopulation;
+    private ToDoubleFunction<Network> fitnessFunction;
     private int populationSize;
     private int elitism;
     private int provenance;
@@ -47,6 +50,15 @@ public class EvolveOptions {
         this.maxConns = Integer.MAX_VALUE;
         this.maxGates = Integer.MAX_VALUE;
         this.fitnessPopulation = false;
+        this.fitnessFunction = null;
+    }
+
+    public ToDoubleFunction<Network> getFitnessFunction() {
+        return this.fitnessFunction;
+    }
+
+    public void setFitnessFunction(final ToDoubleFunction<Network> fitnessFunction) {
+        this.fitnessFunction = fitnessFunction;
     }
 
     int getLog() {

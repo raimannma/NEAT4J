@@ -7,7 +7,6 @@ import methods.Loss;
 import methods.Mutation;
 
 import java.util.*;
-import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -278,22 +277,23 @@ public class Network {
         } else if (options.getIterations() == -1) {
             options.setIterations(0);
         }
-
-        final ToDoubleFunction<Network> fitnesFunction = genome -> {
-            double score = IntStream.range(0, amount)
-                    .mapToDouble(i -> -genome.test(inputs, outputs, loss))
-                    .sum()
-                    - growth * (genome.nodes.size()
-                    - genome.input
-                    - genome.output
-                    + genome.connections.size()
-                    + genome.gates.size()
-            );
-            score = Double.isNaN(score) ? -Double.MAX_VALUE : score;
-            return score / amount;
-        };
+        if (options.getFitnessFunction() == null) {
+            options.setFitnessFunction(genome -> {
+                double score = IntStream.range(0, amount)
+                        .mapToDouble(i -> -genome.test(inputs, outputs, loss))
+                        .sum()
+                        - growth * (genome.nodes.size()
+                        - genome.input
+                        - genome.output
+                        + genome.connections.size()
+                        + genome.gates.size()
+                );
+                score = Double.isNaN(score) ? -Double.MAX_VALUE : score;
+                return score / amount;
+            });
+        }
         options.setNetwork(this);
-        final NEAT neat = new NEAT(this.input, this.output, fitnesFunction, options);
+        final NEAT neat = new NEAT(this.input, this.output, options);
 
         double error = -Double.MAX_VALUE;
         double bestFitness = -Double.MAX_VALUE;
