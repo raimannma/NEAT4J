@@ -11,6 +11,9 @@ import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static methods.Utils.pickRandom;
+import static methods.Utils.randDouble;
+
 class NEAT {
     private final int output;
     private final int input;
@@ -122,8 +125,7 @@ class NEAT {
                 }
 
                 minimalFitness = Math.abs(minimalFitness);
-                totalFitness += minimalFitness * this.population.size();
-                final double random = Math.random() * totalFitness;
+                final double random = randDouble(totalFitness + minimalFitness * this.population.size());
                 double value = 0;
                 for (final Network genome : this.population) {
                     value += genome.score + minimalFitness;
@@ -131,13 +133,13 @@ class NEAT {
                         return genome;
                     }
                 }
-                return this.population.get((int) Math.floor(Math.random() * this.population.size()));
+                return pickRandom(this.population);
             case TOURNAMENT:
                 if (this.selection.size > this.popSize) {
                     throw new RuntimeException("Your tournament size should be lower than the population size, please change methods.selection.TOURNAMENT.size");
                 }
                 return IntStream.range(0, this.selection.size)
-                        .mapToObj(i -> this.population.get((int) Math.floor(Math.random() * this.population.size())))
+                        .mapToObj(i -> pickRandom(this.population))
                         .sorted((o1, o2) -> Double.compare(o2.score, o1.score))
                         .filter(net -> Math.random() < this.selection.probability)
                         .findAny()
@@ -158,7 +160,7 @@ class NEAT {
     }
 
     private Mutation selectMutationMethod(final Network genome) {
-        final Mutation mutationMethod = this.mutation[(int) Math.floor(Math.random() * this.mutation.length)];
+        final Mutation mutationMethod = pickRandom(this.mutation);
 
         return (mutationMethod != Mutation.ADD_NODE || genome.nodes.size() < this.maxNodes)
                 && (mutationMethod != Mutation.ADD_CONN || genome.connections.size() < this.maxConns)

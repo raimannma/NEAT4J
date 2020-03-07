@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import static methods.Mutation.MOD_ACTIVATION;
 import static methods.Mutation.SUB_NODE;
+import static methods.Utils.*;
 
 public class Network {
     public final int input;
@@ -44,7 +45,7 @@ public class Network {
         for (int i = 0; i < this.input; i++) {
             final Node node = this.nodes.get(i);
             for (int j = this.input; j < this.output + this.input; j++) {
-                this.connect(node, this.nodes.get(j), Math.random() * initWeight);
+                this.connect(node, this.nodes.get(j), randDouble(initWeight));
             }
         }
     }
@@ -279,12 +280,12 @@ public class Network {
         }
         if (options.getFitnessFunction() == null) {
             options.setFitnessFunction(genome -> {
-                double score = IntStream.range(0, amount)
+                final double score = IntStream.range(0, amount)
+                        .parallel()
                         .mapToDouble(i -> -genome.test(inputs, outputs, loss))
                         .sum()
                         - growth * (genome.nodes.size() + genome.connections.size() + genome.gates.size() - genome.input - genome.output);
-                score = Double.isNaN(score) ? -Double.MAX_VALUE : score;
-                return score / amount;
+                return Double.isNaN(score) ? -Double.MAX_VALUE : score / amount;
             });
         }
         options.setNetwork(this);
@@ -296,14 +297,13 @@ public class Network {
 
         while (error < -targetError && (options.getIterations() == 0 || neat.generation < options.getIterations())) {
             final Network fittest = neat.evolve();
-            final double fitness = fittest.score;
-            error = fitness + (fittest.nodes.size() - fittest.input - fittest.output + fittest.connections.size() + fittest.gates.size()) * growth;
-            if (fitness > bestFitness) {
-                bestFitness = fitness;
+            error = fittest.score + growth * (fittest.nodes.size() + fittest.connections.size() + fittest.gates.size() - fittest.input - fittest.output);
+            if (fittest.score > bestFitness) {
+                bestFitness = fittest.score;
                 bestGenome = fittest;
             }
             if (options.getLog() >= 1 && neat.generation % options.getLog() == 0) {
-                System.out.println("Iteration: " + neat.generation + "; Fitness: " + fitness + "; Error: " + -error + "; Population: " + neat.population.size());
+                System.out.println("Iteration: " + neat.generation + "; Fitness: " + fittest.score + "; Error: " + -error + "; Population: " + neat.population.size());
             }
         }
 
@@ -378,20 +378,17 @@ public class Network {
                 if (this.connections.size() == 0) {
                     break;
                 }
-                connection = this.connections.get((int) Math.floor(Math.random() * this.connections.size()));
+                connection = pickRandom(this.connections);
                 this.disconnect(connection.from, connection.to);
 
                 node = new Node(Node.NodeType.HIDDEN);
                 node.mutate(MOD_ACTIVATION);
                 this.nodes.add(Math.max(0, Math.min(this.nodes.indexOf(connection.to), this.nodes.size() - this.output)), node);
 
-                final Connection newConn1 = this.connect(connection.from, node).get(0);
-                final Connection newConn2 = this.connect(node, connection.to).get(0);
-
                 if (connection.gater != null && Math.random() >= 0.5) {
-                    this.gate(connection.gater, newConn1);
+                    this.gate(connection.gater, this.connect(connection.from, node).get(0));
                 } else if (connection.gater != null) {
-                    this.gate(connection.gater, newConn2);
+                    this.gate(connection.gater, this.connect(node, connection.to).get(0));
                 }
                 break;
             case SUB_NODE:
@@ -399,8 +396,7 @@ public class Network {
                     break;
                 }
 
-                index = (int) Math.floor(Math.random() * (this.nodes.size() - this.output - this.input) + this.input);
-                this.remove(this.nodes.get(index));
+                this.remove(this.nodes.get((int) Math.floor(Math.random() * (this.nodes.size() - this.output - this.input) + this.input)));
                 break;
             case ADD_CONN:
                 availableNodes = new ArrayList<>();
@@ -416,7 +412,7 @@ public class Network {
                 if (availableNodes.size() == 0) {
                     break;
                 }
-                final Node[] pair = availableNodes.get((int) Math.floor(Math.random() * availableNodes.size()));
+                final Node[] pair = pickRandom(availableNodes);
                 this.connect(pair[0], pair[1]);
                 break;
             case SUB_CONN:
@@ -431,7 +427,7 @@ public class Network {
                 if (availableConns.size() == 0) {
                     break;
                 }
-                randomConn = availableConns.get((int) Math.floor(Math.random() * availableConns.size()));
+                randomConn = pickRandom(availableConns);
                 this.disconnect(randomConn.from, randomConn.to);
                 break;
             case MOD_WEIGHT:
@@ -441,12 +437,11 @@ public class Network {
                     break;
                 }
 
-                connection = allConnections.get((int) Math.floor(Math.random() * allConnections.size()));
-                connection.weight += Math.random() * (method.max - method.min) + method.min;
+                connection = pickRandom(allConnections);
+                connection.weight += randDouble(method.max, method.min);
                 break;
             case MOD_BIAS:
-                index = (int) Math.floor(Math.random() * (this.nodes.size() - this.input) + this.input);
-                this.nodes.get(index).mutate(method);
+                this.nodes.get(randInt(this.input, this.nodes.size())).mutate(method);
                 break;
             case MOD_ACTIVATION:
                 if (!method.mutateOutput && this.input + this.output == this.nodes.size()) {
@@ -460,40 +455,34 @@ public class Network {
                 if (poss.size() == 0) {
                     break;
                 }
-                node = poss.get((int) Math.floor(Math.random() * poss.size()));
+                node = pickRandom(poss);
                 this.connect(node, node);
                 break;
             case SUB_SELF_CONN:
                 if (this.selfConns.size() == 0) {
                     break;
                 }
-                connection = this.selfConns.get((int) Math.floor(Math.random() * this.selfConns.size()));
+                connection = pickRandom(this.selfConns);
                 this.disconnect(connection.from, connection.to);
                 break;
             case ADD_GATE:
                 allConnections = new ArrayList<>(this.connections);
                 allConnections.addAll(this.selfConns);
 
-                final List<Connection> list = new ArrayList<>();
-                for (final Connection connection1 : allConnections) {
-                    if (connection1.gater == null) {
-                        list.add(connection1);
-                    }
-                }
-                availableConns = list;
+                availableConns = allConnections.stream()
+                        .filter(connection1 -> connection1.gater == null)
+                        .collect(Collectors.toList());
                 if (availableConns.size() == 0) {
                     break;
                 }
 
-                index = (int) Math.floor(Math.random() * (this.nodes.size() - this.input) + this.input);
-                this.gate(this.nodes.get(index), availableConns.get((int) Math.floor(Math.random() * availableConns.size())));
+                this.gate(this.nodes.get(randInt(this.input, this.nodes.size())), pickRandom(availableConns));
                 break;
             case SUB_GATE:
                 if (this.gates.size() == 0) {
                     break;
                 }
-                index = (int) Math.floor(Math.random() * this.gates.size());
-                this.ungate(this.gates.get(index));
+                this.ungate(pickRandom(this.gates));
                 break;
             case ADD_BACK_CONN:
                 availableNodes = new ArrayList<>();
@@ -511,7 +500,7 @@ public class Network {
                     break;
                 }
 
-                final Node[] pair1 = availableNodes.get((int) Math.floor(Math.random() * availableNodes.size()));
+                final Node[] pair1 = pickRandom(availableNodes);
                 this.connect(pair1[0], pair1[1]);
                 break;
             case SUB_BACK_CONN:
@@ -526,7 +515,7 @@ public class Network {
                 if (availableConns.size() == 0) {
                     break;
                 }
-                final Connection randomConn1 = availableConns.get((int) Math.floor(Math.random() * availableConns.size()));
+                final Connection randomConn1 = pickRandom(availableConns);
                 this.disconnect(randomConn1.from, randomConn1.to);
                 break;
             case SWAP_NODES:
@@ -558,7 +547,7 @@ public class Network {
                 if (connection.gater != null) {
                     this.ungate(connection);
                 }
-                connections.remove(i);
+                connections.remove(connection);
                 break;
             }
         }
@@ -599,14 +588,13 @@ public class Network {
                 .map(output -> this.connect(input, output, 0).get(0))
                 .forEach(connections::add));
 
-        for (final Node gater : gaters) {
-            if (connections.size() == 0) {
-                break;
-            }
-            final int connIndex = (int) Math.floor(Math.random() * connections.size());
-            this.gate(gater, connections.get(connIndex));
-            connections.remove(connIndex);
-        }
+        gaters.stream()
+                .takeWhile(gater -> connections.size() > 0)
+                .forEach(gater -> {
+                    final Connection connection = pickRandom(connections);
+                    this.gate(gater, connection);
+                    connections.remove(connection);
+                });
         for (int i = node.gated.size() - 1; i >= 0; i--) {
             this.ungate(node.gated.get(i));
         }

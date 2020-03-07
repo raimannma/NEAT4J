@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static methods.Activation.LOGISTIC;
+import static methods.Utils.pickRandom;
+import static methods.Utils.randDouble;
 
 public class Node {
 
@@ -33,7 +35,7 @@ public class Node {
     }
 
     Node(final NodeType type) {
-        this.bias = type == NodeType.INPUT ? 0 : Math.random() * 2 - 1;
+        this.bias = type == NodeType.INPUT ? 0 : randDouble(-1, 1);
         this.activationType = LOGISTIC;
         this.type = type;
 
@@ -209,13 +211,10 @@ public class Node {
     }
 
     void mutate(final Mutation method) {
-        switch (method) {
-            case MOD_ACTIVATION:
-                this.activationType = method.allowed[(int) Math.floor(Math.random() * method.allowed.length)];
-                break;
-            case MOD_BIAS:
-                this.bias += Math.random() * (method.max - method.min) + method.min;
-                break;
+        if (method == Mutation.MOD_ACTIVATION) {
+            this.activationType = pickRandom(method.allowed);
+        } else if (method == Mutation.MOD_BIAS) {
+            this.bias += randDouble(method.min, method.max);
         }
     }
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.stream.IntStream;
 
+import static methods.Utils.pickRandom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,7 +15,9 @@ public class NEATTest {
     @Test
     void testJSON() {
         final Network network = new Network(2, 2);
-        IntStream.range(0, 10).mapToObj(i -> Mutation.ALL[(int) Math.floor(Math.random() * Mutation.ALL.length)]).forEach(network::mutate);
+        IntStream.range(0, 10)
+                .mapToObj(i -> pickRandom(Mutation.ALL))
+                .forEach(network::mutate);
         testEquality(network, Network.fromJSON(network.toJSON()));
     }
 

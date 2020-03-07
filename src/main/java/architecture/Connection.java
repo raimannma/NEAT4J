@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import static methods.Utils.randDouble;
+
 public class Connection {
     final Node to;
     final Node from;
@@ -24,7 +26,7 @@ public class Connection {
         this.from = from;
         this.to = to;
         this.gain = 1;
-        this.weight = Math.random() * 2 - 1;
+        this.weight = randDouble(-1, 1);
         this.gater = null;
         this.eligibility = 0;
 
