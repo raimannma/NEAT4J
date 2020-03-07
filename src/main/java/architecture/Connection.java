@@ -3,6 +3,7 @@ package architecture;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Connection {
     final Node to;
@@ -39,6 +40,23 @@ public class Connection {
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("weight", this.weight);
         return jsonObject;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.to, this.from, this.weight, this.gater, this.gain);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final Connection that = (Connection) o;
+        return Double.compare(that.weight, this.weight) == 0;
     }
 
     @Override

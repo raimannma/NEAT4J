@@ -16,16 +16,16 @@ import static methods.Mutation.MOD_ACTIVATION;
 import static methods.Mutation.SUB_NODE;
 
 public class Network {
-    private final int input;
-    private final int output;
+    public final int input;
+    public final int output;
+    public List<Node> nodes;
+    List<Connection> connections;
     List<Connection> gates;
     double score;
-    List<Node> nodes;
-    List<Connection> connections;
     private List<Connection> selfConns;
     private double dropout;
 
-    Network(final int input, final int output) {
+    public Network(final int input, final int output) {
         this.input = input;
         this.output = output;
 
@@ -62,7 +62,7 @@ public class Network {
         return connections;
     }
 
-    static Network fromJSON(final JsonObject json) {
+    public static Network fromJSON(final JsonObject json) {
         final Network network = new Network(json.get("input").getAsInt(), json.get("output").getAsInt());
         network.dropout = json.get("dropout").getAsDouble();
         network.nodes = new ArrayList<>();
@@ -205,7 +205,7 @@ public class Network {
         return conns;
     }
 
-    JsonObject toJSON() {
+    public JsonObject toJSON() {
         final JsonObject json = new JsonObject();
         json.addProperty("input", this.input);
         json.addProperty("output", this.output);
@@ -259,7 +259,7 @@ public class Network {
         return this.evolve(set, new EvolveOptions());
     }
 
-    private double evolve(final DataEntry[] set, final EvolveOptions options) {
+    public double evolve(final DataEntry[] set, final EvolveOptions options) {
         if (options == null) {
             return this.evolve(set);
         }
@@ -307,7 +307,9 @@ public class Network {
                 bestFitness = fitness;
                 bestGenome = fittest;
             }
-            System.out.println("Iteration: " + neat.generation + "; Fitness: " + fitness + "; Error: " + -error + "; Population: " + neat.population.size());
+            if (options.getLog() >= 1 && neat.generation % options.getLog() == 0) {
+                System.out.println("Iteration: " + neat.generation + "; Fitness: " + fitness + "; Error: " + -error + "; Population: " + neat.population.size());
+            }
         }
 
         if (bestGenome != null) {
@@ -359,7 +361,7 @@ public class Network {
         return output.stream().mapToDouble(i -> i).toArray();
     }
 
-    void mutate(final Mutation method) {
+    public void mutate(final Mutation method) {
         if (method == null) {
             throw new RuntimeException("No (correct) mutate method given!");
         }
@@ -407,7 +409,7 @@ public class Network {
                     node = this.nodes.get(i);
                     for (int j = Math.max(i + 1, this.input); j < this.nodes.size(); j++) {
                         node2 = this.nodes.get(j);
-                        if (!node.isProjectingTo(node2)) {
+                        if (node.isNotProjectingTo(node2)) {
                             availableNodes.add(new Node[]{node, node2});
                         }
                     }
@@ -500,7 +502,7 @@ public class Network {
                     node = this.nodes.get(i);
                     for (int j = this.input; j < i; j++) {
                         node2 = this.nodes.get(j);
-                        if (!node.isProjectingTo(node2)) {
+                        if (node.isNotProjectingTo(node2)) {
                             availableNodes.add(new Node[]{node, node2});
                         }
                     }
@@ -594,7 +596,7 @@ public class Network {
 
         final List<Connection> connections = new ArrayList<>();
         inputs.forEach(input -> outputs.stream()
-                .filter(output -> !input.isProjectingTo(output))
+                .filter(output -> input.isNotProjectingTo(output))
                 .map(output -> this.connect(input, output, 0).get(0))
                 .forEach(connections::add));
 
@@ -615,12 +617,11 @@ public class Network {
     }
 
     private void ungate(final Connection connection) {
-        final int index = this.gates.indexOf(connection);
-        if (index == -1) {
-            throw new RuntimeException("This connection is not gated!");
+        if (connection != null
+                && connection.gater != null
+                && this.gates.remove(connection)) {
+            connection.gater.ungate(connection);
         }
-        this.gates.remove(index);
-        connection.gater.ungate(connection);
     }
 
     void clear() {

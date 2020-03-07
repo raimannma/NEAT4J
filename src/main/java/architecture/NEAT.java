@@ -107,18 +107,16 @@ class NEAT {
             if (this.clear) {
                 this.population.forEach(Network::clear);
             }
-            this.population
-                    .parallelStream()
-                    .forEach(value -> value.score = this.fitnessFunction.applyAsDouble(value));
+            for (final Network value : this.population) {
+                value.score = this.fitnessFunction.applyAsDouble(value);
+            }
         } else {
-            this.population
-                    .parallelStream()
-                    .forEach(genome -> {
-                        if (this.clear) {
-                            genome.clear();
-                        }
-                        genome.score = this.fitnessFunction.applyAsDouble(genome);
-                    });
+            for (final Network genome : this.population) {
+                if (this.clear) {
+                    genome.clear();
+                }
+                genome.score = this.fitnessFunction.applyAsDouble(genome);
+            }
         }
     }
 
@@ -178,7 +176,7 @@ class NEAT {
     }
 
     private void mutate() {
-        this.population.parallelStream()
+        this.population.stream()
                 .filter(network -> Math.random() <= this.mutationRate)
                 .forEach(network -> IntStream.range(0, this.mutationAmount)
                         .forEach(j -> network.mutate(this.selectMutationMethod(network))));

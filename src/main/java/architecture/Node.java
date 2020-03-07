@@ -123,20 +123,26 @@ public class Node {
                 this.connections.self.weight = weight;
             }
             connections.add(this.connections.self);
-        } else if (this.isProjectingTo(target)) {
-            throw new RuntimeException("Already projecting a connection to this node!");
         } else {
-            final Connection connection = new Connection(this, target, weight);
-            target.connections.in.add(connection);
-            this.connections.out.add(connection);
-            connections.add(connection);
+            Connection connection = this.connections.out.stream()
+                    .filter(conn -> conn.to.equals(target))
+                    .findAny()
+                    .orElse(null);
+            if (connection == null) {
+                connection = new Connection(this, target, weight);
+                target.connections.in.add(connection);
+                this.connections.out.add(connection);
+                connections.add(connection);
+            } else {
+                connections.add(connection);
+            }
         }
         return connections;
     }
 
-    boolean isProjectingTo(final Node node) {
-        return this.equals(node) && this.connections.self.weight != 0
-                || this.connections.out.stream().anyMatch(connection -> connection.to.equals(node));
+    boolean isNotProjectingTo(final Node node) {
+        return (!this.equals(node) || this.connections.self.weight == 0)
+                && this.connections.out.stream().noneMatch(connection -> connection.to.equals(node));
     }
 
     void disconnect(final Node node) {
@@ -224,7 +230,16 @@ public class Node {
 
     @Override
     public boolean equals(final Object o) {
-        return this == o;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        final Node node = (Node) o;
+        return node.bias == this.bias &&
+                this.activationType == node.activationType &&
+                this.type == node.type;
     }
 
     @Override

@@ -25,8 +25,9 @@ public class EvolveOptions {
     private Loss loss;
     private int iterations;
     private Network network;
+    private int log;
 
-    EvolveOptions() {
+    public EvolveOptions() {
         this.error = Double.NaN;
         this.growth = 0.0001;
         this.loss = Loss.MSE;
@@ -46,6 +47,14 @@ public class EvolveOptions {
         this.maxConns = Integer.MAX_VALUE;
         this.maxGates = Integer.MAX_VALUE;
         this.fitnessPopulation = false;
+    }
+
+    int getLog() {
+        return this.log;
+    }
+
+    public void setLog(final int log) {
+        this.log = log;
     }
 
     boolean isFitnessPopulation() {
