@@ -555,8 +555,7 @@ public class Network {
     }
 
     private void remove(final Node node) {
-        final int index = this.nodes.indexOf(node);
-        if (index == -1) {
+        if (!this.nodes.contains(node)) {
             throw new RuntimeException("This node does not exist in the network!");
         }
 
@@ -600,7 +599,7 @@ public class Network {
         }
 
         this.disconnect(node, node);
-        this.nodes.remove(index);
+        this.nodes.remove(node);
     }
 
     private void ungate(final Connection connection) {
