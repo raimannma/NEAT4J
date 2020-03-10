@@ -23,7 +23,7 @@ public enum Loss {
         @Override
         public double calc(final double[] target, final double[] output) {
             return IntStream.range(0, output.length)
-                    .mapToDouble(i -> Math.round(target[i] * 2) != Math.round(output[i] * 2) ? 1 : 0)
+                    .mapToDouble(i -> Math.round(target[i] * 2) == Math.round(output[i] * 2) ? 0 : 1)
                     .sum();
         }
     }, MAE {

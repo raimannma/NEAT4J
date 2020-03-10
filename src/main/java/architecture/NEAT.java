@@ -92,7 +92,7 @@ class NEAT {
 
         this.population.addAll(elitists);
 
-        this.population.parallelStream().forEach(network -> network.score = Double.NaN);
+        this.population.forEach(network -> network.score = Double.NaN);
 
         this.generation++;
         return fittest;
@@ -110,42 +110,40 @@ class NEAT {
     }
 
     private Network getParent() {
-        switch (this.selection) {
-            case POWER:
-                if (this.population.get(0).score < this.population.get(1).score) {
-                    this.population.sort((o1, o2) -> Double.compare(o2.score, o1.score));
-                }
-                return this.population.get((int) Math.floor(Math.pow(Math.random(), this.selection.power) * this.population.size()));
-            case FITNESS_PROPORTIONATE:
-                double totalFitness = 0;
-                double minimalFitness = 0;
-                for (final Network network : this.population) {
-                    minimalFitness = Math.min(network.score, minimalFitness);
-                    totalFitness += network.score;
-                }
+        if (this.selection == Selection.POWER) {
+            if (this.population.get(0).score < this.population.get(1).score) {
+                this.population.sort((o1, o2) -> Double.compare(o2.score, o1.score));
+            }
+            return this.population.get((int) Math.floor(Math.pow(Math.random(), this.selection.power) * this.population.size()));
+        } else if (this.selection == Selection.FITNESS_PROPORTIONATE) {
+            double totalFitness = 0;
+            double minimalFitness = 0;
+            for (final Network network : this.population) {
+                minimalFitness = Math.min(network.score, minimalFitness);
+                totalFitness += network.score;
+            }
 
-                minimalFitness = Math.abs(minimalFitness);
-                final double random = randDouble(totalFitness + minimalFitness * this.population.size());
-                double value = 0;
-                for (final Network genome : this.population) {
-                    value += genome.score + minimalFitness;
-                    if (random < value) {
-                        return genome;
-                    }
+            minimalFitness = Math.abs(minimalFitness);
+            final double random = randDouble(totalFitness + minimalFitness * this.population.size());
+            double value = 0;
+            for (final Network genome : this.population) {
+                value += genome.score + minimalFitness;
+                if (random < value) {
+                    return genome;
                 }
-                return pickRandom(this.population);
-            case TOURNAMENT:
-                if (this.selection.size > this.popSize) {
-                    throw new RuntimeException("Your tournament size should be lower than the population size, please change methods.selection.TOURNAMENT.size");
-                }
-                return IntStream.range(0, this.selection.size)
-                        .mapToObj(i -> pickRandom(this.population))
-                        .sorted((o1, o2) -> Double.compare(o2.score, o1.score))
-                        .filter(net -> Math.random() < this.selection.probability)
-                        .findAny()
-                        .orElse(this.population.get(0));
+            }
+        } else if (this.selection == Selection.TOURNAMENT) {
+            if (this.selection.size > this.popSize) {
+                throw new RuntimeException("Your tournament size should be lower than the population size, please change methods.selection.TOURNAMENT.size");
+            }
+            return IntStream.range(0, this.selection.size)
+                    .mapToObj(i -> pickRandom(this.population))
+                    .sorted((o1, o2) -> Double.compare(o2.score, o1.score))
+                    .filter(net -> Math.random() < this.selection.probability)
+                    .findFirst()
+                    .orElse(pickRandom(this.population));
         }
-        return this.population.get(0);
+        return pickRandom(this.population);
     }
 
     private Network getOffspring(final Network[] parents) {

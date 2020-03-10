@@ -1,20 +1,22 @@
 package methods;
 
 import java.util.List;
+import java.util.SplittableRandom;
 
 public enum Utils {
     ;
+    private static final SplittableRandom rand = new SplittableRandom();
 
     public static int randInt(final int min, final int max) {
-        return (int) Math.floor(Math.random() * (max - min) + min);
+        return rand.nextInt(min, max);
     }
 
     public static double randDouble(final double min, final double max) {
-        return Math.random() * (max - min) + min;
+        return rand.nextDouble(min, max);
     }
 
     public static double randDouble(final double max) {
-        return Math.random() * max;
+        return rand.nextDouble(max);
     }
 
     public static <T> T pickRandom(final T[] arr) {
@@ -22,7 +24,7 @@ public enum Utils {
     }
 
     public static int randInt(final int max) {
-        return (int) Math.floor(Math.random() * max);
+        return rand.nextInt(max);
     }
 
     public static <T> T pickRandom(final List<T> list) {

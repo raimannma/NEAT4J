@@ -89,14 +89,18 @@ public enum Activation {
     }, BIPOLAR {
         @Override
         public double calc(final double x, final boolean derivate) {
-            return derivate ? 0 : x > 0 ? 1 : -1;
+            if (derivate) {
+                return 0;
+            } else {
+                return x > 0 ? 1 : -1;
+            }
         }
     }, BIPOLAR_SIGMOID {
         @Override
         public double calc(final double x, final boolean derivate) {
             final double d = 2 / (1 + Math.exp(-x)) - 1;
             if (derivate) {
-                return 0.5 * (1 + d) * (1 - d);
+                return 0.5 - 0.5 * d * d;
             } else {
                 return d;
             }
@@ -105,7 +109,7 @@ public enum Activation {
         @Override
         public double calc(final double x, final boolean derivate) {
             if (derivate) {
-                return x > -1 && x < 1 ? 1 : 0;
+                return Math.abs(x) < 1 ? 1 : 0;
             } else {
                 return Math.max(-1, Math.min(1, x));
             }
@@ -122,7 +126,11 @@ public enum Activation {
     }, INVERSE {
         @Override
         public double calc(final double x, final boolean derivate) {
-            return derivate ? -1 : 1 - x;
+            if (derivate) {
+                return -1;
+            } else {
+                return 1 - x;
+            }
         }
     };
 
