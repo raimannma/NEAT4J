@@ -313,7 +313,7 @@ public class Network {
         return -error;
     }
 
-    private double test(final double[][] inputs, final double[][] outputs) {
+    public double test(final double[][] inputs, final double[][] outputs) {
         return this.test(inputs, outputs, Loss.MSE);
     }
 

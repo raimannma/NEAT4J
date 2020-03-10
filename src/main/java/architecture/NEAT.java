@@ -102,7 +102,9 @@ class NEAT {
         if (this.clear) {
             this.population.forEach(Network::clear);
         }
-        this.population.forEach(genome -> genome.score = this.fitnessFunction.applyAsDouble(genome));
+        this.population
+                .parallelStream()
+                .forEach(genome -> genome.score = this.fitnessFunction.applyAsDouble(genome));
     }
 
     private void sort() {
@@ -151,7 +153,7 @@ class NEAT {
     }
 
     private void mutate() {
-        this.population.stream()
+        this.population.parallelStream()
                 .filter(network -> Math.random() <= this.mutationRate)
                 .forEach(network -> IntStream.range(0, this.mutationAmount)
                         .forEach(j -> network.mutate(this.selectMutationMethod(network))));
