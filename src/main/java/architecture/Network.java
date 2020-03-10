@@ -430,7 +430,7 @@ public class Network {
                 }
 
                 connection = pickRandom(allConnections);
-                connection.weight += randDouble(method.max, method.min);
+                connection.weight += randDouble(method.min, method.max);
                 break;
             case MOD_BIAS:
                 this.nodes.get(randInt(this.input, this.nodes.size())).mutate(method);
