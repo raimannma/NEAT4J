@@ -196,5 +196,4 @@ class NEAT {
                 .forEach(i -> this.population.add(Network.fromJSON(arr.get(i).getAsJsonObject())));
         this.popSize = this.population.size();
     }
-
 }
