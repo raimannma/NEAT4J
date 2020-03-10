@@ -17,16 +17,15 @@ public class Connection {
     ArrayList<Double> xTraceValues;
     double eligibility;
 
-    Connection(final Node from, final Node to, final double weight) {
-        this(from, to);
-        this.weight = weight;
+    Connection(final Node from, final Node to) {
+        this(from, to, randDouble(-1, 1));
     }
 
-    private Connection(final Node from, final Node to) {
+    Connection(final Node from, final Node to, final double weight) {
         this.from = from;
         this.to = to;
         this.gain = 1;
-        this.weight = randDouble(-1, 1);
+        this.weight = weight;
         this.gater = null;
         this.eligibility = 0;
 

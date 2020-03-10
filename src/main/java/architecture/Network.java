@@ -52,13 +52,11 @@ public class Network {
 
     private List<Connection> connect(final Node from, final Node to, final double weight) {
         final List<Connection> connections = from.connect(to, weight);
-        connections.parallelStream().forEach(connection -> {
-            if (from.equals(to)) {
-                this.selfConns.add(connection);
-            } else {
-                this.connections.add(connection);
-            }
-        });
+        if (from.equals(to)) {
+            this.selfConns.addAll(connections);
+        } else {
+            this.connections.addAll(connections);
+        }
         return connections;
     }
 
@@ -70,9 +68,7 @@ public class Network {
 
         final JsonArray nodes = json.get("nodes").getAsJsonArray();
         final JsonArray connections = json.get("connections").getAsJsonArray();
-        for (int i = 0; i < nodes.size(); i++) {
-            network.nodes.add(Node.fromJSON(nodes.get(i).getAsJsonObject()));
-        }
+        nodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
         for (int i = 0; i < connections.size(); i++) {
             final JsonObject connJSON = connections.get(i).getAsJsonObject();
             final List<Connection> connection = network.connect(network.nodes.get(connJSON.get("from").getAsInt()), network.nodes.get(connJSON.get("to").getAsInt()));
@@ -214,29 +210,27 @@ public class Network {
         final JsonArray connections = new JsonArray();
 
         IntStream.range(0, this.nodes.size()).forEach(i -> this.nodes.get(i).index = i);
-        for (int i = 0; i < this.nodes.size(); i++) {
+        IntStream.range(0, this.nodes.size()).forEach(i -> {
             final Node node = this.nodes.get(i);
             final JsonObject nodeJSON = node.toJSON();
             nodeJSON.addProperty("index", i);
             nodes.add(nodeJSON);
-
             if (node.self.weight != 0) {
                 final JsonObject connectionJSON = node.self.toJSON();
                 connectionJSON.addProperty("from", i);
                 connectionJSON.addProperty("to", i);
-
                 connectionJSON.addProperty("gater", node.self.gater == null ? -1 : node.self.gater.index);
                 connections.add(connectionJSON);
             }
-        }
+        });
 
-        for (final Connection connection : this.connections) {
+        this.connections.forEach(connection -> {
             final JsonObject toJSON = connection.toJSON();
             toJSON.addProperty("from", connection.from.index);
             toJSON.addProperty("to", connection.to.index);
             toJSON.addProperty("gater", connection.gater != null ? connection.gater.index : -1);
             connections.add(toJSON);
-        }
+        });
 
         json.add("nodes", nodes);
         json.add("connections", connections);
@@ -302,7 +296,7 @@ public class Network {
                 bestFitness = fittest.score;
                 bestGenome = fittest;
             }
-            if (options.getLog() >= 1 && neat.generation % options.getLog() == 0) {
+            if (options.getLog() > 0 && neat.generation % options.getLog() == 0) {
                 System.out.println("Iteration: " + neat.generation + "; Fitness: " + fittest.score + "; Error: " + -error + "; Population: " + neat.population.size());
             }
         }
@@ -368,14 +362,15 @@ public class Network {
 
         final List<Connection> allConnections;
         int index;
-        final Connection connection, randomConn;
+        final Connection connection;
+        final Connection randomConn;
         Node node;
         Node node2;
         final List<Connection> availableConns;
         final List<Node[]> availableNodes;
         switch (method) {
             case ADD_NODE:
-                if (this.connections.size() == 0) {
+                if (this.connections.isEmpty()) {
                     break;
                 }
                 connection = pickRandom(this.connections);
@@ -409,7 +404,7 @@ public class Network {
                         }
                     }
                 }
-                if (availableNodes.size() == 0) {
+                if (availableNodes.isEmpty()) {
                     break;
                 }
                 final Node[] pair = pickRandom(availableNodes);
@@ -417,14 +412,11 @@ public class Network {
                 break;
             case SUB_CONN:
                 availableConns = new ArrayList<>();
-                for (final Connection conn : this.connections) {
-                    if (conn.from.out.size() > 1
-                            && conn.to.in.size() > 1
-                            && this.nodes.indexOf(conn.to) > this.nodes.indexOf(conn.from)) {
-                        availableConns.add(conn);
-                    }
-                }
-                if (availableConns.size() == 0) {
+                this.connections.stream()
+                        .filter(conn -> !conn.from.out.isEmpty() && !conn.to.in.isEmpty()
+                                && this.nodes.indexOf(conn.to) > this.nodes.indexOf(conn.from))
+                        .forEach(availableConns::add);
+                if (availableConns.isEmpty()) {
                     break;
                 }
                 randomConn = pickRandom(availableConns);
@@ -433,7 +425,7 @@ public class Network {
             case MOD_WEIGHT:
                 allConnections = new ArrayList<>(this.connections);
                 allConnections.addAll(this.selfConns);
-                if (allConnections.size() == 0) {
+                if (allConnections.isEmpty()) {
                     break;
                 }
 
@@ -452,14 +444,14 @@ public class Network {
                 break;
             case ADD_SELF_CONN:
                 final List<Node> poss = IntStream.range(this.input, this.nodes.size()).mapToObj(this.nodes::get).filter(node1 -> node1.self.weight == 0).collect(Collectors.toList());
-                if (poss.size() == 0) {
+                if (poss.isEmpty()) {
                     break;
                 }
                 node = pickRandom(poss);
                 this.connect(node, node);
                 break;
             case SUB_SELF_CONN:
-                if (this.selfConns.size() == 0) {
+                if (this.selfConns.isEmpty()) {
                     break;
                 }
                 connection = pickRandom(this.selfConns);
@@ -472,14 +464,14 @@ public class Network {
                 availableConns = allConnections.stream()
                         .filter(connection1 -> connection1.gater == null)
                         .collect(Collectors.toList());
-                if (availableConns.size() == 0) {
+                if (availableConns.isEmpty()) {
                     break;
                 }
 
                 this.gate(this.nodes.get(randInt(this.input, this.nodes.size())), pickRandom(availableConns));
                 break;
             case SUB_GATE:
-                if (this.gates.size() == 0) {
+                if (this.gates.isEmpty()) {
                     break;
                 }
                 this.ungate(pickRandom(this.gates));
@@ -496,7 +488,7 @@ public class Network {
                     }
                 }
 
-                if (availableNodes.size() == 0) {
+                if (availableNodes.isEmpty()) {
                     break;
                 }
 
@@ -505,18 +497,14 @@ public class Network {
                 break;
             case SUB_BACK_CONN:
                 availableConns = new ArrayList<>();
-                for (final Connection connection1 : this.connections) {
-                    if (connection1.from.out.size() > 1 &&
-                            connection1.to.in.size() > 1 &&
-                            this.nodes.indexOf(connection1.from) > this.nodes.indexOf(connection1.to)) {
-                        availableConns.add(connection1);
-                    }
-                }
-                if (availableConns.size() == 0) {
+                this.connections.stream().filter(connection1 -> !connection1.from.out.isEmpty() && !connection1.to.in.isEmpty() &&
+                        this.nodes.indexOf(connection1.from) > this.nodes.indexOf(connection1.to))
+                        .forEach(availableConns::add);
+                if (availableConns.isEmpty()) {
                     break;
                 }
-                final Connection randomConn1 = pickRandom(availableConns);
-                this.disconnect(randomConn1.from, randomConn1.to);
+                randomConn = pickRandom(availableConns);
+                this.disconnect(randomConn.from, randomConn.to);
                 break;
             case SWAP_NODES:
                 if (method.mutateOutput && this.nodes.size() - this.input < 2
