@@ -4,7 +4,6 @@ import methods.Mutation;
 import mnist.MnistReader;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MNISTTest {
     @Test
-    void testMNIST() throws IOException {
+    void testMNIST() {
         final int[] labels = MnistReader.getLabels("src/test/resources/mnist/label.idx1-ubyte");
         final List<int[][]> images = MnistReader.getImages("src/test/resources/mnist/images.idx3-ubyte");
 
@@ -45,13 +44,13 @@ public class MNISTTest {
         final EvolveOptions options = new EvolveOptions();
         options.setLog(1);
         options.setError(0.05);
-        options.setPopulationSize(100);
-        options.setElitism(5);
+        options.setPopulationSize(1000);
+        options.setElitism(50);
         options.setMutations(Mutation.FFW);
         options.setEqual(true);
 
         network.evolve(trainInput, trainOutput, options);
 
-        assertTrue(network.test(testInput, testOutput) <= 0.05);
+        assertTrue(network.test(testInput, testOutput) <= 0.15);
     }
 }

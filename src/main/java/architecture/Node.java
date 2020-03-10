@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static methods.Activation.LOGISTIC;
 import static methods.Utils.pickRandom;
@@ -20,13 +18,12 @@ public class Node {
     final List<Connection> in;
     final List<Connection> out;
     final List<Connection> gated;
-    Connection self;
+    final Connection self;
     int index;
     Activation activationType;
     double bias;
     NodeType type;
     double mask;
-    private double old;
     private double state;
     private double activation;
 
@@ -41,7 +38,6 @@ public class Node {
 
         this.activation = 0;
         this.state = 0;
-        this.old = 0;
         this.mask = 1;
 
         this.in = new ArrayList<>();
@@ -60,47 +56,9 @@ public class Node {
     }
 
     double activate() {
-        this.old = this.state;
         this.updateState();
-
-        this.activation = this.activationType.calc(this.state) * this.mask;
-        final double derivative = this.activationType.calc(this.state, true);
-
-        final List<Node> nodes = new ArrayList<>();
-        final ArrayList<Double> influences = IntStream.range(0, this.gated.size())
-                .mapToObj(i -> 0.0)
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        this.gated.forEach(connection -> {
-            final Node node = connection.to;
-            final int index = nodes.indexOf(node);
-            if (index > -1) {
-                influences.set(index, influences.get(index) + connection.weight * connection.from.activation);
-            } else {
-                nodes.add(node);
-                influences.add(node.self.gater == null || !node.self.gater.equals(this)
-                        ? connection.weight * connection.from.activation
-                        : connection.weight * connection.from.activation + node.old);
-            }
-            connection.gain = this.activation;
-        });
-
-        this.in.forEach(connection -> {
-            connection.eligibility = this.self.gain * this.self.weight * connection.eligibility + connection.from.activation * connection.gain;
-            IntStream.range(0, nodes.size()).forEach(j -> {
-                final Node node = nodes.get(j);
-                final double influence = influences.get(j);
-                final int index = connection.xTraceNodes.indexOf(node);
-                if (index > -1) {
-                    connection.xTraceValues.set(index,
-                            node.self.gain * node.self.weight * connection.xTraceValues.get(index)
-                                    + derivative * connection.eligibility * influence);
-                } else {
-                    connection.xTraceNodes.add(node);
-                    connection.xTraceValues.add(derivative * connection.eligibility * influence);
-                }
-            });
-        });
+        this.activation = this.activationType.calc(this.state);
+        this.gated.forEach(conn -> conn.gain = this.activation);
         return this.activation;
     }
 
@@ -110,17 +68,6 @@ public class Node {
     }
 
     void activate(final double input) {
-        this.activation = input;
-    }
-
-    double noTraceActivation() {
-        this.updateState();
-        this.activation = this.activationType.calc(this.state);
-        this.gated.forEach(conn -> conn.gain = this.activation);
-        return this.activation;
-    }
-
-    void noTraceActivation(final double input) {
         this.activation = input;
     }
 
@@ -151,10 +98,6 @@ public class Node {
                 && this.out.stream().noneMatch(connection -> connection.to.equals(node));
     }
 
-    void disconnect(final Node node) {
-        this.disconnect(node, false);
-    }
-
     void clear() {
         this.in.forEach(connection -> {
             connection.eligibility = 0;
@@ -162,12 +105,11 @@ public class Node {
             connection.xTraceValues = new ArrayList<>();
         });
         this.gated.forEach(connection -> connection.gain = 0);
-        this.old = 0;
         this.state = 0;
         this.activation = 0;
     }
 
-    private void disconnect(final Node node, final boolean twoSided) {
+    void disconnect(final Node node) {
         if (this.equals(node)) {
             this.self.weight = 0;
             return;
@@ -176,26 +118,23 @@ public class Node {
             if (connection.to.equals(node)) {
                 this.out.remove(connection);
                 connection.to.in.remove(connection);
-                if (connection.gater != null) {
-                    connection.gater.ungate(connection);
+                if (connection.gateNode != null) {
+                    connection.gateNode.removeGate(connection);
                 }
                 break;
             }
         }
-        if (twoSided) {
-            node.disconnect(this);
-        }
     }
 
-    void ungate(final Connection connection) {
-        this.ungate(new Connection[]{connection});
+    void removeGate(final Connection connection) {
+        this.removeGate(new Connection[]{connection});
     }
 
-    private void ungate(final Connection[] connections) {
+    private void removeGate(final Connection[] connections) {
         for (int i = connections.length - 1; i >= 0; i--) {
             final Connection connection = connections[i];
             this.gated.remove(connection);
-            connection.gater = null;
+            connection.gateNode = null;
             connection.gain = 1;
         }
     }
@@ -205,7 +144,7 @@ public class Node {
     }
 
     private void gate(final Connection[] connections) {
-        Arrays.stream(connections).forEach(connection -> connection.gater = this);
+        Arrays.stream(connections).forEach(connection -> connection.gateNode = this);
         this.gated.addAll(Arrays.asList(connections));
     }
 

@@ -17,7 +17,7 @@ public class EvolveOptions {
     private Mutation[] mutations;
     private Network template;
     private int maxNodes;
-    private int maxConns;
+    private int maxConnections;
     private int maxGates;
     private boolean equal;
     private boolean clear;
@@ -46,7 +46,7 @@ public class EvolveOptions {
         this.mutations = Mutation.FFW;
         this.template = null;
         this.maxNodes = Integer.MAX_VALUE;
-        this.maxConns = Integer.MAX_VALUE;
+        this.maxConnections = Integer.MAX_VALUE;
         this.maxGates = Integer.MAX_VALUE;
         this.fitnessFunction = null;
     }
@@ -139,12 +139,12 @@ public class EvolveOptions {
         this.maxNodes = maxNodes;
     }
 
-    int getMaxConns() {
-        return this.maxConns;
+    int getMaxConnections() {
+        return this.maxConnections;
     }
 
-    public void setMaxConns(final int maxConns) {
-        this.maxConns = maxConns;
+    public void setMaxConnections(final int maxConnections) {
+        this.maxConnections = maxConnections;
     }
 
     int getMaxGates() {

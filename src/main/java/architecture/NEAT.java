@@ -25,7 +25,7 @@ class NEAT {
     private final int provenance;
     private final int elitism;
     private final int maxGates;
-    private final int maxConns;
+    private final int maxConnections;
     private final int maxNodes;
     private final Network template;
     private final Mutation[] mutation;
@@ -50,7 +50,7 @@ class NEAT {
         this.mutation = options.getMutations();
         this.template = options.getTemplate();
         this.maxNodes = options.getMaxNodes();
-        this.maxConns = options.getMaxConns();
+        this.maxConnections = options.getMaxConnections();
         this.maxGates = options.getMaxGates();
 
         this.generation = 0;
@@ -163,7 +163,7 @@ class NEAT {
         final Mutation mutationMethod = pickRandom(this.mutation);
 
         return (mutationMethod != Mutation.ADD_NODE || genome.nodes.size() < this.maxNodes)
-                && (mutationMethod != Mutation.ADD_CONN || genome.connections.size() < this.maxConns)
+                && (mutationMethod != Mutation.ADD_CONN || genome.connections.size() < this.maxConnections)
                 && (mutationMethod != Mutation.ADD_GATE || genome.gates.size() < this.maxGates)
                 ? mutationMethod
                 : null;

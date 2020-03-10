@@ -3,9 +3,9 @@ package methods;
 public enum Activation {
     LOGISTIC {
         @Override
-        public double calc(final double x, final boolean derivate) {
+        public double calc(final double x, final boolean derivative) {
             final double fx = 1 / (1 + Math.exp(-x));
-            if (derivate) {
+            if (derivative) {
                 return fx * 1 - fx * fx;
             } else {
                 return fx;
@@ -13,8 +13,8 @@ public enum Activation {
         }
     }, TANH {
         @Override
-        public double calc(final double x, final boolean derivate) {
-            if (derivate) {
+        public double calc(final double x, final boolean derivative) {
+            if (derivative) {
                 return 1 - Math.pow(Math.tanh(x), 2);
             } else {
                 return Math.tanh(x);
@@ -22,8 +22,8 @@ public enum Activation {
         }
     }, IDENTITY {
         @Override
-        public double calc(final double x, final boolean derivate) {
-            if (derivate) {
+        public double calc(final double x, final boolean derivative) {
+            if (derivative) {
                 return 1;
             } else {
                 return x;
@@ -31,8 +31,8 @@ public enum Activation {
         }
     }, STEP {
         @Override
-        public double calc(final double x, final boolean derivate) {
-            if (derivate) {
+        public double calc(final double x, final boolean derivative) {
+            if (derivative) {
                 return 0;
             } else {
                 return x > 0 ? 1 : 0;
@@ -40,8 +40,8 @@ public enum Activation {
         }
     }, RELU {
         @Override
-        public double calc(final double x, final boolean derivate) {
-            if (derivate) {
+        public double calc(final double x, final boolean derivative) {
+            if (derivative) {
                 return x > 0 ? 1 : 0;
             } else {
                 return x > 0 ? x : 0;
@@ -49,9 +49,9 @@ public enum Activation {
         }
     }, SOFTSIGN {
         @Override
-        public double calc(final double x, final boolean derivate) {
+        public double calc(final double x, final boolean derivative) {
             final double d = 1 + Math.abs(x);
-            if (derivate) {
+            if (derivative) {
                 return x / Math.pow(d, 2);
             } else {
                 return x / d;
@@ -59,8 +59,8 @@ public enum Activation {
         }
     }, SINUSOID {
         @Override
-        public double calc(final double x, final boolean derivate) {
-            if (derivate) {
+        public double calc(final double x, final boolean derivative) {
+            if (derivative) {
                 return Math.cos(x);
             } else {
                 return Math.sin(x);
@@ -68,9 +68,9 @@ public enum Activation {
         }
     }, GAUSSIAN {
         @Override
-        public double calc(final double x, final boolean derivate) {
+        public double calc(final double x, final boolean derivative) {
             final double d = Math.exp(-Math.pow(x, 2));
-            if (derivate) {
+            if (derivative) {
                 return -2 * x * d;
             } else {
                 return d;
@@ -78,9 +78,9 @@ public enum Activation {
         }
     }, BENT_IDENTITY {
         @Override
-        public double calc(final double x, final boolean derivate) {
+        public double calc(final double x, final boolean derivative) {
             final double d = Math.sqrt(Math.pow(x, 2) + 1);
-            if (derivate) {
+            if (derivative) {
                 return x / (2 * d) + 1;
             } else {
                 return (d - 1) / 2 + x;
@@ -88,8 +88,8 @@ public enum Activation {
         }
     }, BIPOLAR {
         @Override
-        public double calc(final double x, final boolean derivate) {
-            if (derivate) {
+        public double calc(final double x, final boolean derivative) {
+            if (derivative) {
                 return 0;
             } else {
                 return x > 0 ? 1 : -1;
@@ -97,9 +97,9 @@ public enum Activation {
         }
     }, BIPOLAR_SIGMOID {
         @Override
-        public double calc(final double x, final boolean derivate) {
+        public double calc(final double x, final boolean derivative) {
             final double d = 2 / (1 + Math.exp(-x)) - 1;
-            if (derivate) {
+            if (derivative) {
                 return 0.5 - 0.5 * d * d;
             } else {
                 return d;
@@ -107,8 +107,8 @@ public enum Activation {
         }
     }, HARD_TANH {
         @Override
-        public double calc(final double x, final boolean derivate) {
-            if (derivate) {
+        public double calc(final double x, final boolean derivative) {
+            if (derivative) {
                 return Math.abs(x) < 1 ? 1 : 0;
             } else {
                 return Math.max(-1, Math.min(1, x));
@@ -116,8 +116,8 @@ public enum Activation {
         }
     }, ABSOLUTE {
         @Override
-        public double calc(final double x, final boolean derivate) {
-            if (derivate) {
+        public double calc(final double x, final boolean derivative) {
+            if (derivative) {
                 return x < 0 ? -1 : 1;
             } else {
                 return Math.abs(x);
@@ -125,8 +125,8 @@ public enum Activation {
         }
     }, INVERSE {
         @Override
-        public double calc(final double x, final boolean derivate) {
-            if (derivate) {
+        public double calc(final double x, final boolean derivative) {
+            if (derivative) {
                 return -1;
             } else {
                 return 1 - x;
@@ -138,5 +138,5 @@ public enum Activation {
         return this.calc(x, false);
     }
 
-    public abstract double calc(double x, boolean derivate);
+    public abstract double calc(double x, boolean derivative);
 }

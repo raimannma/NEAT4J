@@ -22,7 +22,7 @@ public class Network {
     List<Connection> connections;
     List<Connection> gates;
     double score;
-    private List<Connection> selfConns;
+    private List<Connection> selfConnections;
     private double dropout;
 
     public Network(final int input, final int output) {
@@ -34,7 +34,7 @@ public class Network {
         this.nodes = new ArrayList<>();
         this.connections = new ArrayList<>();
         this.gates = new ArrayList<>();
-        this.selfConns = new ArrayList<>();
+        this.selfConnections = new ArrayList<>();
 
         this.dropout = 0;
         IntStream.range(0, this.input + this.output)
@@ -53,7 +53,7 @@ public class Network {
     private List<Connection> connect(final Node from, final Node to, final double weight) {
         final List<Connection> connections = from.connect(to, weight);
         if (from.equals(to)) {
-            this.selfConns.addAll(connections);
+            this.selfConnections.addAll(connections);
         } else {
             this.connections.addAll(connections);
         }
@@ -74,8 +74,8 @@ public class Network {
             final List<Connection> connection = network.connect(network.nodes.get(connJSON.get("from").getAsInt()), network.nodes.get(connJSON.get("to").getAsInt()));
             connection.get(0).weight = connJSON.get("weight").getAsDouble();
 
-            if (connJSON.has("gater") && connJSON.get("gater").getAsInt() != -1) {
-                network.gate(network.nodes.get(connJSON.get("gater").getAsInt()), connection.get(0));
+            if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
+                network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection.get(0));
             }
         }
         return network;
@@ -88,7 +88,7 @@ public class Network {
     private void gate(final Node node, final Connection connection) {
         if (!this.nodes.contains(node)) {
             throw new RuntimeException("This node is not part of the network!");
-        } else if (connection.gater != null) {
+        } else if (connection.gateNode != null) {
             return;
         }
         node.gate(connection);
@@ -150,26 +150,26 @@ public class Network {
             offspring.nodes.add(newNode);
         }
 
-        final Map<Integer, Double[]> n1Conns = makeConnections(network1);
-        final Map<Integer, Double[]> n2Conns = makeConnections(network2);
+        final Map<Integer, Double[]> n1Connections = makeConnections(network1);
+        final Map<Integer, Double[]> n2Connections = makeConnections(network2);
 
         final List<Double[]> connections = new ArrayList<>();
-        final List<Integer> keys1 = new ArrayList<>(n1Conns.keySet());
-        final List<Integer> keys2 = new ArrayList<>(n2Conns.keySet());
+        final List<Integer> keys1 = new ArrayList<>(n1Connections.keySet());
+        final List<Integer> keys2 = new ArrayList<>(n2Connections.keySet());
 
         for (int i = keys1.size() - 1; i >= 0; i--) {
-            if (n2Conns.get(keys1.get(i)) != null) {
-                connections.add(Math.random() >= 0.5 ? n1Conns.get(keys1.get(i)) : n2Conns.get(keys1.get(i)));
-                n2Conns.put(keys1.get(i), null);
+            if (n2Connections.get(keys1.get(i)) != null) {
+                connections.add(Math.random() >= 0.5 ? n1Connections.get(keys1.get(i)) : n2Connections.get(keys1.get(i)));
+                n2Connections.put(keys1.get(i), null);
             } else if (score1 >= score2 || equal) {
-                connections.add(n1Conns.get(keys1.get(i)));
+                connections.add(n1Connections.get(keys1.get(i)));
             }
         }
 
         if (score2 >= score1 || equal) {
             keys2.stream()
-                    .filter(integer -> n2Conns.get(integer) != null)
-                    .map(n2Conns::get)
+                    .filter(integer -> n2Connections.get(integer) != null)
+                    .map(n2Connections::get)
                     .forEach(connections::add);
         }
 
@@ -188,17 +188,17 @@ public class Network {
     }
 
     private static Map<Integer, Double[]> makeConnections(final Network network) {
-        final Map<Integer, Double[]> conns = new HashMap<>();
-        Stream.concat(network.connections.stream(), network.selfConns.stream())
+        final Map<Integer, Double[]> connections = new HashMap<>();
+        Stream.concat(network.connections.stream(), network.selfConnections.stream())
                 .forEach(connection -> {
                     final Double[] data = new Double[4];
                     data[0] = connection.weight;
                     data[1] = (double) connection.from.index;
                     data[2] = (double) connection.to.index;
-                    data[3] = (double) (connection.gater != null ? connection.gater.index : -1);
-                    conns.put(Connection.getInnovationID(connection.from.index, connection.to.index), data);
+                    data[3] = (double) (connection.gateNode != null ? connection.gateNode.index : -1);
+                    connections.put(Connection.getInnovationID(connection.from.index, connection.to.index), data);
                 });
-        return conns;
+        return connections;
     }
 
     public JsonObject toJSON() {
@@ -219,7 +219,7 @@ public class Network {
                 final JsonObject connectionJSON = node.self.toJSON();
                 connectionJSON.addProperty("from", i);
                 connectionJSON.addProperty("to", i);
-                connectionJSON.addProperty("gater", node.self.gater == null ? -1 : node.self.gater.index);
+                connectionJSON.addProperty("gateNode", node.self.gateNode == null ? -1 : node.self.gateNode.index);
                 connections.add(connectionJSON);
             }
         });
@@ -228,7 +228,7 @@ public class Network {
             final JsonObject toJSON = connection.toJSON();
             toJSON.addProperty("from", connection.from.index);
             toJSON.addProperty("to", connection.to.index);
-            toJSON.addProperty("gater", connection.gater != null ? connection.gater.index : -1);
+            toJSON.addProperty("gateNode", connection.gateNode != null ? connection.gateNode.index : -1);
             connections.add(toJSON);
         });
 
@@ -245,7 +245,7 @@ public class Network {
                 ", gates=" + this.gates +
                 ", nodes=" + this.nodes +
                 ", connections=" + this.connections +
-                ", selfConns=" + this.selfConns +
+                ", selfConnections=" + this.selfConnections +
                 '}';
     }
 
@@ -304,7 +304,7 @@ public class Network {
         if (bestGenome != null) {
             this.nodes = bestGenome.nodes;
             this.connections = bestGenome.connections;
-            this.selfConns = bestGenome.selfConns;
+            this.selfConnections = bestGenome.selfConnections;
             this.gates = bestGenome.gates;
             if (options.isClear()) {
                 this.clear();
@@ -326,29 +326,29 @@ public class Network {
                     .forEach(node -> node.mask = 1 - this.dropout);
         }
         return IntStream.range(0, inputs.length)
-                .mapToDouble(i -> loss.calc(outputs[i], this.noTraceActivate(inputs[i])))
+                .mapToDouble(i -> loss.calc(outputs[i], this.activate(inputs[i])))
                 .sum()
                 / inputs.length;
     }
 
-    private double[] noTraceActivate(final double[] input) {
+    private double[] activate(final double[] input) {
         final List<Double> output = new ArrayList<>();
         int inputIndex = 0;
         for (final Node node : this.nodes) {
             switch (node.type) {
                 case INPUT:
                     if (inputIndex < input.length) {
-                        node.noTraceActivation(input[inputIndex++]);
+                        node.activate(input[inputIndex++]);
                     } else {
                         node.type = Node.NodeType.HIDDEN;
-                        node.noTraceActivation();
+                        node.activate();
                     }
                     break;
                 case HIDDEN:
-                    node.noTraceActivation();
+                    node.activate();
                     break;
                 case OUTPUT:
-                    output.add(node.noTraceActivation());
+                    output.add(node.activate());
                     break;
             }
         }
@@ -366,7 +366,7 @@ public class Network {
         final Connection randomConn;
         Node node;
         Node node2;
-        final List<Connection> availableConns;
+        final List<Connection> availableConnections;
         final List<Node[]> availableNodes;
         switch (method) {
             case ADD_NODE:
@@ -380,10 +380,10 @@ public class Network {
                 node.mutate(MOD_ACTIVATION);
                 this.nodes.add(Math.max(0, Math.min(this.nodes.indexOf(connection.to), this.nodes.size() - this.output)), node);
 
-                if (connection.gater != null && Math.random() >= 0.5) {
-                    this.gate(connection.gater, this.connect(connection.from, node).get(0));
-                } else if (connection.gater != null) {
-                    this.gate(connection.gater, this.connect(node, connection.to).get(0));
+                if (connection.gateNode != null && Math.random() >= 0.5) {
+                    this.gate(connection.gateNode, this.connect(connection.from, node).get(0));
+                } else if (connection.gateNode != null) {
+                    this.gate(connection.gateNode, this.connect(node, connection.to).get(0));
                 }
                 break;
             case SUB_NODE:
@@ -411,20 +411,20 @@ public class Network {
                 this.connect(pair[0], pair[1]);
                 break;
             case SUB_CONN:
-                availableConns = new ArrayList<>();
+                availableConnections = new ArrayList<>();
                 this.connections.stream()
                         .filter(conn -> !conn.from.out.isEmpty() && !conn.to.in.isEmpty()
                                 && this.nodes.indexOf(conn.to) > this.nodes.indexOf(conn.from))
-                        .forEach(availableConns::add);
-                if (availableConns.isEmpty()) {
+                        .forEach(availableConnections::add);
+                if (availableConnections.isEmpty()) {
                     break;
                 }
-                randomConn = pickRandom(availableConns);
+                randomConn = pickRandom(availableConnections);
                 this.disconnect(randomConn.from, randomConn.to);
                 break;
             case MOD_WEIGHT:
                 allConnections = new ArrayList<>(this.connections);
-                allConnections.addAll(this.selfConns);
+                allConnections.addAll(this.selfConnections);
                 if (allConnections.isEmpty()) {
                     break;
                 }
@@ -451,30 +451,30 @@ public class Network {
                 this.connect(node, node);
                 break;
             case SUB_SELF_CONN:
-                if (this.selfConns.isEmpty()) {
+                if (this.selfConnections.isEmpty()) {
                     break;
                 }
-                connection = pickRandom(this.selfConns);
+                connection = pickRandom(this.selfConnections);
                 this.disconnect(connection.from, connection.to);
                 break;
             case ADD_GATE:
                 allConnections = new ArrayList<>(this.connections);
-                allConnections.addAll(this.selfConns);
+                allConnections.addAll(this.selfConnections);
 
-                availableConns = allConnections.stream()
-                        .filter(connection1 -> connection1.gater == null)
+                availableConnections = allConnections.stream()
+                        .filter(connection1 -> connection1.gateNode == null)
                         .collect(Collectors.toList());
-                if (availableConns.isEmpty()) {
+                if (availableConnections.isEmpty()) {
                     break;
                 }
 
-                this.gate(this.nodes.get(randInt(this.input, this.nodes.size())), pickRandom(availableConns));
+                this.gate(this.nodes.get(randInt(this.input, this.nodes.size())), pickRandom(availableConnections));
                 break;
             case SUB_GATE:
                 if (this.gates.isEmpty()) {
                     break;
                 }
-                this.ungate(pickRandom(this.gates));
+                this.removeGate(pickRandom(this.gates));
                 break;
             case ADD_BACK_CONN:
                 availableNodes = new ArrayList<>();
@@ -496,14 +496,14 @@ public class Network {
                 this.connect(pair1[0], pair1[1]);
                 break;
             case SUB_BACK_CONN:
-                availableConns = new ArrayList<>();
+                availableConnections = new ArrayList<>();
                 this.connections.stream().filter(connection1 -> !connection1.from.out.isEmpty() && !connection1.to.in.isEmpty() &&
                         this.nodes.indexOf(connection1.from) > this.nodes.indexOf(connection1.to))
-                        .forEach(availableConns::add);
-                if (availableConns.isEmpty()) {
+                        .forEach(availableConnections::add);
+                if (availableConnections.isEmpty()) {
                     break;
                 }
-                randomConn = pickRandom(availableConns);
+                randomConn = pickRandom(availableConnections);
                 this.disconnect(randomConn.from, randomConn.to);
                 break;
             case SWAP_NODES:
@@ -528,11 +528,11 @@ public class Network {
     }
 
     private void disconnect(final Node from, final Node to) {
-        final List<Connection> connections = from.equals(to) ? this.selfConns : this.connections;
+        final List<Connection> connections = from.equals(to) ? this.selfConnections : this.connections;
         for (final Connection connection : connections) {
             if (connection.from.equals(from) && connection.to.equals(to)) {
-                if (connection.gater != null) {
-                    this.ungate(connection);
+                if (connection.gateNode != null) {
+                    this.removeGate(connection);
                 }
                 connections.remove(connection);
                 break;
@@ -546,14 +546,14 @@ public class Network {
             throw new RuntimeException("This node does not exist in the network!");
         }
 
-        final List<Node> gaters = new ArrayList<>();
+        final List<Node> gateNodes = new ArrayList<>();
         this.disconnect(node, node);
 
         final List<Node> inputs = new ArrayList<>();
         for (int i = node.in.size() - 1; i >= 0; i--) {
             final Connection connection = node.in.get(i);
-            if (SUB_NODE.keepGates && connection.gater != null && !connection.gater.equals(node)) {
-                gaters.add(connection.gater);
+            if (SUB_NODE.keepGates && connection.gateNode != null && !connection.gateNode.equals(node)) {
+                gateNodes.add(connection.gateNode);
             }
             inputs.add(connection.from);
             this.disconnect(connection.from, node);
@@ -561,8 +561,8 @@ public class Network {
         final List<Node> outputs = new ArrayList<>();
         for (int i = node.out.size() - 1; i >= 0; i--) {
             final Connection connection = node.out.get(i);
-            if (SUB_NODE.keepGates && connection.gater != null && !connection.gater.equals(node)) {
-                gaters.add(connection.gater);
+            if (SUB_NODE.keepGates && connection.gateNode != null && !connection.gateNode.equals(node)) {
+                gateNodes.add(connection.gateNode);
             }
             outputs.add(connection.to);
             this.disconnect(node, connection.to);
@@ -574,55 +574,28 @@ public class Network {
                 .map(output -> this.connect(input, output, 0).get(0))
                 .forEach(connections::add));
 
-        gaters.stream()
-                .takeWhile(gater -> connections.size() > 0)
-                .forEach(gater -> {
+        gateNodes.stream()
+                .takeWhile(gate -> connections.size() > 0)
+                .forEach(gateNode -> {
                     final Connection connection = pickRandom(connections);
-                    this.gate(gater, connection);
+                    this.gate(gateNode, connection);
                     connections.remove(connection);
                 });
         for (int i = node.gated.size() - 1; i >= 0; i--) {
-            this.ungate(node.gated.get(i));
+            this.removeGate(node.gated.get(i));
         }
 
         this.disconnect(node, node);
         this.nodes.remove(node);
     }
 
-    private void ungate(final Connection connection) {
-        if (connection != null && connection.gater != null && this.gates.remove(connection)) {
-            connection.gater.ungate(connection);
+    private void removeGate(final Connection connection) {
+        if (connection != null && connection.gateNode != null && this.gates.remove(connection)) {
+            connection.gateNode.removeGate(connection);
         }
     }
 
     void clear() {
         this.nodes.forEach(Node::clear);
-    }
-
-    public double[] activate(final double[] input) {
-        return this.activate(input, false);
-    }
-
-    private double[] activate(final double[] input, final boolean training) {
-        final List<Double> output = new ArrayList<>();
-
-        for (int i = 0; i < this.nodes.size(); i++) {
-            final Node node = this.nodes.get(i);
-            switch (node.type) {
-                case INPUT:
-                    node.activate(input[i]);
-                    break;
-                case HIDDEN:
-                    if (training) {
-                        node.mask = Math.random() < this.dropout ? 0 : 1;
-                    }
-                    node.activate();
-                    break;
-                case OUTPUT:
-                    output.add(node.activate());
-                    break;
-            }
-        }
-        return output.stream().mapToDouble(i -> i).toArray();
     }
 }

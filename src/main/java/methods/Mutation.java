@@ -27,12 +27,11 @@ public enum Mutation {
             MOD_ACTIVATION,
             SWAP_NODES
     };
-
+    public final boolean mutateOutput;
     public Activation[] allowed;
     public int min;
     public int max;
     public boolean keepGates;
-    public boolean mutateOutput;
 
     Mutation(final boolean mutateOutput) {
         this.min = -1;

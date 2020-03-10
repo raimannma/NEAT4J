@@ -5,28 +5,22 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static methods.Utils.randDouble;
-
 public class Connection {
     final Node to;
     final Node from;
     double weight;
-    Node gater;
+    Node gateNode;
     double gain;
     ArrayList<Node> xTraceNodes;
     ArrayList<Double> xTraceValues;
     double eligibility;
-
-    Connection(final Node from, final Node to) {
-        this(from, to, randDouble(-1, 1));
-    }
 
     Connection(final Node from, final Node to, final double weight) {
         this.from = from;
         this.to = to;
         this.gain = 1;
         this.weight = weight;
-        this.gater = null;
+        this.gateNode = null;
         this.eligibility = 0;
 
         this.xTraceNodes = new ArrayList<>();
@@ -45,7 +39,7 @@ public class Connection {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.to, this.from, this.weight, this.gater, this.gain);
+        return Objects.hash(this.to, this.from, this.weight, this.gateNode, this.gain);
     }
 
     @Override
