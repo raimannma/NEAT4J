@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.ToDoubleFunction;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import methods.Mutation;
 import methods.Selection;
@@ -22,7 +21,6 @@ class NEAT {
   private final boolean clear;
   private final double mutationRate;
   private final int mutationAmount;
-  private final int provenance;
   private final int elitism;
   private final int maxGates;
   private final int maxConnections;
@@ -43,7 +41,6 @@ class NEAT {
     this.clear = options.getClear();
     this.popSize = options.getPopulationSize();
     this.elitism = options.getElitism();
-    this.provenance = options.getProvenance();
     this.mutationRate = options.getMutationRate();
     this.mutationAmount = options.getMutationAmount();
     this.selection = options.getSelection();
@@ -78,11 +75,7 @@ class NEAT {
     fittest.score = this.population.get(0).score;
 
     final List<Network> elitists = this.population.subList(0, this.elitism);
-
-    final List<Network> newPopulation = IntStream.range(0, this.provenance)
-      .mapToObj(i -> this.template.clone())
-      .collect(Collectors.toList());
-
+    final List<Network> newPopulation = new ArrayList<>();
     while (newPopulation.size() < this.popSize - this.elitism) {
       newPopulation.add(this.getOffspring(this.getParent(), this.getParent()));
     }
@@ -203,6 +196,6 @@ class NEAT {
   @Override
   public int hashCode() {
     return Arrays.hashCode(this.mutation)
-      + 31 * Objects.hash(this.output, this.input, this.fitnessFunction, this.equal, this.clear, this.mutationRate, this.mutationAmount, this.provenance, this.elitism, this.maxGates, this.maxConnections, this.maxNodes, this.template, this.selection, this.generation, this.population, this.popSize);
+      + 31 * Objects.hash(this.output, this.input, this.fitnessFunction, this.equal, this.clear, this.mutationRate, this.mutationAmount, this.elitism, this.maxGates, this.maxConnections, this.maxNodes, this.template, this.selection, this.generation, this.population, this.popSize);
   }
 }

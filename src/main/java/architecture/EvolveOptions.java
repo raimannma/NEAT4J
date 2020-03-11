@@ -11,7 +11,6 @@ public class EvolveOptions {
   private ToDoubleFunction<Network> fitnessFunction;
   private int populationSize;
   private int elitism;
-  private int provenance;
   private double mutationRate;
   private int mutationAmount;
   private Selection selection;
@@ -40,7 +39,6 @@ public class EvolveOptions {
     this.clear = false;
     this.populationSize = 500;
     this.elitism = 0;
-    this.provenance = 0;
     this.mutationRate = 0.3;
     this.mutationAmount = 1;
     this.selection = Selection.POWER;
@@ -82,14 +80,6 @@ public class EvolveOptions {
 
   public void setElitism(final int elitism) {
     this.elitism = elitism;
-  }
-
-  int getProvenance() {
-    return this.provenance;
-  }
-
-  public void setProvenance(final int provenance) {
-    this.provenance = provenance;
   }
 
   double getMutationRate() {
@@ -227,6 +217,6 @@ public class EvolveOptions {
   @Override
   public int hashCode() {
     return Arrays.hashCode(this.mutations)
-      + 31 * Objects.hash(this.fitnessFunction, this.populationSize, this.elitism, this.provenance, this.mutationRate, this.mutationAmount, this.selection, this.template, this.maxNodes, this.maxConnections, this.maxGates, this.equal, this.clear, this.error, this.growth, this.amount, this.loss, this.iterations, this.network, this.log);
+      + 31 * Objects.hash(this.fitnessFunction, this.populationSize, this.elitism, this.mutationRate, this.mutationAmount, this.selection, this.template, this.maxNodes, this.maxConnections, this.maxGates, this.equal, this.clear, this.error, this.growth, this.amount, this.loss, this.iterations, this.network, this.log);
   }
 }
