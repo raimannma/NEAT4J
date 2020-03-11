@@ -85,6 +85,7 @@ class NEAT {
       .mapToObj(value -> new Network[] {NEAT.this.getParent(), NEAT.this.getParent()})
       .sequential()
       .map(this::getOffspring)
+      .distinct()
       .forEach(newPopulation::add);
 
     this.population = newPopulation;
