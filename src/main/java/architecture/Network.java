@@ -20,7 +20,7 @@ import methods.Activation;
 import methods.Loss;
 import methods.Mutation;
 
-public class Network {
+public class Network implements Cloneable {
   public final int input;
   public final int output;
   public List<Node> nodes;
@@ -63,41 +63,6 @@ public class Network {
       this.connections.addAll(connections);
     }
     return connections;
-  }
-
-  public static Network fromJSON(final JsonObject json) {
-    final Network network = new Network(json.get("input").getAsInt(), json.get("output").getAsInt());
-    network.dropout = json.get("dropout").getAsDouble();
-    network.nodes = new ArrayList<>();
-    network.connections = new ArrayList<>();
-
-    final JsonArray nodes = json.get("nodes").getAsJsonArray();
-    final JsonArray connections = json.get("connections").getAsJsonArray();
-    nodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
-    for (int i = 0; i < connections.size(); i++) {
-      final JsonObject connJSON = connections.get(i).getAsJsonObject();
-      final List<Connection> connection = network.connect(network.nodes.get(connJSON.get("from").getAsInt()), network.nodes.get(connJSON.get("to").getAsInt()));
-      connection.get(0).weight = connJSON.get("weight").getAsDouble();
-
-      if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
-        network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection.get(0));
-      }
-    }
-    return network;
-  }
-
-  private List<Connection> connect(final Node from, final Node to) {
-    return this.connect(from, to, 0);
-  }
-
-  private void gate(final Node node, final Connection connection) {
-    if (!this.nodes.contains(node)) {
-      throw new RuntimeException("This node is not part of the network!");
-    } else if (connection.gateNode != null) {
-      return;
-    }
-    node.gate(connection);
-    this.gates.add(connection);
   }
 
   static Network crossover(final Network network1, final Network network2, final boolean equal) {
@@ -206,40 +171,18 @@ public class Network {
     return connections;
   }
 
-  public JsonObject toJSON() {
-    final JsonObject json = new JsonObject();
-    json.addProperty("input", this.input);
-    json.addProperty("output", this.output);
-    json.addProperty("dropout", this.dropout);
-    final JsonArray nodes = new JsonArray();
-    final JsonArray connections = new JsonArray();
+  private List<Connection> connect(final Node from, final Node to) {
+    return this.connect(from, to, 0);
+  }
 
-    IntStream.range(0, this.nodes.size()).forEach(i -> this.nodes.get(i).index = i);
-    IntStream.range(0, this.nodes.size()).forEach(i -> {
-      final Node node = this.nodes.get(i);
-      final JsonObject nodeJSON = node.toJSON();
-      nodeJSON.addProperty("index", i);
-      nodes.add(nodeJSON);
-      if (node.self.weight != 0) {
-        final JsonObject connectionJSON = node.self.toJSON();
-        connectionJSON.addProperty("from", i);
-        connectionJSON.addProperty("to", i);
-        connectionJSON.addProperty("gateNode", node.self.gateNode == null ? -1 : node.self.gateNode.index);
-        connections.add(connectionJSON);
-      }
-    });
-
-    this.connections.forEach(connection -> {
-      final JsonObject toJSON = connection.toJSON();
-      toJSON.addProperty("from", connection.from.index);
-      toJSON.addProperty("to", connection.to.index);
-      toJSON.addProperty("gateNode", connection.gateNode != null ? connection.gateNode.index : -1);
-      connections.add(toJSON);
-    });
-
-    json.add("nodes", nodes);
-    json.add("connections", connections);
-    return json;
+  private void gate(final Node node, final Connection connection) {
+    if (!this.nodes.contains(node)) {
+      throw new RuntimeException("This node is not part of the network!");
+    } else if (connection.gateNode != null) {
+      return;
+    }
+    node.gate(connection);
+    this.gates.add(connection);
   }
 
   private double evolve(final double[][] inputs, final double[][] outputs) {
@@ -613,6 +556,68 @@ public class Network {
       Objects.equals(this.connections, network.connections) &&
       Objects.equals(this.gates, network.gates) &&
       Objects.equals(this.selfConnections, network.selfConnections);
+  }
+
+  @Override
+  protected Network clone() {
+    return Network.fromJSON(this.toJSON());
+  }
+
+  public static Network fromJSON(final JsonObject json) {
+    final Network network = new Network(json.get("input").getAsInt(), json.get("output").getAsInt());
+    network.dropout = json.get("dropout").getAsDouble();
+    network.nodes = new ArrayList<>();
+    network.connections = new ArrayList<>();
+
+    final JsonArray nodes = json.get("nodes").getAsJsonArray();
+    final JsonArray connections = json.get("connections").getAsJsonArray();
+    nodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
+    for (int i = 0; i < connections.size(); i++) {
+      final JsonObject connJSON = connections.get(i).getAsJsonObject();
+      final List<Connection> connection = network.connect(network.nodes.get(connJSON.get("from").getAsInt()), network.nodes.get(connJSON.get("to").getAsInt()));
+      connection.get(0).weight = connJSON.get("weight").getAsDouble();
+
+      if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
+        network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection.get(0));
+      }
+    }
+    return network;
+  }
+
+  public JsonObject toJSON() {
+    final JsonObject json = new JsonObject();
+    json.addProperty("input", this.input);
+    json.addProperty("output", this.output);
+    json.addProperty("dropout", this.dropout);
+    final JsonArray nodes = new JsonArray();
+    final JsonArray connections = new JsonArray();
+
+    IntStream.range(0, this.nodes.size()).forEach(i -> this.nodes.get(i).index = i);
+    IntStream.range(0, this.nodes.size()).forEach(i -> {
+      final Node node = this.nodes.get(i);
+      final JsonObject nodeJSON = node.toJSON();
+      nodeJSON.addProperty("index", i);
+      nodes.add(nodeJSON);
+      if (node.self.weight != 0) {
+        final JsonObject connectionJSON = node.self.toJSON();
+        connectionJSON.addProperty("from", i);
+        connectionJSON.addProperty("to", i);
+        connectionJSON.addProperty("gateNode", node.self.gateNode == null ? -1 : node.self.gateNode.index);
+        connections.add(connectionJSON);
+      }
+    });
+
+    this.connections.forEach(connection -> {
+      final JsonObject toJSON = connection.toJSON();
+      toJSON.addProperty("from", connection.from.index);
+      toJSON.addProperty("to", connection.to.index);
+      toJSON.addProperty("gateNode", connection.gateNode != null ? connection.gateNode.index : -1);
+      connections.add(toJSON);
+    });
+
+    json.add("nodes", nodes);
+    json.add("connections", connections);
+    return json;
   }
 
   @Override

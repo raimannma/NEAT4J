@@ -62,7 +62,7 @@ class NEAT {
     this.population = new ArrayList<>();
     for (int i = 0; i < this.popSize; i++) {
       final Network copy = template != null
-        ? Network.fromJSON(template.toJSON())
+        ? template.clone()
         : new Network(this.input, this.output);
       copy.score = Double.NaN;
       this.population.add(copy);
@@ -74,21 +74,18 @@ class NEAT {
       this.evaluate();
     }
     this.sort();
-    final Network fittest = Network.fromJSON(this.population.get(0).toJSON());
+    final Network fittest = this.population.get(0).clone();
     fittest.score = this.population.get(0).score;
 
     final List<Network> elitists = this.population.subList(0, this.elitism);
 
     final List<Network> newPopulation = IntStream.range(0, this.provenance)
-      .mapToObj(i -> Network.fromJSON(this.template.toJSON()))
+      .mapToObj(i -> this.template.clone())
       .collect(Collectors.toList());
 
-    IntStream.range(0, this.popSize - this.elitism - this.provenance)
-      .mapToObj(value -> new Network[] {NEAT.this.getParent(), NEAT.this.getParent()})
-      .sequential()
-      .map(this::getOffspring)
-      .distinct()
-      .forEach(newPopulation::add);
+    while (newPopulation.size() < this.popSize - this.elitism) {
+      newPopulation.add(this.getOffspring(this.getParent(), this.getParent()));
+    }
 
     this.population = newPopulation;
     this.mutate();
@@ -112,6 +109,10 @@ class NEAT {
 
   private void sort() {
     this.population.sort((o1, o2) -> Double.compare(o2.score, o1.score));
+  }
+
+  private Network getOffspring(final Network... parents) {
+    return Network.crossover(parents[0], parents[1], this.equal);
   }
 
   private Network getParent() {
@@ -152,10 +153,6 @@ class NEAT {
         .orElse(pickRandom(this.population));
     }
     return pickRandom(this.population);
-  }
-
-  private Network getOffspring(final Network[] parents) {
-    return Network.crossover(parents[0], parents[1], this.equal);
   }
 
   private void mutate() {
