@@ -50,7 +50,7 @@ public class Connection {
       return false;
     }
     final Connection that = (Connection) o;
-    return Double.compare(this.weight, that.weight) == 0
+    return this.weight == that.weight
       && this.from.toJSON().toString().equals(that.from.toJSON().toString())
       && this.to.toJSON().toString().equals(that.to.toJSON().toString());
   }
