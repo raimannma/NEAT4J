@@ -88,8 +88,10 @@ public class Network implements Cloneable {
       size = network2.nodes.size();
     }
 
-    IntStream.range(0, network1.nodes.size()).forEach(i -> network1.nodes.get(i).index = i);
-    IntStream.range(0, network2.nodes.size()).forEach(i -> network2.nodes.get(i).index = i);
+    IntStream.range(0, network1.nodes.size())
+      .forEach(i -> network1.nodes.get(i).index = i);
+    IntStream.range(0, network2.nodes.size())
+      .forEach(i -> network2.nodes.get(i).index = i);
 
     for (int i = 0; i < size; i++) {
       Node node;
@@ -120,26 +122,26 @@ public class Network implements Cloneable {
       offspring.nodes.add(newNode);
     }
 
-    final Map<Integer, Double[]> n1Connections = makeConnections(network1);
-    final Map<Integer, Double[]> n2Connections = makeConnections(network2);
+    final Map<Integer, Double[]> network1Connections = makeConnections(network1);
+    final Map<Integer, Double[]> network2Connections = makeConnections(network2);
 
     final List<Double[]> connections = new ArrayList<>();
-    final List<Integer> keys1 = new ArrayList<>(n1Connections.keySet());
-    final List<Integer> keys2 = new ArrayList<>(n2Connections.keySet());
+    final List<Integer> innovationIDs1 = new ArrayList<>(network1Connections.keySet());
+    final List<Integer> innovationIDs2 = new ArrayList<>(network2Connections.keySet());
 
-    for (int i = keys1.size() - 1; i >= 0; i--) {
-      if (n2Connections.get(keys1.get(i)) != null) {
-        connections.add(Math.random() >= 0.5 ? n1Connections.get(keys1.get(i)) : n2Connections.get(keys1.get(i)));
-        n2Connections.put(keys1.get(i), null);
+    for (int i = innovationIDs1.size() - 1; i >= 0; i--) {
+      if (network2Connections.get(innovationIDs1.get(i)) != null) {
+        connections.add(Math.random() >= 0.5 ? network1Connections.get(innovationIDs1.get(i)) : network2Connections.get(innovationIDs1.get(i)));
+        network2Connections.put(innovationIDs1.get(i), null);
       } else if (score1 >= score2 || equal) {
-        connections.add(n1Connections.get(keys1.get(i)));
+        connections.add(network1Connections.get(innovationIDs1.get(i)));
       }
     }
 
     if (score2 >= score1 || equal) {
-      keys2.stream()
-        .filter(integer -> n2Connections.get(integer) != null)
-        .map(n2Connections::get)
+      innovationIDs2.stream()
+        .filter(integer -> network2Connections.get(integer) != null)
+        .map(network2Connections::get)
         .forEach(connections::add);
     }
 
