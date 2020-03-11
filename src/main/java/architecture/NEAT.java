@@ -60,8 +60,8 @@ class NEAT {
     this.population = new ArrayList<>();
     for (int i = 0; i < this.popSize; i++) {
       final Network copy = template != null
-          ? Network.fromJSON(template.toJSON())
-          : new Network(this.input, this.output);
+        ? Network.fromJSON(template.toJSON())
+        : new Network(this.input, this.output);
       copy.score = Double.NaN;
       this.population.add(copy);
     }
@@ -78,14 +78,14 @@ class NEAT {
     final List<Network> elitists = this.population.subList(0, this.elitism);
 
     final List<Network> newPopulation = IntStream.range(0, this.provenance)
-        .mapToObj(i -> Network.fromJSON(this.template.toJSON()))
-        .collect(Collectors.toList());
+      .mapToObj(i -> Network.fromJSON(this.template.toJSON()))
+      .collect(Collectors.toList());
 
     IntStream.range(0, this.popSize - this.elitism - this.provenance)
-        .mapToObj(value -> new Network[] {NEAT.this.getParent(), NEAT.this.getParent()})
-        .sequential()
-        .map(this::getOffspring)
-        .forEach(newPopulation::add);
+      .mapToObj(value -> new Network[] {NEAT.this.getParent(), NEAT.this.getParent()})
+      .sequential()
+      .map(this::getOffspring)
+      .forEach(newPopulation::add);
 
     this.population = newPopulation;
     this.mutate();
@@ -103,8 +103,8 @@ class NEAT {
       this.population.forEach(Network::clear);
     }
     this.population
-        .parallelStream()
-        .forEach(genome -> genome.score = this.fitnessFunction.applyAsDouble(genome));
+      .parallelStream()
+      .forEach(genome -> genome.score = this.fitnessFunction.applyAsDouble(genome));
   }
 
   private void sort() {
@@ -117,7 +117,7 @@ class NEAT {
         this.population.sort((o1, o2) -> Double.compare(o2.score, o1.score));
       }
       final int index = (int) Math.floor(Math.pow(Math.random(), this.selection.power)
-          * this.population.size());
+        * this.population.size());
       return this.population.get(index);
     } else if (this.selection == Selection.FITNESS_PROPORTIONATE) {
       double totalFitness = 0;
@@ -139,14 +139,14 @@ class NEAT {
     } else if (this.selection == Selection.TOURNAMENT) {
       if (this.selection.size > this.popSize) {
         throw new RuntimeException("Your tournament size should be lower than the population size,"
-            + "please change methods.selection.TOURNAMENT.size");
+          + "please change methods.selection.TOURNAMENT.size");
       }
       return IntStream.range(0, this.selection.size)
-          .mapToObj(i -> pickRandom(this.population))
-          .sorted((o1, o2) -> Double.compare(o2.score, o1.score))
-          .filter(net -> Math.random() < this.selection.probability)
-          .findFirst()
-          .orElse(pickRandom(this.population));
+        .mapToObj(i -> pickRandom(this.population))
+        .sorted((o1, o2) -> Double.compare(o2.score, o1.score))
+        .filter(net -> Math.random() < this.selection.probability)
+        .findFirst()
+        .orElse(pickRandom(this.population));
     }
     return pickRandom(this.population);
   }
@@ -157,19 +157,19 @@ class NEAT {
 
   private void mutate() {
     this.population.parallelStream()
-        .filter(network -> Math.random() <= this.mutationRate)
-        .forEach(network -> IntStream.range(0, this.mutationAmount)
-            .forEach(j -> network.mutate(this.selectMutationMethod(network))));
+      .filter(network -> Math.random() <= this.mutationRate)
+      .forEach(network -> IntStream.range(0, this.mutationAmount)
+        .forEach(j -> network.mutate(this.selectMutationMethod(network))));
   }
 
   private Mutation selectMutationMethod(final Network genome) {
     final Mutation mutationMethod = pickRandom(this.mutation);
 
     return (mutationMethod != Mutation.ADD_NODE || genome.nodes.size() < this.maxNodes)
-        && (mutationMethod != Mutation.ADD_CONN || genome.connections.size() < this.maxConnections)
-        && (mutationMethod != Mutation.ADD_GATE || genome.gates.size() < this.maxGates)
-        ? mutationMethod
-        : null;
+      && (mutationMethod != Mutation.ADD_CONN || genome.connections.size() < this.maxConnections)
+      && (mutationMethod != Mutation.ADD_GATE || genome.gates.size() < this.maxGates)
+      ? mutationMethod
+      : null;
   }
 
   Network getFittest() {
@@ -196,7 +196,7 @@ class NEAT {
   void fromJson(final JsonObject jsonObject) {
     final JsonArray arr = jsonObject.get("genomes").getAsJsonArray();
     IntStream.range(0, arr.size())
-        .forEach(i -> this.population.add(Network.fromJSON(arr.get(i).getAsJsonObject())));
+      .forEach(i -> this.population.add(Network.fromJSON(arr.get(i).getAsJsonObject())));
     this.popSize = this.population.size();
   }
 }
