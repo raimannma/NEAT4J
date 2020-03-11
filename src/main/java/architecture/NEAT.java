@@ -79,7 +79,7 @@ class NEAT {
     final List<Network> elitists = this.population.subList(0, this.elitism);
     final Set<Network> newPopulation = new HashSet<>();
     while (newPopulation.size() < this.popSize - this.elitism) {
-      newPopulation.add(this.getOffspring(this.getParent(), this.getParent()));
+      newPopulation.add(Network.crossover(this.getParent(), this.getParent(), this.equal));
     }
 
     this.population = new ArrayList<>(newPopulation);
@@ -104,10 +104,6 @@ class NEAT {
 
   private void sort() {
     this.population.sort((o1, o2) -> Double.compare(o2.score, o1.score));
-  }
-
-  private Network getOffspring(final Network... parents) {
-    return Network.crossover(parents[0], parents[1], this.equal);
   }
 
   private Network getParent() {
