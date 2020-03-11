@@ -194,7 +194,7 @@ public class EvolveOptions {
     return this.iterations;
   }
 
-  void setIterations(final int iterations) {
+  public void setIterations(final int iterations) {
     this.iterations = iterations;
   }
 
