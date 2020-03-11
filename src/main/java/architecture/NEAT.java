@@ -77,7 +77,10 @@ class NEAT {
     final List<Network> elitists = this.population.subList(0, this.elitism);
     final List<Network> newPopulation = new ArrayList<>();
     while (newPopulation.size() < this.popSize - this.elitism) {
-      newPopulation.add(this.getOffspring(this.getParent(), this.getParent()));
+      final Network newGenome = this.getOffspring(this.getParent(), this.getParent());
+      if (!newPopulation.contains(newGenome)) {
+        newPopulation.add(newGenome);
+      }
     }
 
     this.population = newPopulation;
@@ -97,7 +100,7 @@ class NEAT {
     }
     this.population
       .parallelStream()
-      .forEach(genome -> genome.score = this.fitnessFunction.applyAsDouble(genome));
+      .forEach(this.fitnessFunction::applyAsDouble);
   }
 
   private void sort() {
