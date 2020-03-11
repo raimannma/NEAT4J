@@ -6,8 +6,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.IntStream;
 import methods.Mutation;
@@ -75,15 +77,12 @@ class NEAT {
     fittest.score = this.population.get(0).score;
 
     final List<Network> elitists = this.population.subList(0, this.elitism);
-    final List<Network> newPopulation = new ArrayList<>();
+    final Set<Network> newPopulation = new HashSet<>();
     while (newPopulation.size() < this.popSize - this.elitism) {
-      final Network newGenome = this.getOffspring(this.getParent(), this.getParent());
-      if (!newPopulation.contains(newGenome)) {
-        newPopulation.add(newGenome);
-      }
+      newPopulation.add(this.getOffspring(this.getParent(), this.getParent()));
     }
 
-    this.population = newPopulation;
+    this.population = new ArrayList<>(newPopulation);
     this.mutate();
 
     this.population.addAll(elitists);
@@ -152,7 +151,8 @@ class NEAT {
   }
 
   private void mutate() {
-    this.population.parallelStream()
+    this.population
+      .parallelStream()
       .filter(network -> Math.random() <= this.mutationRate)
       .forEach(network -> IntStream.range(0, this.mutationAmount)
         .forEach(j -> network.mutate(this.selectMutationMethod(network))));
