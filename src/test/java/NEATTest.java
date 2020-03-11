@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.stream.IntStream;
 import architecture.EvolveOptions;
 import architecture.Network;
-import architecture.Node;
 import methods.Mutation;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class NEATTest {
@@ -22,9 +22,10 @@ public class NEATTest {
   private static void testEquality(final Network original, final Network copied) {
     assertEquals(original.input, copied.input);
     assertEquals(original.output, copied.output);
-    for (final Node node : original.nodes) {
-      assertTrue(copied.nodes.contains(node));
-    }
+    original.nodes
+      .parallelStream()
+      .map(node -> copied.nodes.contains(node))
+      .forEach(Assertions::assertTrue);
   }
 
   @Test
