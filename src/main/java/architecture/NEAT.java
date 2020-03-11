@@ -100,7 +100,7 @@ class NEAT {
     }
     this.population
       .parallelStream()
-      .forEach(this.fitnessFunction::applyAsDouble);
+      .forEach(genome -> genome.score = this.fitnessFunction.applyAsDouble(genome));
   }
 
   private void sort() {
