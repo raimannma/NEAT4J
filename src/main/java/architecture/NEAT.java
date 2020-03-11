@@ -5,7 +5,9 @@ import static methods.Utils.randDouble;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -199,5 +201,11 @@ class NEAT {
     IntStream.range(0, arr.size())
       .forEach(i -> this.population.add(Network.fromJSON(arr.get(i).getAsJsonObject())));
     this.popSize = this.population.size();
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(this.mutation)
+      + 31 * Objects.hash(this.output, this.input, this.fitnessFunction, this.equal, this.clear, this.mutationRate, this.mutationAmount, this.provenance, this.elitism, this.maxGates, this.maxConnections, this.maxNodes, this.template, this.selection, this.generation, this.population, this.popSize);
   }
 }

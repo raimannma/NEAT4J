@@ -1,5 +1,7 @@
 package architecture;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.ToDoubleFunction;
 import methods.Loss;
 import methods.Mutation;
@@ -220,5 +222,11 @@ public class EvolveOptions {
 
   public void setClear(final boolean clear) {
     this.clear = clear;
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode(this.mutations)
+      + 31 * Objects.hash(this.fitnessFunction, this.populationSize, this.elitism, this.provenance, this.mutationRate, this.mutationAmount, this.selection, this.template, this.maxNodes, this.maxConnections, this.maxGates, this.equal, this.clear, this.error, this.growth, this.amount, this.loss, this.iterations, this.network, this.log);
   }
 }

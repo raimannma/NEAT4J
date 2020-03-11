@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -239,18 +240,6 @@ public class Network {
     json.add("nodes", nodes);
     json.add("connections", connections);
     return json;
-  }
-
-  @Override
-  public String toString() {
-    return "Network{" +
-      "input=" + this.input +
-      ", output=" + this.output +
-      ", gates=" + this.gates +
-      ", nodes=" + this.nodes +
-      ", connections=" + this.connections +
-      ", selfConnections=" + this.selfConnections +
-      '}';
   }
 
   private double evolve(final double[][] inputs, final double[][] outputs) {
@@ -601,5 +590,40 @@ public class Network {
 
   void clear() {
     this.nodes.forEach(Node::clear);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.input, this.output, this.nodes, this.connections, this.gates, this.selfConnections, this.dropout);
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || this.getClass() != o.getClass()) {
+      return false;
+    }
+    final Network network = (Network) o;
+    return this.input == network.input &&
+      this.output == network.output &&
+      Double.compare(network.dropout, this.dropout) == 0 &&
+      Objects.equals(this.nodes, network.nodes) &&
+      Objects.equals(this.connections, network.connections) &&
+      Objects.equals(this.gates, network.gates) &&
+      Objects.equals(this.selfConnections, network.selfConnections);
+  }
+
+  @Override
+  public String toString() {
+    return "Network{" +
+      "input=" + this.input +
+      ", output=" + this.output +
+      ", gates=" + this.gates +
+      ", nodes=" + this.nodes +
+      ", connections=" + this.connections +
+      ", selfConnections=" + this.selfConnections +
+      '}';
   }
 }
