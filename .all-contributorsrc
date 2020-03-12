@@ -9,7 +9,20 @@
   "imageSize": 100,
   "commit": false,
   "commitConvention": "none",
-  "contributors": [],
+  "contributors": [
+    {
+      "login": "raimannma",
+      "name": "Manuel Raimann",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/26171511?v=4",
+      "profile": "https://github.com/raimannma",
+      "contributions": [
+        "code",
+        "doc",
+        "test",
+        "bug"
+      ]
+    }
+  ],
   "contributorsPerLine": 7,
   "skipCi": true
 }
