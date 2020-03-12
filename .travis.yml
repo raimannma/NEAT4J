@@ -5,6 +5,3 @@ dist: bionic
 
 jdk:
   - openjdk13
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
