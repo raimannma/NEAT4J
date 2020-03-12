@@ -67,7 +67,7 @@ public class Network implements Cloneable {
 
   static Network crossover(final Network network1, final Network network2, final boolean equal) {
     if (network1.input != network2.input || network1.output != network2.output) {
-      throw new RuntimeException("Networks don't have the same input/output size!");
+      throw new IllegalStateException("Networks don't have the same input/output size!");
     }
 
     final Network offspring = new Network(network1.input, network1.output);
@@ -179,7 +179,7 @@ public class Network implements Cloneable {
 
   private void gate(final Node node, final Connection connection) {
     if (!this.nodes.contains(node)) {
-      throw new RuntimeException("This node is not part of the network!");
+      throw new ArrayIndexOutOfBoundsException("This node is not part of the network!");
     } else if (connection.gateNode != null) {
       return;
     }
@@ -196,7 +196,7 @@ public class Network implements Cloneable {
       return this.evolve(inputs, outputs);
     }
     if (inputs[0].length != this.input || outputs[0].length != this.output) {
-      throw new RuntimeException("Dataset input/output size should be same as network input/output size!");
+      throw new IllegalStateException("Dataset input/output size should be same as network input/output size!");
     }
 
     double targetError = Double.isNaN(options.getError()) ? 0.05 : options.getError();
@@ -204,7 +204,7 @@ public class Network implements Cloneable {
     final Loss loss = options.getLoss();
     final int amount = options.getAmount();
     if (options.getIterations() == -1 && Double.isNaN(options.getError())) {
-      throw new RuntimeException("At least one of the following options must be specified: error, iterations");
+      throw new IllegalArgumentException("At least one of the following options must be specified: error, iterations");
     } else if (Double.isNaN(options.getError())) {
       targetError = -1;
     } else if (options.getIterations() == -1) {
@@ -295,7 +295,7 @@ public class Network implements Cloneable {
 
   public void mutate(final Mutation method) {
     if (Arrays.stream(Mutation.ALL).noneMatch(meth -> meth == method)) {
-      throw new RuntimeException("No (correct) mutate method given!");
+      throw new IllegalArgumentException("No (correct) mutate method given!");
     }
 
     final List<Connection> allConnections;
@@ -481,7 +481,7 @@ public class Network implements Cloneable {
 
   private void remove(final Node node) {
     if (!this.nodes.contains(node)) {
-      throw new RuntimeException("This node does not exist in the network!");
+      throw new IllegalArgumentException("This node does not exist in the network!");
     }
 
     final List<Node> gateNodes = new ArrayList<>();
