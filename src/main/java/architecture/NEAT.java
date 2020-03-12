@@ -61,7 +61,7 @@ class NEAT {
     this.population = new ArrayList<>();
     for (int i = 0; i < this.populationSize; i++) {
       final Network copy = template != null
-        ? template.clone()
+        ? template.copy()
         : new Network(this.input, this.output);
       copy.score = Double.NaN;
       this.population.add(copy);
@@ -73,7 +73,7 @@ class NEAT {
       this.evaluate();
     }
     this.sort();
-    final Network fittest = this.population.get(0).clone();
+    final Network fittest = this.population.get(0).copy();
     fittest.score = this.population.get(0).score;
 
     final List<Network> elitists = this.population.subList(0, this.elitism);

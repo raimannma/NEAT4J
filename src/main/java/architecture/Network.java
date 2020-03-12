@@ -561,7 +561,18 @@ public class Network implements Cloneable {
   }
 
   @Override
-  protected Network clone() {
+  public String toString() {
+    return "Network{" +
+      "input=" + this.input +
+      ", output=" + this.output +
+      ", gates=" + this.gates +
+      ", nodes=" + this.nodes +
+      ", connections=" + this.connections +
+      ", selfConnections=" + this.selfConnections +
+      '}';
+  }
+
+  Network copy() {
     return Network.fromJSON(this.toJSON());
   }
 
@@ -620,17 +631,5 @@ public class Network implements Cloneable {
     json.add("nodes", nodes);
     json.add("connections", connections);
     return json;
-  }
-
-  @Override
-  public String toString() {
-    return "Network{" +
-      "input=" + this.input +
-      ", output=" + this.output +
-      ", gates=" + this.gates +
-      ", nodes=" + this.nodes +
-      ", connections=" + this.connections +
-      ", selfConnections=" + this.selfConnections +
-      '}';
   }
 }
