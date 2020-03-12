@@ -4,3 +4,4 @@
 <a href="/LICENSE">
   <img src="https://img.shields.io/github/license/raimannma/NEAT4J" alt="NEAT4J's License">
 </a>
+<img src="https://img.shields.io/github/contributors/raimannma/NEAT4J">
