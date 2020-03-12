@@ -32,7 +32,7 @@ class NEAT {
   private final Selection selection;
   int generation;
   List<Network> population;
-  private int popSize;
+  private int populationSize;
 
   NEAT(final int input, final int output, final EvolveOptions options) {
     this.input = input;
@@ -41,7 +41,7 @@ class NEAT {
     this.fitnessFunction = options.getFitnessFunction();
     this.equal = options.isEqual();
     this.clear = options.getClear();
-    this.popSize = options.getPopulationSize();
+    this.populationSize = options.getPopulationSize();
     this.elitism = options.getElitism();
     this.mutationRate = options.getMutationRate();
     this.mutationAmount = options.getMutationAmount();
@@ -59,7 +59,7 @@ class NEAT {
 
   private void createPool(final Network template) {
     this.population = new ArrayList<>();
-    for (int i = 0; i < this.popSize; i++) {
+    for (int i = 0; i < this.populationSize; i++) {
       final Network copy = template != null
         ? template.clone()
         : new Network(this.input, this.output);
@@ -78,7 +78,7 @@ class NEAT {
 
     final List<Network> elitists = this.population.subList(0, this.elitism);
     final Set<Network> newPopulation = new HashSet<>();
-    while (newPopulation.size() < this.popSize - this.elitism) {
+    while (newPopulation.size() < this.populationSize - this.elitism) {
       newPopulation.add(Network.crossover(this.getParent(), this.getParent(), this.equal));
     }
 
@@ -132,11 +132,7 @@ class NEAT {
         }
       }
     } else if (this.selection == Selection.TOURNAMENT) {
-      if (this.selection.size > this.popSize) {
-        throw new RuntimeException("Your tournament size should be lower than the population size,"
-          + "please change methods.selection.TOURNAMENT.size");
-      }
-      return IntStream.range(0, this.selection.size)
+      return IntStream.range(0, Math.min(this.populationSize, this.selection.size))
         .mapToObj(i -> pickRandom(this.population))
         .sorted((o1, o2) -> Double.compare(o2.score, o1.score))
         .filter(net -> Math.random() < this.selection.probability)
@@ -189,12 +185,12 @@ class NEAT {
     final JsonArray arr = jsonObject.get("genomes").getAsJsonArray();
     IntStream.range(0, arr.size())
       .forEach(i -> this.population.add(Network.fromJSON(arr.get(i).getAsJsonObject())));
-    this.popSize = this.population.size();
+    this.populationSize = this.population.size();
   }
 
   @Override
   public int hashCode() {
     return Arrays.hashCode(this.mutation)
-      + 31 * Objects.hash(this.output, this.input, this.fitnessFunction, this.equal, this.clear, this.mutationRate, this.mutationAmount, this.elitism, this.maxGates, this.maxConnections, this.maxNodes, this.template, this.selection, this.generation, this.population, this.popSize);
+      + 31 * Objects.hash(this.output, this.input, this.fitnessFunction, this.equal, this.clear, this.mutationRate, this.mutationAmount, this.elitism, this.maxGates, this.maxConnections, this.maxNodes, this.template, this.selection, this.generation, this.population, this.populationSize);
   }
 }
