@@ -4,7 +4,7 @@ sudo: false # faster builds
 dist: bionic
 
 jdk:
-  -openjdk13
+  - openjdk13
 
 script: "mvn cobertura:cobertura"
 
