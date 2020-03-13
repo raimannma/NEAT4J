@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Connection {
-  final Node to;
-  final Node from;
-  double weight;
-  Node gateNode;
+  public final Node to;
+  public final Node from;
+  public Node gateNode;
+  public double weight;
   double gain;
   ArrayList<Node> xTraceNodes;
   ArrayList<Double> xTraceValues;
