@@ -24,7 +24,7 @@ public enum Loss {
     public double calc(final double[] target, final double[] output) {
       return IntStream.range(0, output.length)
         .mapToDouble(i -> Math.round(target[i] * 2) == Math.round(output[i] * 2) ? 0 : 1)
-        .sum();
+        .sum() / output.length;
     }
   }, MAE {
     @Override
@@ -47,14 +47,14 @@ public enum Loss {
     public double calc(final double[] target, final double[] output) {
       return IntStream.range(0, output.length)
         .mapToDouble(i -> Math.log(Math.max(target[i], 1e-15)) - Math.log(Math.max(output[i], 1e-15)))
-        .sum();
+        .sum() / output.length;
     }
   }, HINGE {
     @Override
     public double calc(final double[] target, final double[] output) {
       return IntStream.range(0, output.length)
         .mapToDouble(i -> Math.max(0, 1 - target[i] * output[i]))
-        .sum();
+        .sum() / output.length;
     }
   };
 
