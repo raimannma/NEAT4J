@@ -50,23 +50,15 @@ public class EvolveOptions {
     this.fitnessFunction = null;
   }
 
-  ToDoubleFunction<Network> getFitnessFunction() {
+  public ToDoubleFunction<Network> getFitnessFunction() {
     return this.fitnessFunction;
   }
 
-  void setFitnessFunction(final ToDoubleFunction<Network> fitnessFunction) {
+  public void setFitnessFunction(final ToDoubleFunction<Network> fitnessFunction) {
     this.fitnessFunction = fitnessFunction;
   }
 
-  int getLog() {
-    return this.log;
-  }
-
-  public void setLog(final int log) {
-    this.log = log;
-  }
-
-  int getPopulationSize() {
+  public int getPopulationSize() {
     return this.populationSize;
   }
 
@@ -74,7 +66,7 @@ public class EvolveOptions {
     this.populationSize = populationSize;
   }
 
-  int getElitism() {
+  public int getElitism() {
     return this.elitism;
   }
 
@@ -82,7 +74,7 @@ public class EvolveOptions {
     this.elitism = elitism;
   }
 
-  double getMutationRate() {
+  public double getMutationRate() {
     return this.mutationRate;
   }
 
@@ -90,7 +82,7 @@ public class EvolveOptions {
     this.mutationRate = mutationRate;
   }
 
-  int getMutationAmount() {
+  public int getMutationAmount() {
     return this.mutationAmount;
   }
 
@@ -98,7 +90,7 @@ public class EvolveOptions {
     this.mutationAmount = mutationAmount;
   }
 
-  Selection getSelection() {
+  public Selection getSelection() {
     return this.selection;
   }
 
@@ -106,7 +98,7 @@ public class EvolveOptions {
     this.selection = selection;
   }
 
-  Mutation[] getMutations() {
+  public Mutation[] getMutations() {
     return this.mutations;
   }
 
@@ -114,7 +106,7 @@ public class EvolveOptions {
     this.mutations = mutations;
   }
 
-  Network getTemplate() {
+  public Network getTemplate() {
     return this.template;
   }
 
@@ -122,7 +114,7 @@ public class EvolveOptions {
     this.template = template;
   }
 
-  int getMaxNodes() {
+  public int getMaxNodes() {
     return this.maxNodes;
   }
 
@@ -130,7 +122,7 @@ public class EvolveOptions {
     this.maxNodes = maxNodes;
   }
 
-  int getMaxConnections() {
+  public int getMaxConnections() {
     return this.maxConnections;
   }
 
@@ -138,7 +130,7 @@ public class EvolveOptions {
     this.maxConnections = maxConnections;
   }
 
-  int getMaxGates() {
+  public int getMaxGates() {
     return this.maxGates;
   }
 
@@ -146,7 +138,7 @@ public class EvolveOptions {
     this.maxGates = maxGates;
   }
 
-  boolean isEqual() {
+  public boolean isEqual() {
     return this.equal;
   }
 
@@ -154,7 +146,15 @@ public class EvolveOptions {
     this.equal = equal;
   }
 
-  double getError() {
+  public boolean isClear() {
+    return this.clear;
+  }
+
+  public void setClear(final boolean clear) {
+    this.clear = clear;
+  }
+
+  public double getError() {
     return this.error;
   }
 
@@ -162,7 +162,7 @@ public class EvolveOptions {
     this.error = error;
   }
 
-  double getGrowth() {
+  public double getGrowth() {
     return this.growth;
   }
 
@@ -170,7 +170,7 @@ public class EvolveOptions {
     this.growth = growth;
   }
 
-  int getAmount() {
+  public int getAmount() {
     return this.amount;
   }
 
@@ -178,11 +178,7 @@ public class EvolveOptions {
     this.amount = amount;
   }
 
-  boolean isClear() {
-    return this.clear;
-  }
-
-  Loss getLoss() {
+  public Loss getLoss() {
     return this.loss;
   }
 
@@ -190,7 +186,7 @@ public class EvolveOptions {
     this.loss = loss;
   }
 
-  int getIterations() {
+  public int getIterations() {
     return this.iterations;
   }
 
@@ -202,16 +198,16 @@ public class EvolveOptions {
     return this.network;
   }
 
-  void setNetwork(final Network network) {
+  public void setNetwork(final Network network) {
     this.network = network;
   }
 
-  boolean getClear() {
-    return this.clear;
+  public int getLog() {
+    return this.log;
   }
 
-  public void setClear(final boolean clear) {
-    this.clear = clear;
+  public void setLog(final int log) {
+    this.log = log;
   }
 
   @Override
