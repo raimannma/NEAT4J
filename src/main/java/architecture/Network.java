@@ -24,9 +24,9 @@ public class Network implements Cloneable {
   public final int input;
   public final int output;
   public List<Node> nodes;
+  public double score;
   List<Connection> connections;
   List<Connection> gates;
-  public double score;
   private List<Connection> selfConnections;
   private double dropout;
 
@@ -273,21 +273,17 @@ public class Network implements Cloneable {
     final List<Double> output = new ArrayList<>();
     int inputIndex = 0;
     for (final Node node : this.nodes) {
-      switch (node.type) {
-        case INPUT:
-          if (inputIndex < input.length) {
-            node.activate(input[inputIndex++]);
-          } else {
-            node.type = Node.NodeType.HIDDEN;
-            node.activate();
-          }
-          break;
-        case HIDDEN:
+      if (node.type == Node.NodeType.INPUT) {
+        if (inputIndex < input.length) {
+          node.activate(input[inputIndex++]);
+        } else {
+          node.type = Node.NodeType.HIDDEN;
           node.activate();
-          break;
-        case OUTPUT:
-          output.add(node.activate());
-          break;
+        }
+      } else if (node.type == Node.NodeType.HIDDEN) {
+        node.activate();
+      } else if (node.type == Node.NodeType.OUTPUT) {
+        output.add(node.activate());
       }
     }
     return output.stream().mapToDouble(i -> i).toArray();
@@ -309,7 +305,7 @@ public class Network implements Cloneable {
     switch (method) {
       case ADD_NODE:
         if (this.connections.isEmpty()) {
-          break;
+          return;
         }
         connection = pickRandom(this.connections);
         this.disconnect(connection.from, connection.to);
@@ -326,7 +322,7 @@ public class Network implements Cloneable {
         break;
       case SUB_NODE:
         if (this.nodes.size() == this.input + this.output) {
-          break;
+          return;
         }
 
         this.remove(this.nodes.get((int) Math.floor(Math.random() * (this.nodes.size() - this.output - this.input) + this.input)));
@@ -343,7 +339,7 @@ public class Network implements Cloneable {
           }
         }
         if (availableNodes.isEmpty()) {
-          break;
+          return;
         }
         final Node[] pair = pickRandom(availableNodes);
         this.connect(pair[0], pair[1]);
@@ -355,7 +351,7 @@ public class Network implements Cloneable {
             && this.nodes.indexOf(conn.to) > this.nodes.indexOf(conn.from))
           .forEach(availableConnections::add);
         if (availableConnections.isEmpty()) {
-          break;
+          return;
         }
         randomConn = pickRandom(availableConnections);
         this.disconnect(randomConn.from, randomConn.to);
@@ -364,7 +360,7 @@ public class Network implements Cloneable {
         allConnections = new ArrayList<>(this.connections);
         allConnections.addAll(this.selfConnections);
         if (allConnections.isEmpty()) {
-          break;
+          return;
         }
 
         connection = pickRandom(allConnections);
@@ -375,7 +371,7 @@ public class Network implements Cloneable {
         break;
       case MOD_ACTIVATION:
         if (!method.mutateOutput && this.input + this.output == this.nodes.size()) {
-          break;
+          return;
         }
         index = (int) Math.floor(Math.random() * (this.nodes.size() - (method.mutateOutput ? 0 : this.output) - this.input) + this.input);
         this.nodes.get(index).mutate(method);
@@ -383,14 +379,14 @@ public class Network implements Cloneable {
       case ADD_SELF_CONN:
         final List<Node> poss = IntStream.range(this.input, this.nodes.size()).mapToObj(this.nodes::get).filter(node1 -> node1.self.weight == 0).collect(Collectors.toList());
         if (poss.isEmpty()) {
-          break;
+          return;
         }
         node = pickRandom(poss);
         this.connect(node, node);
         break;
       case SUB_SELF_CONN:
         if (this.selfConnections.isEmpty()) {
-          break;
+          return;
         }
         connection = pickRandom(this.selfConnections);
         this.disconnect(connection.from, connection.to);
@@ -403,14 +399,14 @@ public class Network implements Cloneable {
           .filter(connection1 -> connection1.gateNode == null)
           .collect(Collectors.toList());
         if (availableConnections.isEmpty()) {
-          break;
+          return;
         }
 
         this.gate(this.nodes.get(randInt(this.input, this.nodes.size())), pickRandom(availableConnections));
         break;
       case SUB_GATE:
         if (this.gates.isEmpty()) {
-          break;
+          return;
         }
         this.removeGate(pickRandom(this.gates));
         break;
@@ -427,7 +423,7 @@ public class Network implements Cloneable {
         }
 
         if (availableNodes.isEmpty()) {
-          break;
+          return;
         }
 
         final Node[] pair1 = pickRandom(availableNodes);
@@ -439,7 +435,7 @@ public class Network implements Cloneable {
           this.nodes.indexOf(connection1.from) > this.nodes.indexOf(connection1.to))
           .forEach(availableConnections::add);
         if (availableConnections.isEmpty()) {
-          break;
+          return;
         }
         randomConn = pickRandom(availableConnections);
         this.disconnect(randomConn.from, randomConn.to);
@@ -447,7 +443,7 @@ public class Network implements Cloneable {
       case SWAP_NODES:
         if (method.mutateOutput && this.nodes.size() - this.input < 2
           || !method.mutateOutput && this.nodes.size() - this.input - this.output < 2) {
-          break;
+          return;
         }
         index = (int) Math.floor(Math.random() * (this.nodes.size() - (method.mutateOutput ? 0 : this.output) - this.input) + this.input);
         node = this.nodes.get(index);
@@ -461,6 +457,8 @@ public class Network implements Cloneable {
         node.activationType = node2.activationType;
         node2.bias = biasTemp;
         node2.activationType = activationType;
+        break;
+      default:
         break;
     }
   }
