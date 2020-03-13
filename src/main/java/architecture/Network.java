@@ -191,7 +191,7 @@ public class Network implements Cloneable {
       throw new IllegalStateException("Dataset input/output size should be same as network input/output size!");
     }
 
-    double targetError = Double.isNaN(options.getError()) ? Double.MAX_VALUE : options.getError();
+    double targetError = options.getError();
     final double growth = options.getGrowth();
     final Loss loss = options.getLoss();
     final int amount = options.getAmount();
@@ -200,7 +200,7 @@ public class Network implements Cloneable {
     } else if (Double.isNaN(options.getError())) {
       targetError = -1;
     } else if (options.getIterations() == -1) {
-      options.setIterations(0);
+      options.setIterations(Integer.MAX_VALUE);
     }
     if (options.getFitnessFunction() == null) {
       options.setFitnessFunction(genome ->
