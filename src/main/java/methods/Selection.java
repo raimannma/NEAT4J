@@ -3,6 +3,7 @@ package methods;
 import static methods.Utils.pickRandom;
 import static methods.Utils.randDouble;
 import java.util.List;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import architecture.Network;
 
@@ -13,14 +14,10 @@ public abstract class Selection {
   public final static class FitnessProportionate extends Selection {
     @Override
     public Network select(final List<Network> population) {
-      double totalFitness = 0;
-      double minimalFitness = 0;
-      for (final Network network : population) {
-        minimalFitness = Math.min(network.score, minimalFitness);
-        totalFitness += network.score;
-      }
+      final DoubleStream scoreStream = population.stream().mapToDouble(network -> network.score);
+      final double minimalFitness = Math.abs(scoreStream.min().orElseThrow());
+      final double totalFitness = scoreStream.sum();
 
-      minimalFitness = Math.abs(minimalFitness);
       final double random = randDouble(totalFitness + minimalFitness * population.size());
       double value = 0;
       for (final Network genome : population) {
@@ -49,8 +46,7 @@ public abstract class Selection {
       if (population.get(0).score < population.get(1).score) {
         population.sort((o1, o2) -> Double.compare(o2.score, o1.score));
       }
-      final int index = (int) Math.floor(Math.pow(randDouble(), this.power) * population.size());
-      return population.get(index);
+      return population.get((int) Math.floor(Math.pow(randDouble(), this.power) * population.size()));
     }
   }
 

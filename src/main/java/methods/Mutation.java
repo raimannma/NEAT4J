@@ -70,7 +70,8 @@ public enum Mutation {
     public void mutate(final Network network) {
       final ArrayList<Connection> availableConnections = new ArrayList<>();
       network.connections.stream()
-        .filter(conn -> !conn.from.out.isEmpty() && !conn.to.in.isEmpty()
+        .filter(conn -> !conn.from.in.isEmpty()
+          && !conn.to.out.isEmpty()
           && network.nodes.indexOf(conn.to) > network.nodes.indexOf(conn.from))
         .forEach(availableConnections::add);
       if (availableConnections.isEmpty()) {
