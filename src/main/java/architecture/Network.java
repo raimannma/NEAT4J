@@ -75,44 +75,42 @@ public class Network implements Cloneable {
     final double score2 = Double.isNaN(network2.score) ? 0 : network2.score;
 
     final int size;
+    final int size1 = network1.nodes.size();
+    final int size2 = network2.nodes.size();
     if (equal || score1 == score2) {
-      final int max = Math.max(network1.nodes.size(), network2.nodes.size());
-      final int min = Math.min(network1.nodes.size(), network2.nodes.size());
+      final int max = Math.max(size1, size2);
+      final int min = Math.min(size1, size2);
       size = (int) Math.floor(Utils.randDouble() * (max - min + 1) + min);
     } else if (score1 > score2) {
-      size = network1.nodes.size();
+      size = size1;
     } else {
-      size = network2.nodes.size();
+      size = size2;
     }
 
-    IntStream.range(0, network1.nodes.size())
-      .forEach(i -> network1.nodes.get(i).index = i);
-    IntStream.range(0, network2.nodes.size())
-      .forEach(i -> network2.nodes.get(i).index = i);
+    network1.setNodeIndizes();
+    network2.setNodeIndizes();
 
     for (int i = 0; i < size; i++) {
       Node node;
       final Node other;
       if (i < size - network1.output) {
-        final double random = Utils.randDouble();
-        if (random < 0.5) {
-          node = i < network2.nodes.size() ? network2.nodes.get(i) : null;
-          other = i < network1.nodes.size() ? network1.nodes.get(i) : null;
+        if (Utils.randDouble() >= 0.5) {
+          node = i < size1 ? network1.nodes.get(i) : null;
+          other = i < size2 ? network2.nodes.get(i) : null;
         } else {
-          node = i < network1.nodes.size() ? network1.nodes.get(i) : null;
-          other = i < network2.nodes.size() ? network2.nodes.get(i) : null;
+          node = i < size2 ? network2.nodes.get(i) : null;
+          other = i < size1 ? network1.nodes.get(i) : null;
         }
         if (node == null || node.type == Node.NodeType.OUTPUT) {
           node = other;
         }
-      } else if (Utils.randDouble() >= 0.5) {
-        node = network1.nodes.get(network1.nodes.size() + i - size);
       } else {
-        node = network2.nodes.get(network2.nodes.size() + i - size);
+        node = Utils.randDouble() >= 0.5
+          ? network1.nodes.get(i + size1 - size)
+          : network2.nodes.get(i + size2 - size);
       }
 
       final Node newNode = new Node();
-      assert node != null;
       newNode.bias = node.bias;
       newNode.activationType = node.activationType;
       newNode.type = node.type;
@@ -127,9 +125,11 @@ public class Network implements Cloneable {
     final List<Integer> innovationIDs2 = new ArrayList<>(network2Connections.keySet());
 
     for (int i = innovationIDs1.size() - 1; i >= 0; i--) {
-      if (network2Connections.get(innovationIDs1.get(i)) != null) {
-        connections.add(Utils.randDouble() >= 0.5 ? network1Connections.get(innovationIDs1.get(i)) : network2Connections.get(innovationIDs1.get(i)));
-        network2Connections.put(innovationIDs1.get(i), null);
+      final Double[] remove = network2Connections.remove(innovationIDs1.get(i));
+      if (remove != null) {
+        connections.add(Utils.randDouble() >= 0.5
+          ? network1Connections.get(innovationIDs1.get(i))
+          : remove);
       } else if (score1 >= score2 || equal) {
         connections.add(network1Connections.get(innovationIDs1.get(i)));
       }
@@ -137,23 +137,27 @@ public class Network implements Cloneable {
 
     if (score2 >= score1 || equal) {
       innovationIDs2.stream()
-        .filter(integer -> network2Connections.get(integer) != null)
         .map(network2Connections::get)
+        .filter(Objects::nonNull)
         .forEach(connections::add);
     }
 
-    for (final Double[] connData : connections) {
-      if (connData[2] < size && connData[1] < size) {
-        final Node from = offspring.nodes.get((int) (double) connData[1]);
-        final Node to = offspring.nodes.get((int) (double) connData[2]);
+    connections.stream()
+      .filter(connectionData -> connectionData[2] < size && connectionData[1] < size)
+      .forEach(connectionData -> {
+        final Node from = offspring.nodes.get((int) (double) connectionData[1]);
+        final Node to = offspring.nodes.get((int) (double) connectionData[2]);
         final Connection connection = offspring.connect(from, to).get(0);
-        connection.weight = connData[0];
-        if (connData[3] != -1 && connData[3] < size) {
-          offspring.gate(offspring.nodes.get((int) (double) connData[3]), connection);
+        connection.weight = connectionData[0];
+        if (!Double.isNaN(connectionData[3]) && connectionData[3] < size) {
+          offspring.gate(offspring.nodes.get((int) (double) connectionData[3]), connection);
         }
-      }
-    }
+      });
     return offspring;
+  }
+
+  private void setNodeIndizes() {
+    IntStream.range(0, this.nodes.size()).forEach(i -> this.nodes.get(i).index = i);
   }
 
   private static Map<Integer, Double[]> makeConnections(final Network network) {
@@ -164,7 +168,9 @@ public class Network implements Cloneable {
         data[0] = connection.weight;
         data[1] = (double) connection.from.index;
         data[2] = (double) connection.to.index;
-        data[3] = (double) (connection.gateNode != null ? connection.gateNode.index : -1);
+        data[3] = connection.gateNode != null
+          ? connection.gateNode.index
+          : Double.NaN;
         connections.put(Connection.getInnovationID(connection.from.index, connection.to.index), data);
       });
     return connections;
@@ -440,7 +446,7 @@ public class Network implements Cloneable {
     final JsonArray nodes = new JsonArray();
     final JsonArray connections = new JsonArray();
 
-    IntStream.range(0, this.nodes.size()).forEach(i -> this.nodes.get(i).index = i);
+    this.setNodeIndizes();
     IntStream.range(0, this.nodes.size()).forEach(i -> {
       final Node node = this.nodes.get(i);
       final JsonObject nodeJSON = node.toJSON();
