@@ -41,7 +41,7 @@ public class EvolveOptions {
     this.elitism = 0;
     this.mutationRate = 0.3;
     this.mutationAmount = 1;
-    this.selection = Selection.POWER;
+    this.selection = new Selection.POWER();
     this.mutations = Mutation.FFW;
     this.template = null;
     this.maxNodes = Integer.MAX_VALUE;

@@ -26,7 +26,7 @@ public class Network implements Cloneable {
   public List<Node> nodes;
   List<Connection> connections;
   List<Connection> gates;
-  double score;
+  public double score;
   private List<Connection> selfConnections;
   private double dropout;
 

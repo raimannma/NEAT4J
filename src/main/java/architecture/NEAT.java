@@ -1,7 +1,6 @@
 package architecture;
 
 import static methods.Utils.pickRandom;
-import static methods.Utils.randDouble;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
@@ -107,39 +106,7 @@ class NEAT {
   }
 
   private Network getParent() {
-    if (this.selection == Selection.POWER) {
-      if (this.population.get(0).score < this.population.get(1).score) {
-        this.population.sort((o1, o2) -> Double.compare(o2.score, o1.score));
-      }
-      final int index = (int) Math.floor(Math.pow(Math.random(), this.selection.power)
-        * this.population.size());
-      return this.population.get(index);
-    } else if (this.selection == Selection.FITNESS_PROPORTIONATE) {
-      double totalFitness = 0;
-      double minimalFitness = 0;
-      for (final Network network : this.population) {
-        minimalFitness = Math.min(network.score, minimalFitness);
-        totalFitness += network.score;
-      }
-
-      minimalFitness = Math.abs(minimalFitness);
-      final double random = randDouble(totalFitness + minimalFitness * this.population.size());
-      double value = 0;
-      for (final Network genome : this.population) {
-        value += genome.score + minimalFitness;
-        if (random < value) {
-          return genome;
-        }
-      }
-    } else if (this.selection == Selection.TOURNAMENT) {
-      return IntStream.range(0, Math.min(this.populationSize, this.selection.size))
-        .mapToObj(i -> pickRandom(this.population))
-        .sorted((o1, o2) -> Double.compare(o2.score, o1.score))
-        .filter(net -> Math.random() < this.selection.probability)
-        .findFirst()
-        .orElse(pickRandom(this.population));
-    }
-    return pickRandom(this.population);
+    return this.selection.select(this.population);
   }
 
   private void mutate() {
