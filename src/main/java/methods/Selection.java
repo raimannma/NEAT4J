@@ -49,7 +49,7 @@ public abstract class Selection {
       if (population.get(0).score < population.get(1).score) {
         population.sort((o1, o2) -> Double.compare(o2.score, o1.score));
       }
-      final int index = (int) Math.floor(Math.pow(Math.random(), this.power) * population.size());
+      final int index = (int) Math.floor(Math.pow(Utils.randDouble(), this.power) * population.size());
       return population.get(index);
     }
   }
@@ -68,7 +68,7 @@ public abstract class Selection {
       return IntStream.range(0, Math.min(population.size(), this.size))
         .mapToObj(i -> pickRandom(population))
         .sorted((o1, o2) -> Double.compare(o2.score, o1.score))
-        .filter(net -> Math.random() < this.probability)
+        .filter(net -> Utils.randDouble() < this.probability)
         .findFirst()
         .orElse(pickRandom(population));
     }

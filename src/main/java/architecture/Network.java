@@ -15,6 +15,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import methods.Loss;
 import methods.Mutation;
+import methods.Utils;
 
 public class Network implements Cloneable {
   public final int input;
@@ -77,7 +78,7 @@ public class Network implements Cloneable {
     if (equal || score1 == score2) {
       final int max = Math.max(network1.nodes.size(), network2.nodes.size());
       final int min = Math.min(network1.nodes.size(), network2.nodes.size());
-      size = (int) Math.floor(Math.random() * (max - min + 1) + min);
+      size = (int) Math.floor(Utils.randDouble() * (max - min + 1) + min);
     } else if (score1 > score2) {
       size = network1.nodes.size();
     } else {
@@ -93,7 +94,7 @@ public class Network implements Cloneable {
       Node node;
       final Node other;
       if (i < size - network1.output) {
-        final double random = Math.random();
+        final double random = Utils.randDouble();
         if (random < 0.5) {
           node = i < network2.nodes.size() ? network2.nodes.get(i) : null;
           other = i < network1.nodes.size() ? network1.nodes.get(i) : null;
@@ -104,7 +105,7 @@ public class Network implements Cloneable {
         if (node == null || node.type == Node.NodeType.OUTPUT) {
           node = other;
         }
-      } else if (Math.random() >= 0.5) {
+      } else if (Utils.randDouble() >= 0.5) {
         node = network1.nodes.get(network1.nodes.size() + i - size);
       } else {
         node = network2.nodes.get(network2.nodes.size() + i - size);
@@ -127,7 +128,7 @@ public class Network implements Cloneable {
 
     for (int i = innovationIDs1.size() - 1; i >= 0; i--) {
       if (network2Connections.get(innovationIDs1.get(i)) != null) {
-        connections.add(Math.random() >= 0.5 ? network1Connections.get(innovationIDs1.get(i)) : network2Connections.get(innovationIDs1.get(i)));
+        connections.add(Utils.randDouble() >= 0.5 ? network1Connections.get(innovationIDs1.get(i)) : network2Connections.get(innovationIDs1.get(i)));
         network2Connections.put(innovationIDs1.get(i), null);
       } else if (score1 >= score2 || equal) {
         connections.add(network1Connections.get(innovationIDs1.get(i)));

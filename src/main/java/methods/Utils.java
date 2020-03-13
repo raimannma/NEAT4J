@@ -30,4 +30,8 @@ public enum Utils {
   public static <T> T pickRandom(final List<T> list) {
     return list.get(randInt(list.size()));
   }
+
+  public static double randDouble() {
+    return rand.nextDouble();
+  }
 }

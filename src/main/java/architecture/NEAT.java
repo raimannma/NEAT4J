@@ -13,6 +13,7 @@ import java.util.function.ToDoubleFunction;
 import java.util.stream.IntStream;
 import methods.Mutation;
 import methods.Selection;
+import methods.Utils;
 
 class NEAT {
   private final int output;
@@ -112,7 +113,7 @@ class NEAT {
   private void mutate() {
     this.population
       .parallelStream()
-      .filter(network -> Math.random() <= this.mutationRate)
+      .filter(network -> Utils.randDouble() <= this.mutationRate)
       .forEach(network -> IntStream.range(0, this.mutationAmount)
         .forEach(j -> network.mutate(this.selectMutationMethod(network))));
   }
