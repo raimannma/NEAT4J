@@ -21,13 +21,13 @@ public enum Mutation {
 
   public static final Mutation[] ALL = Mutation.values();
   public static final Mutation[] FFW = new Mutation[] {
-    ADD_NODE,
-    SUB_NODE,
     ADD_CONN,
-    SUB_CONN,
-    MOD_WEIGHT,
-    MOD_BIAS,
+    ADD_NODE,
     MOD_ACTIVATION,
+    MOD_BIAS,
+    MOD_WEIGHT,
+    SUB_CONN,
+    SUB_NODE,
     SWAP_NODES
   };
   public final boolean mutateOutput;
