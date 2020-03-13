@@ -5,7 +5,6 @@ import static methods.Utils.pickRandom;
 import static methods.Utils.randDouble;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import methods.Activation;
@@ -107,38 +106,27 @@ public class Node {
       this.self.weight = 0;
       return;
     }
-    for (final Connection connection : new ArrayList<>(this.out)) {
-      if (connection.to.equals(node)) {
+    new ArrayList<>(this.out)
+      .stream()
+      .filter(connection -> connection.to.equals(node))
+      .forEach(connection -> {
         this.out.remove(connection);
         connection.to.in.remove(connection);
         if (connection.gateNode != null) {
           connection.gateNode.removeGate(connection);
         }
-        break;
-      }
-    }
+      });
   }
 
   public void removeGate(final Connection connection) {
-    this.removeGate(new Connection[] {connection});
-  }
-
-  private void removeGate(final Connection[] connections) {
-    for (int i = connections.length - 1; i >= 0; i--) {
-      final Connection connection = connections[i];
-      this.gated.remove(connection);
-      connection.gateNode = null;
-      connection.gain = 1;
-    }
+    this.gated.remove(connection);
+    connection.gateNode = null;
+    connection.gain = 1;
   }
 
   public void gate(final Connection connection) {
-    this.gate(new Connection[] {connection});
-  }
-
-  private void gate(final Connection[] connections) {
-    Arrays.stream(connections).forEach(connection -> connection.gateNode = this);
-    this.gated.addAll(Arrays.asList(connections));
+    connection.gateNode = this;
+    this.gated.add(connection);
   }
 
   public void mutate(final Mutation method) {
