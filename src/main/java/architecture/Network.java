@@ -1,10 +1,8 @@
 package architecture;
 
-import static methods.Mutation.MOD_ACTIVATION;
 import static methods.Mutation.SUB_NODE;
 import static methods.Utils.pickRandom;
 import static methods.Utils.randDouble;
-import static methods.Utils.randInt;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
@@ -13,10 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import methods.Activation;
 import methods.Loss;
 import methods.Mutation;
 
@@ -25,9 +21,9 @@ public class Network implements Cloneable {
   public final int output;
   public List<Node> nodes;
   public double score;
-  List<Connection> connections;
-  List<Connection> gates;
-  private List<Connection> selfConnections;
+  public List<Connection> connections;
+  public List<Connection> selfConnections;
+  public List<Connection> gates;
   private double dropout;
 
   public Network(final int input, final int output) {
@@ -173,11 +169,11 @@ public class Network implements Cloneable {
     return connections;
   }
 
-  private List<Connection> connect(final Node from, final Node to) {
+  public List<Connection> connect(final Node from, final Node to) {
     return this.connect(from, to, 0);
   }
 
-  private void gate(final Node node, final Connection connection) {
+  public void gate(final Node node, final Connection connection) {
     if (!this.nodes.contains(node)) {
       throw new ArrayIndexOutOfBoundsException("This node is not part of the network!");
     } else if (connection.gateNode != null) {
@@ -185,6 +181,13 @@ public class Network implements Cloneable {
     }
     node.gate(connection);
     this.gates.add(connection);
+  }
+
+  public void mutate(final Mutation method) {
+    if (Arrays.stream(Mutation.ALL).noneMatch(meth -> meth == method)) {
+      throw new IllegalArgumentException("No (correct) mutate method given!");
+    }
+    method.mutate(this);
   }
 
   private double evolve(final double[][] inputs, final double[][] outputs) {
@@ -289,195 +292,7 @@ public class Network implements Cloneable {
     return output.stream().mapToDouble(i -> i).toArray();
   }
 
-  public void mutate(final Mutation method) {
-    if (Arrays.stream(Mutation.ALL).noneMatch(meth -> meth == method)) {
-      throw new IllegalArgumentException("No (correct) mutate method given!");
-    }
-
-    final List<Connection> allConnections;
-    int index;
-    final Connection connection;
-    final Connection randomConn;
-    Node node;
-    Node node2;
-    final List<Connection> availableConnections;
-    final List<Node[]> availableNodes;
-    switch (method) {
-      case ADD_NODE:
-        if (this.connections.isEmpty()) {
-          return;
-        }
-        connection = pickRandom(this.connections);
-        this.disconnect(connection.from, connection.to);
-
-        node = new Node(Node.NodeType.HIDDEN);
-        node.mutate(MOD_ACTIVATION);
-        this.nodes.add(Math.max(0, Math.min(this.nodes.indexOf(connection.to), this.nodes.size() - this.output)), node);
-
-        if (connection.gateNode != null && Math.random() >= 0.5) {
-          this.gate(connection.gateNode, this.connect(connection.from, node).get(0));
-        } else if (connection.gateNode != null) {
-          this.gate(connection.gateNode, this.connect(node, connection.to).get(0));
-        }
-        break;
-      case SUB_NODE:
-        if (this.nodes.size() == this.input + this.output) {
-          return;
-        }
-
-        this.remove(this.nodes.get((int) Math.floor(Math.random() * (this.nodes.size() - this.output - this.input) + this.input)));
-        break;
-      case ADD_CONN:
-        availableNodes = new ArrayList<>();
-        for (int i = 0; i < this.nodes.size() - this.output; i++) {
-          node = this.nodes.get(i);
-          for (int j = Math.max(i + 1, this.input); j < this.nodes.size(); j++) {
-            node2 = this.nodes.get(j);
-            if (node.isNotProjectingTo(node2)) {
-              availableNodes.add(new Node[] {node, node2});
-            }
-          }
-        }
-        if (availableNodes.isEmpty()) {
-          return;
-        }
-        final Node[] pair = pickRandom(availableNodes);
-        this.connect(pair[0], pair[1]);
-        break;
-      case SUB_CONN:
-        availableConnections = new ArrayList<>();
-        this.connections.stream()
-          .filter(conn -> !conn.from.out.isEmpty() && !conn.to.in.isEmpty()
-            && this.nodes.indexOf(conn.to) > this.nodes.indexOf(conn.from))
-          .forEach(availableConnections::add);
-        if (availableConnections.isEmpty()) {
-          return;
-        }
-        randomConn = pickRandom(availableConnections);
-        this.disconnect(randomConn.from, randomConn.to);
-        break;
-      case MOD_WEIGHT:
-        allConnections = new ArrayList<>(this.connections);
-        allConnections.addAll(this.selfConnections);
-        if (allConnections.isEmpty()) {
-          return;
-        }
-
-        connection = pickRandom(allConnections);
-        connection.weight += randDouble(method.min, method.max);
-        break;
-      case MOD_BIAS:
-        this.nodes.get(randInt(this.input, this.nodes.size())).mutate(method);
-        break;
-      case MOD_ACTIVATION:
-        if (!method.mutateOutput && this.input + this.output == this.nodes.size()) {
-          return;
-        }
-        index = (int) Math.floor(Math.random() * (this.nodes.size() - (method.mutateOutput ? 0 : this.output) - this.input) + this.input);
-        this.nodes.get(index).mutate(method);
-        break;
-      case ADD_SELF_CONN:
-        final List<Node> poss = IntStream.range(this.input, this.nodes.size()).mapToObj(this.nodes::get).filter(node1 -> node1.self.weight == 0).collect(Collectors.toList());
-        if (poss.isEmpty()) {
-          return;
-        }
-        node = pickRandom(poss);
-        this.connect(node, node);
-        break;
-      case SUB_SELF_CONN:
-        if (this.selfConnections.isEmpty()) {
-          return;
-        }
-        connection = pickRandom(this.selfConnections);
-        this.disconnect(connection.from, connection.to);
-        break;
-      case ADD_GATE:
-        allConnections = new ArrayList<>(this.connections);
-        allConnections.addAll(this.selfConnections);
-
-        availableConnections = allConnections.stream()
-          .filter(connection1 -> connection1.gateNode == null)
-          .collect(Collectors.toList());
-        if (availableConnections.isEmpty()) {
-          return;
-        }
-
-        this.gate(this.nodes.get(randInt(this.input, this.nodes.size())), pickRandom(availableConnections));
-        break;
-      case SUB_GATE:
-        if (this.gates.isEmpty()) {
-          return;
-        }
-        this.removeGate(pickRandom(this.gates));
-        break;
-      case ADD_BACK_CONN:
-        availableNodes = new ArrayList<>();
-        for (int i = this.input; i < this.nodes.size(); i++) {
-          node = this.nodes.get(i);
-          for (int j = this.input; j < i; j++) {
-            node2 = this.nodes.get(j);
-            if (node.isNotProjectingTo(node2)) {
-              availableNodes.add(new Node[] {node, node2});
-            }
-          }
-        }
-
-        if (availableNodes.isEmpty()) {
-          return;
-        }
-
-        final Node[] pair1 = pickRandom(availableNodes);
-        this.connect(pair1[0], pair1[1]);
-        break;
-      case SUB_BACK_CONN:
-        availableConnections = new ArrayList<>();
-        this.connections.stream().filter(connection1 -> !connection1.from.out.isEmpty() && !connection1.to.in.isEmpty() &&
-          this.nodes.indexOf(connection1.from) > this.nodes.indexOf(connection1.to))
-          .forEach(availableConnections::add);
-        if (availableConnections.isEmpty()) {
-          return;
-        }
-        randomConn = pickRandom(availableConnections);
-        this.disconnect(randomConn.from, randomConn.to);
-        break;
-      case SWAP_NODES:
-        if (method.mutateOutput && this.nodes.size() - this.input < 2
-          || !method.mutateOutput && this.nodes.size() - this.input - this.output < 2) {
-          return;
-        }
-        index = (int) Math.floor(Math.random() * (this.nodes.size() - (method.mutateOutput ? 0 : this.output) - this.input) + this.input);
-        node = this.nodes.get(index);
-        index = (int) Math.floor(Math.random() * (this.nodes.size() - (method.mutateOutput ? 0 : this.output) - this.input) + this.input);
-        node2 = this.nodes.get(index);
-
-        final double biasTemp = node.bias;
-        final Activation activationType = node.activationType;
-
-        node.bias = node2.bias;
-        node.activationType = node2.activationType;
-        node2.bias = biasTemp;
-        node2.activationType = activationType;
-        break;
-      default:
-        break;
-    }
-  }
-
-  private void disconnect(final Node from, final Node to) {
-    final List<Connection> connections = from.equals(to) ? this.selfConnections : this.connections;
-    for (final Connection connection : connections) {
-      if (connection.from.equals(from) && connection.to.equals(to)) {
-        if (connection.gateNode != null) {
-          this.removeGate(connection);
-        }
-        connections.remove(connection);
-        break;
-      }
-    }
-    from.disconnect(to);
-  }
-
-  private void remove(final Node node) {
+  public void remove(final Node node) {
     if (!this.nodes.contains(node)) {
       throw new IllegalArgumentException("This node does not exist in the network!");
     }
@@ -525,7 +340,21 @@ public class Network implements Cloneable {
     this.nodes.remove(node);
   }
 
-  private void removeGate(final Connection connection) {
+  public void disconnect(final Node from, final Node to) {
+    final List<Connection> connections = from.equals(to) ? this.selfConnections : this.connections;
+    for (final Connection connection : connections) {
+      if (connection.from.equals(from) && connection.to.equals(to)) {
+        if (connection.gateNode != null) {
+          this.removeGate(connection);
+        }
+        connections.remove(connection);
+        break;
+      }
+    }
+    from.disconnect(to);
+  }
+
+  public void removeGate(final Connection connection) {
     if (connection != null && connection.gateNode != null && this.gates.remove(connection)) {
       connection.gateNode.removeGate(connection);
     }

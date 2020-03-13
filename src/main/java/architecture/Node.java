@@ -13,13 +13,13 @@ import methods.Mutation;
 
 public class Node {
 
-  final List<Connection> in;
-  final List<Connection> out;
+  public final List<Connection> in;
+  public final List<Connection> out;
+  public final Connection self;
   final List<Connection> gated;
-  final Connection self;
+  public Activation activationType;
+  public double bias;
   int index;
-  Activation activationType;
-  double bias;
   NodeType type;
   double mask;
   private double state;
@@ -29,7 +29,7 @@ public class Node {
     this(NodeType.HIDDEN);
   }
 
-  Node(final NodeType type) {
+  public Node(final NodeType type) {
     this.bias = type == NodeType.INPUT ? 0 : randDouble(-1, 1);
     this.activationType = LOGISTIC;
     this.type = type;
@@ -91,7 +91,7 @@ public class Node {
     return connections;
   }
 
-  boolean isNotProjectingTo(final Node node) {
+  public boolean isNotProjectingTo(final Node node) {
     return (!this.equals(node) || this.self.weight == 0)
       && this.out.stream().noneMatch(connection -> connection.to.equals(node));
   }
@@ -146,7 +146,7 @@ public class Node {
     this.gated.addAll(Arrays.asList(connections));
   }
 
-  void mutate(final Mutation method) {
+  public void mutate(final Mutation method) {
     if (method == Mutation.MOD_ACTIVATION) {
       this.activationType = pickRandom(method.allowed);
     } else if (method == Mutation.MOD_BIAS) {
@@ -189,6 +189,6 @@ public class Node {
       '}';
   }
 
-  enum NodeType {HIDDEN, INPUT, OUTPUT}
+  public enum NodeType {HIDDEN, INPUT, OUTPUT}
 
 }
