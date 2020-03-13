@@ -9,17 +9,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class NEATTest {
-
   @Test
   void testJSON() {
-    final Network network = new Network(2, 2);
+    final Network original = new Network(2, 2);
     IntStream.range(0, 10)
       .mapToObj(i -> pickRandom(Mutation.ALL))
-      .forEach(network::mutate);
-    testEquality(network, Network.fromJSON(network.toJSON()));
-  }
+      .forEach(original::mutate);
 
-  private static void testEquality(final Network original, final Network copied) {
+    final Network copied = Network.fromJSON(original.toJSON());
+
     assertEquals(original.input, copied.input);
     assertEquals(original.output, copied.output);
     original.nodes
@@ -44,17 +42,17 @@ public class NEATTest {
     };
 
     final Network network = new Network(2, 1);
-    learnSet(network, inputs, outputs);
+    assertTrue(learnSet(network, inputs, outputs) <= 0.05);
   }
 
-  private static void learnSet(final Network network, final double[][] inputs, final double[][] outputs) {
+  private static double learnSet(final Network network, final double[][] inputs, final double[][] outputs) {
     final EvolveOptions options = new EvolveOptions();
     options.setMutations(Mutation.ALL);
     options.setPopulationSize(1000);
     options.setElitism(10);
     options.setMutationRate(0.7);
     options.setError(0.05);
-    assertTrue(network.evolve(inputs, outputs, options) <= 0.05);
+    return network.evolve(inputs, outputs, options);
   }
 
   @Test
@@ -73,7 +71,7 @@ public class NEATTest {
     };
 
     final Network network = new Network(2, 1);
-    learnSet(network, inputs, outputs);
+    assertTrue(learnSet(network, inputs, outputs) <= 0.05);
   }
 
   @Test
@@ -92,7 +90,7 @@ public class NEATTest {
     };
 
     final Network network = new Network(2, 1);
-    learnSet(network, inputs, outputs);
+    assertTrue(learnSet(network, inputs, outputs) <= 0.05);
   }
 
   @Test
@@ -107,7 +105,7 @@ public class NEATTest {
     };
 
     final Network network = new Network(1, 1);
-    learnSet(network, inputs, outputs);
+    assertTrue(learnSet(network, inputs, outputs) <= 0.05);
   }
 
   @Test
@@ -126,7 +124,7 @@ public class NEATTest {
     };
 
     final Network network = new Network(2, 1);
-    learnSet(network, inputs, outputs);
+    assertTrue(learnSet(network, inputs, outputs) <= 0.05);
   }
 
   @Test
@@ -145,6 +143,6 @@ public class NEATTest {
     };
 
     final Network network = new Network(2, 1);
-    learnSet(network, inputs, outputs);
+    assertTrue(learnSet(network, inputs, outputs) <= 0.05);
   }
 }
