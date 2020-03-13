@@ -10,11 +10,7 @@ public abstract class Selection {
 
   public abstract Network select(List<Network> population);
 
-  public final static class FITNESS_PROPORTIONATE extends Selection {
-    public FITNESS_PROPORTIONATE() {
-
-    }
-
+  public final static class FitnessProportionate extends Selection {
     @Override
     public Network select(final List<Network> population) {
       double totalFitness = 0;
@@ -37,14 +33,14 @@ public abstract class Selection {
     }
   }
 
-  public final static class POWER extends Selection {
+  public final static class Power extends Selection {
     private final int power;
 
-    public POWER() {
+    public Power() {
       this(4);
     }
 
-    public POWER(final int power) {
+    public Power(final int power) {
       this.power = power;
     }
 
@@ -58,11 +54,11 @@ public abstract class Selection {
     }
   }
 
-  public final static class TOURNAMENT extends Selection {
+  public final static class Tournament extends Selection {
     private final double probability;
     private final int size;
 
-    public TOURNAMENT(final int size, final double probability) {
+    public Tournament(final int size, final double probability) {
       this.size = size;
       this.probability = probability;
     }
