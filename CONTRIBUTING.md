@@ -4,15 +4,15 @@ Thanks for considering contributing to Default!
 
 ## Opening issues
 
-If you find a bug, please feel free to [open an issue](https://github.com/kennethormandy/default/issues).
+If you find a bug, please feel free to [open an issue](https://github.com/raimannma/NEAT4J/issues).
 
-If you taking the time to mention a problem, even a seemingly minor one, it is greatly appreciated, and a totally valid contribution to this project. Thank you!
+If you take the time to mention a problem, even a seemingly minor one, it is greatly appreciated, and a totally valid contribution to this project. Thank you!
 
 ## Fixing bugs
 
 We love pull requests. Here’s a quick guide:
 
-1. [Fork this repository](https://github.com/kennethormandy/default/fork) and then clone it locally:
+1. [Fork this repository](https://github.com/raimannma/NEAT4J/fork) then clone it locally:
 
   ```bash
   git clone https://github.com/kennethormandy/default
@@ -51,8 +51,8 @@ We love pull requests. Here’s a quick guide:
 
 8. Enjoy being the wonderful person you are
 
-  After you’ve opened your pull request, [you should email me](mailto:hello@kennethormandy.com) your mailing address so I can mail you a personal thank you note. Seriously!
+  After you’ve opened your pull request, [you should email me](mailto:raimannma@outlook.de) your mailing address, so I can mail you a personal thank you note. Seriously!
 
 ## Adding new features
 
-Thinking of adding a new feature? Cool! [Open an issue](https://github.com/kennethormandy/default/issues) and let’s design it together.
+Thinking of adding a new feature? Cool! [Open an issue](https://github.com/raimannma/NEAT4J/issues) let’s design it together.

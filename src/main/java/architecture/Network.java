@@ -183,17 +183,6 @@ public class Network implements Cloneable {
     this.gates.add(connection);
   }
 
-  public void mutate(final Mutation method) {
-    if (Arrays.stream(Mutation.ALL).noneMatch(meth -> meth == method)) {
-      throw new IllegalArgumentException("No (correct) mutate method given!");
-    }
-    method.mutate(this);
-  }
-
-  private double evolve(final double[][] inputs, final double[][] outputs) {
-    return this.evolve(inputs, outputs, new EvolveOptions());
-  }
-
   public double evolve(final double[][] inputs, final double[][] outputs, final EvolveOptions options) {
     if (options == null) {
       return this.evolve(inputs, outputs);
@@ -202,7 +191,7 @@ public class Network implements Cloneable {
       throw new IllegalStateException("Dataset input/output size should be same as network input/output size!");
     }
 
-    double targetError = Double.isNaN(options.getError()) ? 0.05 : options.getError();
+    double targetError = Double.isNaN(options.getError()) ? Double.MAX_VALUE : options.getError();
     final double growth = options.getGrowth();
     final Loss loss = options.getLoss();
     final int amount = options.getAmount();
@@ -214,27 +203,26 @@ public class Network implements Cloneable {
       options.setIterations(0);
     }
     if (options.getFitnessFunction() == null) {
-      options.setFitnessFunction(genome -> {
-        final double score = IntStream.range(0, amount)
+      options.setFitnessFunction(genome ->
+        (IntStream.range(0, amount)
           .parallel()
           .mapToDouble(i -> -genome.test(inputs, outputs, loss))
           .sum()
-          - growth * (genome.nodes.size() + genome.connections.size() + genome.gates.size() - genome.input - genome.output);
-        return Double.isNaN(score) ? -Double.MAX_VALUE : score / amount;
-      });
+          - genome.getGrowthScore(growth))
+          / amount);
     }
     options.setNetwork(this);
     final NEAT neat = new NEAT(this.input, this.output, options);
 
     double error = -Double.MAX_VALUE;
-    double bestFitness = -Double.MAX_VALUE;
+    double bestScore = -Double.MAX_VALUE;
     Network bestGenome = null;
 
-    while (error < -targetError && (options.getIterations() == 0 || neat.generation < options.getIterations())) {
+    while (error < -targetError && neat.generation < options.getIterations()) {
       final Network fittest = neat.evolve();
-      error = fittest.score + growth * (fittest.nodes.size() + fittest.connections.size() + fittest.gates.size() - fittest.input - fittest.output);
-      if (fittest.score > bestFitness) {
-        bestFitness = fittest.score;
+      error = fittest.score + fittest.getGrowthScore(growth);
+      if (fittest.score > bestScore) {
+        bestScore = fittest.score;
         bestGenome = fittest;
       }
       if (options.getLog() > 0 && neat.generation % options.getLog() == 0) {
@@ -252,6 +240,25 @@ public class Network implements Cloneable {
       }
     }
     return -error;
+  }
+
+  public void mutate(final Mutation method) {
+    if (Arrays.stream(Mutation.ALL).noneMatch(meth -> meth == method)) {
+      throw new IllegalArgumentException("No (correct) mutate method given!");
+    }
+    method.mutate(this);
+  }
+
+  private double evolve(final double[][] inputs, final double[][] outputs) {
+    return this.evolve(inputs, outputs, new EvolveOptions());
+  }
+
+  private double getGrowthScore(final double growth) {
+    return growth * (this.nodes.size()
+      + this.connections.size()
+      + this.gates.size()
+      - this.input
+      - this.output);
   }
 
   private double test(final double[][] inputs, final double[][] outputs) {
