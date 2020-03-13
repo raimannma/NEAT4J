@@ -1,5 +1,8 @@
 package methods;
 
+/*
+TODO: Move mutateNetwork() here
+*/
 public enum Mutation {
   ADD_NODE(false),
   SUB_NODE(false),
