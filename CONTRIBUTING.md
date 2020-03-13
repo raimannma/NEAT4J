@@ -12,46 +12,43 @@ If you take the time to mention a problem, even a seemingly minor one, it is gre
 
 We love pull requests. Here’s a quick guide:
 
-1. [Fork this repository](https://github.com/raimannma/NEAT4J/fork) then clone it locally:
+1.[Fork this repository](https://github.com/raimannma/NEAT4J/fork) then clone it locally:
 
   ```bash
-  git clone https://github.com/kennethormandy/default
+  git clone https://github.com/raimannma/NEAT4J
   ```
 
-2. Create a topic branch for your changes:
+2.Create a topic branch for your changes:
 
   ```bash
   git checkout -b fix-for-that-thing
   ```
-3. Commit a failing test for the bug:
+
+3.Commit a failing test for the bug:
 
   ```bash
   git commit -am "Adds a failing test to demonstrate that thing"
   ```
 
-4. Commit a fix that makes the test pass:
+4.Commit a fix that makes the test pass:
 
   ```bash
   git commit -am "Adds a fix for that thing!"
   ```
 
-5. Run the tests:
+5.Run the tests:
 
   ```bash
-  npm test
+  mvn clean install test
   ```
 
-6. If everything looks good, push to your fork:
+6.If everything looks good, push to your fork:
 
   ```bash
   git push origin fix-for-that-thing
   ```
 
-7. [Submit a pull request.](https://help.github.com/articles/creating-a-pull-request)
-
-8. Enjoy being the wonderful person you are
-
-  After you’ve opened your pull request, [you should email me](mailto:raimannma@outlook.de) your mailing address, so I can mail you a personal thank you note. Seriously!
+7.[Submit a pull request.](https://help.github.com/articles/creating-a-pull-request)
 
 ## Adding new features
 
