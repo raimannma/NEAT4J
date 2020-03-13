@@ -97,11 +97,6 @@ public class Node {
   }
 
   void clear() {
-    this.in.forEach(connection -> {
-      connection.eligibility = 0;
-      connection.xTraceNodes = new ArrayList<>();
-      connection.xTraceValues = new ArrayList<>();
-    });
     this.gated.forEach(connection -> connection.gain = 0);
     this.state = 0;
     this.activation = 0;

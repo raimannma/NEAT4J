@@ -1,7 +1,6 @@
 package architecture;
 
 import com.google.gson.JsonObject;
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class Connection {
@@ -10,9 +9,6 @@ public class Connection {
   public Node gateNode;
   public double weight;
   double gain;
-  ArrayList<Node> xTraceNodes;
-  ArrayList<Double> xTraceValues;
-  double eligibility;
 
   Connection(final Node from, final Node to, final double weight) {
     this.from = from;
@@ -20,10 +16,6 @@ public class Connection {
     this.gain = 1;
     this.weight = weight;
     this.gateNode = null;
-    this.eligibility = 0;
-
-    this.xTraceNodes = new ArrayList<>();
-    this.xTraceValues = new ArrayList<>();
   }
 
   static int getInnovationID(final int a, final int b) {
