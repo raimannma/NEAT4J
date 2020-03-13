@@ -39,7 +39,7 @@ class NEAT {
 
     this.fitnessFunction = options.getFitnessFunction();
     this.equal = options.isEqual();
-    this.clear = options.getClear();
+    this.clear = options.isClear();
     this.populationSize = options.getPopulationSize();
     this.elitism = options.getElitism();
     this.mutationRate = options.getMutationRate();
