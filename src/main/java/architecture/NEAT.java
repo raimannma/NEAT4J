@@ -29,8 +29,8 @@ class NEAT {
   private final Network template;
   private final Mutation[] mutation;
   private final Selection selection;
-  int generation;
-  List<Network> population;
+  public int generation;
+  public List<Network> population;
   private int populationSize;
 
   NEAT(final int input, final int output, final EvolveOptions options) {
@@ -67,7 +67,7 @@ class NEAT {
     }
   }
 
-  Network evolve() {
+  public Network evolve() {
     if (Double.isNaN(this.population.get(this.population.size() - 1).score)) {
       this.evaluate();
     }
@@ -127,20 +127,20 @@ class NEAT {
       : null;
   }
 
-  Network getFittest() {
+  public Network getFittest() {
     this.evaluate();
     this.sort();
     return this.population.get(0);
   }
 
-  double getAverage() {
+  public double getAverage() {
     if (Double.isNaN(this.population.get(this.population.size() - 1).score)) {
       this.evaluate();
     }
     return this.population.stream().mapToDouble(network -> network.score).average().orElseThrow();
   }
 
-  JsonObject toJson() {
+  public JsonObject toJson() {
     final JsonArray jsonArray = new JsonArray();
     this.population.stream().map(Network::toJSON).forEach(jsonArray::add);
     final JsonObject jsonObject = new JsonObject();
@@ -148,7 +148,7 @@ class NEAT {
     return jsonObject;
   }
 
-  void fromJson(final JsonObject jsonObject) {
+  public void fromJson(final JsonObject jsonObject) {
     final JsonArray arr = jsonObject.get("genomes").getAsJsonArray();
     IntStream.range(0, arr.size())
       .forEach(i -> this.population.add(Network.fromJSON(arr.get(i).getAsJsonObject())));

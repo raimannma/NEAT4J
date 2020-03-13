@@ -8,7 +8,7 @@ public class Connection {
   public final Node from;
   public Node gateNode;
   public double weight;
-  double gain;
+  public double gain;
 
   Connection(final Node from, final Node to, final double weight) {
     this.from = from;
@@ -18,11 +18,11 @@ public class Connection {
     this.gateNode = null;
   }
 
-  static int getInnovationID(final int a, final int b) {
+  public static int getInnovationID(final int a, final int b) {
     return (int) Math.floor(0.5 * (a + b) * (a + b + 1) + b);
   }
 
-  JsonObject toJSON() {
+  public JsonObject toJSON() {
     final JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("weight", this.weight);
     return jsonObject;

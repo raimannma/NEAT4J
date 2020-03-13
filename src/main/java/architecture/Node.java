@@ -16,12 +16,12 @@ public class Node {
   public final List<Connection> in;
   public final List<Connection> out;
   public final Connection self;
-  final List<Connection> gated;
+  public final List<Connection> gated;
   public Activation activationType;
   public double bias;
-  int index;
-  NodeType type;
-  double mask;
+  public int index;
+  public NodeType type;
+  public double mask;
   private double state;
   private double activation;
 
@@ -44,7 +44,7 @@ public class Node {
     this.self = new Connection(this, this, 0);
   }
 
-  static Node fromJSON(final JsonObject jsonObject) {
+  public static Node fromJSON(final JsonObject jsonObject) {
     final Node node = new Node();
     node.bias = jsonObject.get("bias").getAsDouble();
     node.type = NodeType.valueOf(jsonObject.get("type").getAsString());
@@ -53,7 +53,7 @@ public class Node {
     return node;
   }
 
-  double activate() {
+  public double activate() {
     this.updateState();
     this.activation = this.activationType.calc(this.state);
     this.gated.forEach(conn -> conn.gain = this.activation);
@@ -65,11 +65,11 @@ public class Node {
     this.in.forEach(connection -> this.state += connection.from.activation * connection.weight * connection.gain);
   }
 
-  void activate(final double input) {
+  public void activate(final double input) {
     this.activation = input;
   }
 
-  List<Connection> connect(final Node target, final double weight) {
+  public List<Connection> connect(final Node target, final double weight) {
     final List<Connection> connections = new ArrayList<>();
     if (target == this) {
       if (this.self.weight == 0) {
@@ -96,13 +96,13 @@ public class Node {
       && this.out.stream().noneMatch(connection -> connection.to.equals(node));
   }
 
-  void clear() {
+  public void clear() {
     this.gated.forEach(connection -> connection.gain = 0);
     this.state = 0;
     this.activation = 0;
   }
 
-  void disconnect(final Node node) {
+  public void disconnect(final Node node) {
     if (this.equals(node)) {
       this.self.weight = 0;
       return;
@@ -119,7 +119,7 @@ public class Node {
     }
   }
 
-  void removeGate(final Connection connection) {
+  public void removeGate(final Connection connection) {
     this.removeGate(new Connection[] {connection});
   }
 
@@ -132,7 +132,7 @@ public class Node {
     }
   }
 
-  void gate(final Connection connection) {
+  public void gate(final Connection connection) {
     this.gate(new Connection[] {connection});
   }
 
@@ -149,7 +149,7 @@ public class Node {
     }
   }
 
-  JsonObject toJSON() {
+  public JsonObject toJSON() {
     final JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("bias", this.bias);
     jsonObject.addProperty("type", this.type.name());

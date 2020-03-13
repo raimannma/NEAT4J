@@ -1,16 +1,16 @@
+package architecture;
+
 import static methods.Utils.pickRandom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.stream.IntStream;
-import architecture.EvolveOptions;
-import architecture.Network;
 import methods.Mutation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class NEATTest {
   @Test
-  void testJSON() {
+  public void testJSON() {
     final Network original = new Network(2, 2);
     IntStream.range(0, 10)
       .mapToObj(i -> pickRandom(Mutation.ALL))
@@ -27,7 +27,7 @@ public class NEATTest {
   }
 
   @Test
-  void testAND() {
+  public void testAND() {
     final double[][] inputs = new double[][] {
       new double[] {0, 0},
       new double[] {0, 1},
@@ -56,7 +56,7 @@ public class NEATTest {
   }
 
   @Test
-  void testXOR() {
+  public void testXOR() {
     final double[][] inputs = new double[][] {
       new double[] {0, 0},
       new double[] {0, 1},
@@ -75,7 +75,7 @@ public class NEATTest {
   }
 
   @Test
-  void testXNOR() {
+  public void testXNOR() {
     final double[][] inputs = new double[][] {
       new double[] {0, 0},
       new double[] {0, 1},
@@ -94,7 +94,7 @@ public class NEATTest {
   }
 
   @Test
-  void testNot() {
+  public void testNot() {
     final double[][] inputs = new double[][] {
       new double[] {0},
       new double[] {1},
@@ -109,7 +109,7 @@ public class NEATTest {
   }
 
   @Test
-  void testNAND() {
+  public void testNAND() {
     final double[][] inputs = new double[][] {
       new double[] {0, 0},
       new double[] {0, 1},
@@ -128,7 +128,7 @@ public class NEATTest {
   }
 
   @Test
-  void testNOR() {
+  public void testNOR() {
     final double[][] inputs = new double[][] {
       new double[] {0, 0},
       new double[] {0, 1},

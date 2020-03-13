@@ -61,7 +61,7 @@ public class Network implements Cloneable {
     return connections;
   }
 
-  static Network crossover(final Network network1, final Network network2, final boolean equal) {
+  public static Network crossover(final Network network1, final Network network2, final boolean equal) {
     if (network1.input != network2.input || network1.output != network2.output) {
       throw new IllegalStateException("Networks don't have the same input/output size!");
     }
@@ -367,7 +367,7 @@ public class Network implements Cloneable {
     }
   }
 
-  void clear() {
+  public void clear() {
     this.nodes.forEach(Node::clear);
   }
 
@@ -406,7 +406,7 @@ public class Network implements Cloneable {
       '}';
   }
 
-  Network copy() {
+  public Network copy() {
     return Network.fromJSON(this.toJSON());
   }
 
