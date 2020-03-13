@@ -167,9 +167,7 @@ public class Network implements Cloneable {
         data[0] = connection.weight;
         data[1] = (double) connection.from.index;
         data[2] = (double) connection.to.index;
-        data[3] = connection.gateNode != null
-          ? connection.gateNode.index
-          : Double.NaN;
+        data[3] = connection.gateNode == null ? Double.NaN : connection.gateNode.index;
         connections.put(Connection.getInnovationID(connection.from.index, connection.to.index), data);
       });
     return connections;
@@ -187,65 +185,6 @@ public class Network implements Cloneable {
     }
     node.gate(connection);
     this.gates.add(connection);
-  }
-
-  public double evolve(final double[][] inputs, final double[][] outputs, final EvolveOptions options) {
-    if (options == null) {
-      return this.evolve(inputs, outputs);
-    }
-    if (inputs[0].length != this.input || outputs[0].length != this.output) {
-      throw new IllegalStateException("Dataset input/output size should be same as network input/output size!");
-    }
-
-    double targetError = options.getError();
-    final double growth = options.getGrowth();
-    final Loss loss = options.getLoss();
-    final int amount = options.getAmount();
-    if (options.getIterations() == -1 && Double.isNaN(options.getError())) {
-      throw new IllegalArgumentException("At least one of the following options must be specified: error, iterations");
-    } else if (Double.isNaN(options.getError())) {
-      targetError = -1;
-    } else if (options.getIterations() == -1) {
-      options.setIterations(Integer.MAX_VALUE);
-    }
-    if (options.getFitnessFunction() == null) {
-      options.setFitnessFunction(genome ->
-        (IntStream.range(0, amount)
-          .parallel()
-          .mapToDouble(i -> -genome.test(inputs, outputs, loss))
-          .sum()
-          - genome.getGrowthScore(growth))
-          / amount);
-    }
-    options.setNetwork(this);
-    final NEAT neat = new NEAT(this.input, this.output, options);
-
-    double error = -Double.MAX_VALUE;
-    double bestScore = -Double.MAX_VALUE;
-    Network bestGenome = null;
-
-    while (error < -targetError && neat.generation < options.getIterations()) {
-      final Network fittest = neat.evolve();
-      error = fittest.score + fittest.getGrowthScore(growth);
-      if (fittest.score > bestScore) {
-        bestScore = fittest.score;
-        bestGenome = fittest;
-      }
-      if (options.getLog() > 0 && neat.generation % options.getLog() == 0) {
-        System.out.println("Iteration: " + neat.generation + "; Fitness: " + fittest.score + "; Error: " + -error + "; Population: " + neat.population.size());
-      }
-    }
-
-    if (bestGenome != null) {
-      this.nodes = bestGenome.nodes;
-      this.connections = bestGenome.connections;
-      this.selfConnections = bestGenome.selfConnections;
-      this.gates = bestGenome.gates;
-      if (options.isClear()) {
-        this.clear();
-      }
-    }
-    return -error;
   }
 
   public void mutate(final Mutation method) {
@@ -285,17 +224,70 @@ public class Network implements Cloneable {
       / inputs.length;
   }
 
+  public double evolve(final double[][] inputs, final double[][] outputs, final EvolveOptions options) {
+    if (options == null) {
+      return this.evolve(inputs, outputs);
+    }
+    if (inputs[0].length != this.input || outputs[0].length != this.output) {
+      throw new IllegalStateException("Dataset input/output size should be same as network input/output size!");
+    }
+
+    double targetError = options.getError();
+    final double growth = options.getGrowth();
+    final Loss loss = options.getLoss();
+    final int amount = options.getAmount();
+    if (options.getIterations() == -1 && Double.isNaN(options.getError())) {
+      throw new IllegalArgumentException("At least one of the following options must be specified: error, iterations");
+    } else if (Double.isNaN(options.getError())) {
+      targetError = -1;
+    } else if (options.getIterations() == -1) {
+      options.setIterations(Integer.MAX_VALUE);
+    }
+    if (options.getFitnessFunction() == null) {
+      options.setFitnessFunction(genome ->
+        (IntStream.range(0, amount)
+          .parallel()
+          .mapToDouble(i -> -genome.test(inputs, outputs, loss))
+          .sum() - genome.getGrowthScore(growth))
+          / amount);
+    }
+    options.setNetwork(this);
+    final NEAT neat = new NEAT(this.input, this.output, options);
+
+    double error = -Double.MAX_VALUE;
+    double bestScore = -Double.MAX_VALUE;
+    Network bestGenome = null;
+
+    while (error < -targetError && neat.generation < options.getIterations()) {
+      final Network fittest = neat.evolve();
+      error = fittest.score + fittest.getGrowthScore(growth);
+      if (fittest.score > bestScore) {
+        bestScore = fittest.score;
+        bestGenome = fittest;
+      }
+      if (options.getLog() > 0 && neat.generation % options.getLog() == 0) {
+        System.out.println("Iteration: " + neat.generation + "; Fitness: " + fittest.score + "; Error: " + -error + "; Population: " + neat.population.size());
+      }
+    }
+
+    if (bestGenome != null) {
+      this.nodes = bestGenome.nodes;
+      this.connections = bestGenome.connections;
+      this.selfConnections = bestGenome.selfConnections;
+      this.gates = bestGenome.gates;
+      if (options.isClear()) {
+        this.clear();
+      }
+    }
+    return -error;
+  }
+
   private double[] activate(final double[] input) {
     final List<Double> output = new ArrayList<>();
     int inputIndex = 0;
     for (final Node node : this.nodes) {
       if (node.type == Node.NodeType.INPUT) {
-        if (inputIndex < input.length) {
-          node.activate(input[inputIndex++]);
-        } else {
-          node.type = Node.NodeType.HIDDEN;
-          node.activate();
-        }
+        node.activate(input[inputIndex++]);
       } else if (node.type == Node.NodeType.HIDDEN) {
         node.activate();
       } else if (node.type == Node.NodeType.OUTPUT) {
@@ -316,7 +308,9 @@ public class Network implements Cloneable {
     final List<Node> inputs = new ArrayList<>();
     for (int i = node.in.size() - 1; i >= 0; i--) {
       final Connection connection = node.in.get(i);
-      if (SUB_NODE.keepGates && connection.gateNode != null && !connection.gateNode.equals(node)) {
+      if (SUB_NODE.keepGates
+        && connection.gateNode != null
+        && !connection.gateNode.equals(node)) {
         gateNodes.add(connection.gateNode);
       }
       inputs.add(connection.from);
@@ -325,7 +319,9 @@ public class Network implements Cloneable {
     final List<Node> outputs = new ArrayList<>();
     for (int i = node.out.size() - 1; i >= 0; i--) {
       final Connection connection = node.out.get(i);
-      if (SUB_NODE.keepGates && connection.gateNode != null && !connection.gateNode.equals(node)) {
+      if (SUB_NODE.keepGates
+        && connection.gateNode != null
+        && !connection.gateNode.equals(node)) {
         gateNodes.add(connection.gateNode);
       }
       outputs.add(connection.to);
@@ -368,7 +364,9 @@ public class Network implements Cloneable {
   }
 
   public void removeGate(final Connection connection) {
-    if (connection != null && connection.gateNode != null && this.gates.remove(connection)) {
+    if (connection != null
+      && connection.gateNode != null
+      && this.gates.remove(connection)) {
       connection.gateNode.removeGate(connection);
     }
   }
@@ -427,11 +425,11 @@ public class Network implements Cloneable {
     nodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
     for (int i = 0; i < connections.size(); i++) {
       final JsonObject connJSON = connections.get(i).getAsJsonObject();
-      final List<Connection> connection = network.connect(network.nodes.get(connJSON.get("from").getAsInt()), network.nodes.get(connJSON.get("to").getAsInt()));
-      connection.get(0).weight = connJSON.get("weight").getAsDouble();
+      final Connection connection = network.connect(network.nodes.get(connJSON.get("from").getAsInt()), network.nodes.get(connJSON.get("to").getAsInt())).get(0);
+      connection.weight = connJSON.get("weight").getAsDouble();
 
       if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
-        network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection.get(0));
+        network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection);
       }
     }
     return network;
