@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import methods.Loss;
 import methods.Mutation;
-import methods.Utils;
 
 public class Network implements Cloneable {
   public final int input;
@@ -80,7 +79,7 @@ public class Network implements Cloneable {
     if (equal || score1 == score2) {
       final int max = Math.max(size1, size2);
       final int min = Math.min(size1, size2);
-      size = (int) Math.floor(Utils.randDouble() * (max - min + 1) + min);
+      size = (int) Math.floor(randDouble() * (max - min + 1) + min);
     } else if (score1 > score2) {
       size = size1;
     } else {
@@ -94,7 +93,7 @@ public class Network implements Cloneable {
       Node node;
       final Node other;
       if (i < size - network1.output) {
-        if (Utils.randDouble() >= 0.5) {
+        if (randDouble() >= 0.5) {
           node = i < size1 ? network1.nodes.get(i) : null;
           other = i < size2 ? network2.nodes.get(i) : null;
         } else {
@@ -105,7 +104,7 @@ public class Network implements Cloneable {
           node = other;
         }
       } else {
-        node = Utils.randDouble() >= 0.5
+        node = randDouble() >= 0.5
           ? network1.nodes.get(i + size1 - size)
           : network2.nodes.get(i + size2 - size);
       }
@@ -127,7 +126,7 @@ public class Network implements Cloneable {
     for (int i = innovationIDs1.size() - 1; i >= 0; i--) {
       final Double[] remove = network2Connections.remove(innovationIDs1.get(i));
       if (remove != null) {
-        connections.add(Utils.randDouble() >= 0.5
+        connections.add(randDouble() >= 0.5
           ? network1Connections.get(innovationIDs1.get(i))
           : remove);
       } else if (score1 >= score2 || equal) {

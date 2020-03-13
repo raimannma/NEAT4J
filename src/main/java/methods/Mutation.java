@@ -28,7 +28,7 @@ public enum Mutation {
       node.mutate(MOD_ACTIVATION);
       network.nodes.add(Math.max(0, Math.min(network.nodes.indexOf(connection.to), network.nodes.size() - network.output)), node);
 
-      if (connection.gateNode != null && Utils.randDouble() >= 0.5) {
+      if (connection.gateNode != null && randDouble() >= 0.5) {
         network.gate(connection.gateNode, network.connect(connection.from, node).get(0));
       } else if (connection.gateNode != null) {
         network.gate(connection.gateNode, network.connect(node, connection.to).get(0));
@@ -42,7 +42,7 @@ public enum Mutation {
         return;
       }
 
-      network.remove(network.nodes.get((int) Math.floor(Utils.randDouble() * (network.nodes.size() - network.output - network.input) + network.input)));
+      network.remove(network.nodes.get((int) Math.floor(randDouble() * (network.nodes.size() - network.output - network.input) + network.input)));
     }
   },
   ADD_CONN(false) {
@@ -105,7 +105,7 @@ public enum Mutation {
       if (!this.mutateOutput && network.input + network.output == network.nodes.size()) {
         return;
       }
-      final int index = (int) Math.floor(Utils.randDouble() * (network.nodes.size() - (this.mutateOutput ? 0 : network.output) - network.input) + network.input);
+      final int index = (int) Math.floor(randDouble() * (network.nodes.size() - (this.mutateOutput ? 0 : network.output) - network.input) + network.input);
       network.nodes.get(index).mutate(MOD_ACTIVATION);
     }
   },
@@ -203,9 +203,9 @@ public enum Mutation {
         || !this.mutateOutput && network.nodes.size() - network.input - network.output < 2) {
         return;
       }
-      int index = (int) Math.floor(Utils.randDouble() * (network.nodes.size() - (this.mutateOutput ? 0 : network.output) - network.input) + network.input);
+      int index = (int) Math.floor(randDouble() * (network.nodes.size() - (this.mutateOutput ? 0 : network.output) - network.input) + network.input);
       final Node node = network.nodes.get(index);
-      index = (int) Math.floor(Utils.randDouble() * (network.nodes.size() - (this.mutateOutput ? 0 : network.output) - network.input) + network.input);
+      index = (int) Math.floor(randDouble() * (network.nodes.size() - (this.mutateOutput ? 0 : network.output) - network.input) + network.input);
       final Node node2 = network.nodes.get(index);
 
       final double biasTemp = node.bias;
