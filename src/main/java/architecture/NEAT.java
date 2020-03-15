@@ -101,7 +101,12 @@ class NEAT {
     }
     this.population
       .parallelStream()
-      .forEach(genome -> genome.score = this.fitnessFunction.applyAsDouble(genome));
+      .forEach(genome -> {
+        genome.score = this.fitnessFunction.applyAsDouble(genome);
+        if (Double.isNaN(genome.score)) {
+          genome.score = Double.MAX_VALUE;
+        }
+      });
   }
 
   private void sort() {
