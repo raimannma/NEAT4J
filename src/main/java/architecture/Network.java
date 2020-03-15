@@ -52,16 +52,6 @@ public class Network implements Cloneable {
     }
   }
 
-  private List<Connection> connect(final @NotNull Node from, final Node to, final double weight) {
-    final List<Connection> connections = from.connect(to, weight);
-    if (from.equals(to)) {
-      this.selfConnections.addAll(connections);
-    } else {
-      this.connections.addAll(connections);
-    }
-    return connections;
-  }
-
   public static @NotNull Network crossover(final @NotNull Network network1, final @NotNull Network network2, final boolean equal) {
     if (network1.input != network2.input || network1.output != network2.output) {
       throw new IllegalStateException("Networks don't have the same input/output size!");
@@ -156,10 +146,6 @@ public class Network implements Cloneable {
     return offspring;
   }
 
-  private void setNodeIndizes() {
-    IntStream.range(0, this.nodes.size()).forEach(i -> this.nodes.get(i).index = i);
-  }
-
   private static @NotNull Map<Integer, Double[]> makeConnections(final @NotNull Network network) {
     final Map<Integer, Double[]> connections = new HashMap<>();
     Stream.concat(network.connections.stream(), network.selfConnections.stream())
@@ -172,6 +158,41 @@ public class Network implements Cloneable {
         connections.put(Connection.getInnovationID(connection.from.index, connection.to.index), data);
       });
     return connections;
+  }
+
+  public static @NotNull Network fromJSON(final @NotNull JsonObject json) {
+    final Network network = new Network(json.get("input").getAsInt(), json.get("output").getAsInt());
+    network.dropout = json.get("dropout").getAsDouble();
+    network.nodes = new ArrayList<>();
+    network.connections = new ArrayList<>();
+
+    final JsonArray nodes = json.get("nodes").getAsJsonArray();
+    final JsonArray connections = json.get("connections").getAsJsonArray();
+    nodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
+    for (int i = 0; i < connections.size(); i++) {
+      final JsonObject connJSON = connections.get(i).getAsJsonObject();
+      final Connection connection = network.connect(network.nodes.get(connJSON.get("from").getAsInt()), network.nodes.get(connJSON.get("to").getAsInt())).get(0);
+      connection.weight = connJSON.get("weight").getAsDouble();
+
+      if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
+        network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection);
+      }
+    }
+    return network;
+  }
+
+  private List<Connection> connect(final @NotNull Node from, final Node to, final double weight) {
+    final List<Connection> connections = from.connect(to, weight);
+    if (from.equals(to)) {
+      this.selfConnections.addAll(connections);
+    } else {
+      this.connections.addAll(connections);
+    }
+    return connections;
+  }
+
+  private void setNodeIndizes() {
+    IntStream.range(0, this.nodes.size()).forEach(i -> this.nodes.get(i).index = i);
   }
 
   public List<Connection> connect(final Node from, final Node to) {
@@ -417,27 +438,6 @@ public class Network implements Cloneable {
 
   public Network copy() {
     return Network.fromJSON(this.toJSON());
-  }
-
-  public static @NotNull Network fromJSON(final @NotNull JsonObject json) {
-    final Network network = new Network(json.get("input").getAsInt(), json.get("output").getAsInt());
-    network.dropout = json.get("dropout").getAsDouble();
-    network.nodes = new ArrayList<>();
-    network.connections = new ArrayList<>();
-
-    final JsonArray nodes = json.get("nodes").getAsJsonArray();
-    final JsonArray connections = json.get("connections").getAsJsonArray();
-    nodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
-    for (int i = 0; i < connections.size(); i++) {
-      final JsonObject connJSON = connections.get(i).getAsJsonObject();
-      final Connection connection = network.connect(network.nodes.get(connJSON.get("from").getAsInt()), network.nodes.get(connJSON.get("to").getAsInt())).get(0);
-      connection.weight = connJSON.get("weight").getAsDouble();
-
-      if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
-        network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection);
-      }
-    }
-    return network;
   }
 
   public JsonObject toJSON() {
