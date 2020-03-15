@@ -286,12 +286,12 @@ public class Network implements Cloneable {
     final List<Double> output = new ArrayList<>();
     int inputIndex = 0;
     for (final Node node : this.nodes) {
-      if (node.type == Node.NodeType.INPUT) {
+      if (node.type == Node.NodeType.INPUT && input.length > inputIndex) {
         node.activate(input[inputIndex++]);
-      } else if (node.type == Node.NodeType.HIDDEN) {
-        node.activate();
       } else if (node.type == Node.NodeType.OUTPUT) {
         output.add(node.activate());
+      } else {
+        node.activate();
       }
     }
     return output.stream().mapToDouble(i -> i).toArray();
@@ -306,6 +306,7 @@ public class Network implements Cloneable {
     this.disconnect(node, node);
 
     final List<Node> inputs = new ArrayList<>();
+    final Map<Node, Node> disconnect = new HashMap<>();
     for (int i = node.in.size() - 1; i >= 0; i--) {
       final Connection connection = node.in.get(i);
       if (SUB_NODE.keepGates
@@ -314,9 +315,12 @@ public class Network implements Cloneable {
         gateNodes.add(connection.gateNode);
       }
       inputs.add(connection.from);
-      this.disconnect(connection.from, node);
+      disconnect.put(connection.from, node);
     }
+    disconnect.forEach(Network.this::disconnect);
+
     final List<Node> outputs = new ArrayList<>();
+    disconnect.clear();
     for (int i = node.out.size() - 1; i >= 0; i--) {
       final Connection connection = node.out.get(i);
       if (SUB_NODE.keepGates
@@ -325,8 +329,9 @@ public class Network implements Cloneable {
         gateNodes.add(connection.gateNode);
       }
       outputs.add(connection.to);
-      this.disconnect(node, connection.to);
+      disconnect.put(node, connection.to);
     }
+    disconnect.forEach(Network.this::disconnect);
 
     final List<Connection> connections = new ArrayList<>();
     inputs.forEach(input -> outputs.stream()
