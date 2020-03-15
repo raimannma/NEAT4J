@@ -32,7 +32,7 @@ public class NEATTest {
         assertEquals(original.input, copied.input);
         assertEquals(original.output, copied.output);
         original.nodes
-                .parallelStream()
+                .stream()
                 .map(node -> copied.nodes.contains(node))
                 .forEach(Assertions::assertTrue);
     }
