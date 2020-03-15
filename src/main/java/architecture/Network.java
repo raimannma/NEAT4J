@@ -207,11 +207,11 @@ public class Network implements Cloneable {
       - this.output);
   }
 
-  private double test(final double[][] inputs, final double[][] outputs) {
+  public double test(final double[][] inputs, final double[][] outputs) {
     return this.test(inputs, outputs, Loss.MSE);
   }
 
-  private double test(final double[][] inputs, final double[][] outputs, final Loss loss) {
+  public double test(final double[][] inputs, final double[][] outputs, final Loss loss) {
     if (loss == null) {
       return this.test(inputs, outputs);
     } else if (this.dropout != 0) {
