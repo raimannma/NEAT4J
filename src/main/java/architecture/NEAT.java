@@ -113,11 +113,13 @@ class NEAT {
   }
 
   private void mutate() {
-    this.population
-      .stream()
-      .filter(network -> Utils.randDouble() <= this.mutationRate)
-      .forEach(network -> IntStream.range(0, this.mutationAmount)
-        .forEach(j -> network.mutate(this.selectMutationMethod(network))));
+    for (final Network network : this.population) {
+      if (Utils.randDouble() <= this.mutationRate) {
+        for (int j = 0; j < this.mutationAmount; j++) {
+          network.mutate(this.selectMutationMethod(network));
+        }
+      }
+    }
   }
 
   private @Nullable Mutation selectMutationMethod(final Network genome) {
