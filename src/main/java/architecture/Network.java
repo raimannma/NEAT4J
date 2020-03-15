@@ -268,7 +268,6 @@ public class Network implements Cloneable {
         if (options.getFitnessFunction() == null) {
             options.setFitnessFunction(genome ->
                     (IntStream.range(0, amount)
-                            .parallel()
                             .mapToDouble(i -> -genome.test(inputs, outputs, loss))
                             .sum() - genome.getGrowthScore(growth))
                             / amount);

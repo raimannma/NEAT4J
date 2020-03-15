@@ -114,7 +114,7 @@ class NEAT {
 
     private void mutate() {
         this.population
-                .parallelStream()
+                .stream()
                 .filter(network -> Utils.randDouble() <= this.mutationRate)
                 .forEach(network -> IntStream.range(0, this.mutationAmount)
                         .forEach(j -> network.mutate(this.selectMutationMethod(network))));
