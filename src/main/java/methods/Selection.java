@@ -55,7 +55,7 @@ public abstract class Selection {
   public final static class Tournament extends Selection {
     private final int size;
 
-    public Tournament(final int size, final double probability) {
+    public Tournament(final int size) {
       this.size = size;
     }
 
