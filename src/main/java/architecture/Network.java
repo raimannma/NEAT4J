@@ -242,7 +242,7 @@ public class Network implements Cloneable {
     } else if (Double.isNaN(options.getError())) {
       targetError = -1;
     } else if (options.getIterations() == -1) {
-      options.setIterations(Integer.MAX_VALUE);
+      options.setIterations(-1);
     }
     if (options.getFitnessFunction() == null) {
       options.setFitnessFunction(genome ->
@@ -258,7 +258,7 @@ public class Network implements Cloneable {
     double bestScore = -Double.MAX_VALUE;
     Network bestGenome = null;
 
-    while (error < -targetError && neat.generation < options.getIterations()) {
+    while (error < -targetError || neat.generation < options.getIterations()) {
       final Network fittest = neat.evolve();
       error = fittest.score + fittest.getGrowthScore(growth);
       if (fittest.score > bestScore) {
