@@ -81,12 +81,7 @@ class NEAT {
     final List<Network> elitists = this.population.subList(0, this.elitism);
     final Set<Network> newPopulation = new HashSet<>();
     while (newPopulation.size() < this.populationSize - this.elitism) {
-      final Network parent1 = this.getParent();
-      this.population.remove(parent1);
-      final Network parent2 = this.getParent();
-      this.population.remove(parent2);
-
-      newPopulation.add(Network.crossover(parent1, parent2, this.equal));
+      newPopulation.add(Network.crossover(this.getParent(), this.getParent(), this.equal));
     }
 
     this.population = new ArrayList<>(newPopulation);
