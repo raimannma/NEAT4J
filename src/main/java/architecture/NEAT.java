@@ -104,7 +104,7 @@ class NEAT {
       .forEach(genome -> {
         genome.score = this.fitnessFunction.applyAsDouble(genome);
         if (Double.isNaN(genome.score)) {
-          genome.score = Double.MAX_VALUE;
+          genome.score = -Double.MAX_VALUE;
         }
       });
   }
