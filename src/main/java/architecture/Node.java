@@ -11,24 +11,74 @@ import methods.Activation;
 import methods.Mutation;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The type Node.
+ *
+ * @author Manuel Raimann
+ */
 public class Node {
 
+  /**
+   * Incoming connections.
+   */
   public final List<Connection> in;
+  /**
+   * Outgoing connections.
+   */
   public final List<Connection> out;
+  /**
+   * Connection to the node itself.
+   */
   public final Connection self;
+  /**
+   * Gated connections.
+   */
   public final List<Connection> gated;
+  /**
+   * The Activation type.
+   */
   public Activation activationType;
+  /**
+   * Neuron's bias.
+   *
+   * @see <a href="https://becominghuman.ai/what-is-an-artificial-neuron-8b2e421ce42e">Neuron's bias</a>
+   */
   public double bias;
+  /**
+   * The Index.
+   * -used for crossover
+   */
   public int index;
+  /**
+   * The NodeType.
+   */
   public NodeType type;
+  /**
+   * Used for dropout.
+   * This is either 0 (ignored) or 1 (included) during training and is used to avoid overfit.
+   */
   public double mask;
+  /**
+   * The state of this node.
+   */
   private double state;
+  /**
+   * The output value of this node.
+   */
   private double activation;
 
+  /**
+   * Instantiates a new Node.
+   */
   Node() {
     this(NodeType.HIDDEN);
   }
 
+  /**
+   * Instantiates a new Node.
+   *
+   * @param type the type
+   */
   public Node(final NodeType type) {
     this.bias = type == NodeType.INPUT ? 0 : randDouble(-1, 1);
     this.activationType = LOGISTIC;
@@ -44,6 +94,13 @@ public class Node {
     this.self = new Connection(this, this, 0);
   }
 
+
+  /**
+   * Convert a JsonObject to a node.
+   *
+   * @param jsonObject the json object which holds the information
+   * @return the node created from the information of the json object
+   */
   public static @NotNull Node fromJSON(final @NotNull JsonObject jsonObject) {
     final Node node = new Node();
     node.bias = jsonObject.get("bias").getAsDouble();
@@ -53,29 +110,50 @@ public class Node {
     return node;
   }
 
+  /**
+   * Activates the node.
+   * <p>
+   * When a neuron activates, it computes its state from all its input connections and 'squashes' it using its activation function, and returns the output (activation).
+   *
+   * @return A neuron's squashed output value.
+   */
   public double activate() {
-    this.updateState();
+    this.state = this.self.gain * this.self.weight * this.state + this.bias;
+    this.in.forEach(connection -> this.state += connection.from.activation * connection.weight * connection.gain);
+
     this.activation = this.activationType.calc(this.state);
     this.gated.forEach(conn -> conn.gain = this.activation);
     return this.activation;
   }
 
-  private void updateState() {
-    this.state = this.self.gain * this.self.weight * this.state + this.bias;
-    this.in.forEach(connection -> this.state += connection.from.activation * connection.weight * connection.gain);
-  }
-
+  /**
+   * Activates the node with input value.
+   * <p>
+   * When a neuron activates, it computes its state from all its input connections and 'squashes' it using its activation function, and returns the output (activation).
+   * <p>
+   * You can also provide the activation (a float between 0 and 1) as a parameter,
+   * which is useful for neurons in the input layer.
+   *
+   * @param input the input to this node
+   */
   public void activate(final double input) {
-    this.activation = input;
+    this.activation = input; // just copy
   }
 
-  public List<Connection> connect(final Node target, final double weight) {
-    final List<Connection> connections = new ArrayList<>();
+  /**
+   * Connect this node to another node.
+   *
+   * @param target the target node
+   * @param weight the weight value of the connection between this and the target node
+   * @return the created connection pointing from this node to the target node
+   */
+  public Connection connect(final Node target, final double weight) {
+    final Connection out;
     if (target == this) {
       if (this.self.weight == 0) {
         this.self.weight = weight;
       }
-      connections.add(this.self);
+      out = this.self;
     } else {
       Connection connection = this.out.stream()
         .filter(conn -> conn.to.equals(target))
@@ -86,58 +164,101 @@ public class Node {
         target.in.add(connection);
         this.out.add(connection);
       }
-      connections.add(connection);
+      out = connection;
     }
-    return connections;
+    return out;
   }
 
-  public boolean isNotProjectingTo(final Node node) {
-    return (!this.equals(node) || this.self.weight == 0)
-      && this.out.stream().noneMatch(connection -> connection.to.equals(node));
+  /**
+   * Checks if there is no connection between this node and the target node.
+   *
+   * @param target the target node
+   * @return is there no connection
+   */
+  public boolean isNotProjectingTo(final Node target) {
+    return (!this.equals(target) || this.self.weight == 0)
+      && this.out.stream().noneMatch(connection -> connection.to.equals(target));
   }
 
+  /**
+   * Resets this node.
+   */
   public void clear() {
     this.gated.forEach(connection -> connection.gain = 0);
     this.state = 0;
     this.activation = 0;
   }
 
-  public void disconnect(final Node node) {
-    if (this.equals(node)) {
-      this.self.weight = 0;
+  /**
+   * Disconnects this node from the target node.
+   *
+   * @param target the target node
+   */
+  public void disconnect(final Node target) {
+    if (this.equals(target)) {
+      // disconnecting a self connection
+      this.self.weight = 0; // just set weight of self connection to 0
       return;
     }
     new ArrayList<>(this.out)
       .stream()
-      .filter(connection -> connection.to.equals(node))
+      // get connections that points to the target node
+      .filter(connection -> connection.to.equals(target))
       .forEach(connection -> {
-        this.out.remove(connection);
-        connection.to.in.remove(connection);
+        this.out.remove(connection); // remove connection from outgoing connections list
+        target.in.remove(connection); // remove connection from the input of the target node
         if (connection.gateNode != null) {
+          // if connection has gate node -> remove gate
           connection.gateNode.removeGate(connection);
         }
       });
   }
 
+  /**
+   * Stops this node from gating (manipulating) the given connection.
+   *
+   * @param connection Connection to ungate
+   */
   public void removeGate(final Connection connection) {
-    this.gated.remove(connection);
-    connection.gateNode = null;
-    connection.gain = 1;
+    this.gated.remove(connection); // remove connection from gated list
+    connection.gateNode = null; // set gate node to null
+    connection.gain = 1; // set connection gain to 1
   }
 
+  /**
+   * Set this node to gate (influences) the given connection.
+   *
+   * @param connection Connection to be gated (influenced) by a node.
+   */
   public void gate(final @NotNull Connection connection) {
     connection.gateNode = this;
     this.gated.add(connection);
   }
 
-  public void mutate(final Mutation method) {
+  /**
+   * Mutates the node.
+   *
+   * @param method the Mutation method
+   * @throws IllegalArgumentException threw if mutation method not allowed
+   */
+  public void mutate(final Mutation method) throws IllegalArgumentException {
     if (method == Mutation.MOD_ACTIVATION) {
+      // Mutate activation
       this.activationType = pickRandom(method.allowed);
     } else if (method == Mutation.MOD_BIAS) {
+      // Mutate bias
       this.bias += randDouble(method.min, method.max);
+    } else {
+      // Throw error
+      throw new IllegalArgumentException("Mutation method not allowed for node-level mutation!");
     }
   }
 
+  /**
+   * Converts the node to a JsonObject that can later be converted back.
+   *
+   * @return the created JsonObject
+   */
   public JsonObject toJSON() {
     final JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("bias", this.bias);
@@ -173,6 +294,30 @@ public class Node {
       '}';
   }
 
-  public enum NodeType {HIDDEN, INPUT, OUTPUT}
+  /**
+   * Node types.
+   * <p>
+   * Stores all possible types of nodes ("Input", "Hidden", "Output")
+   */
+  public enum NodeType {
+    /**
+     * Hidden node type.
+     * <p>
+     * Indicates that this node is part of the hidden layer(s).
+     */
+    HIDDEN,
+    /**
+     * Input node type.
+     * <p>
+     * Indicates that this node is part of the input layer.
+     */
+    INPUT,
+    /**
+     * Output node type.
+     * <p>
+     * Indicates that this node is part of the output layer.
+     */
+    OUTPUT
+  }
 
 }

@@ -26,9 +26,9 @@ public enum Mutation {
       network.nodes.add(Math.max(0, Math.min(network.nodes.indexOf(connection.to), network.nodes.size() - network.output)), node);
 
       if (connection.gateNode != null && randDouble() >= 0.5) {
-        network.gate(connection.gateNode, network.connect(connection.from, node).get(0));
+        network.gate(connection.gateNode, network.connect(connection.from, node));
       } else if (connection.gateNode != null) {
-        network.gate(connection.gateNode, network.connect(node, connection.to).get(0));
+        network.gate(connection.gateNode, network.connect(node, connection.to));
       }
     }
   },

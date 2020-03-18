@@ -137,7 +137,7 @@ public class Network implements Cloneable {
       .forEach(connectionData -> {
         final Node from = offspring.nodes.get((int) (double) connectionData[1]);
         final Node to = offspring.nodes.get((int) (double) connectionData[2]);
-        final Connection connection = offspring.connect(from, to).get(0);
+        final Connection connection = offspring.connect(from, to);
         connection.weight = connectionData[0];
         if (!Double.isNaN(connectionData[3]) && connectionData[3] < size) {
           offspring.gate(offspring.nodes.get((int) (double) connectionData[3]), connection);
@@ -171,7 +171,7 @@ public class Network implements Cloneable {
     nodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
     for (int i = 0; i < connections.size(); i++) {
       final JsonObject connJSON = connections.get(i).getAsJsonObject();
-      final Connection connection = network.connect(network.nodes.get(connJSON.get("from").getAsInt()), network.nodes.get(connJSON.get("to").getAsInt())).get(0);
+      final Connection connection = network.connect(network.nodes.get(connJSON.get("from").getAsInt()), network.nodes.get(connJSON.get("to").getAsInt()));
       connection.weight = connJSON.get("weight").getAsDouble();
 
       if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
@@ -181,21 +181,21 @@ public class Network implements Cloneable {
     return network;
   }
 
-  private List<Connection> connect(final @NotNull Node from, final Node to, final double weight) {
-    final List<Connection> connections = from.connect(to, weight);
+  private Connection connect(final @NotNull Node from, final Node to, final double weight) {
+    final Connection connection = from.connect(to, weight);
     if (from.equals(to)) {
-      this.selfConnections.addAll(connections);
+      this.selfConnections.add(connection);
     } else {
-      this.connections.addAll(connections);
+      this.connections.add(connection);
     }
-    return connections;
+    return connection;
   }
 
   private void setNodeIndizes() {
     IntStream.range(0, this.nodes.size()).forEach(i -> this.nodes.get(i).index = i);
   }
 
-  public List<Connection> connect(final Node from, final Node to) {
+  public Connection connect(final Node from, final Node to) {
     return this.connect(from, to, 0);
   }
 
@@ -357,7 +357,7 @@ public class Network implements Cloneable {
     final List<Connection> connections = new ArrayList<>();
     inputs.forEach(input -> outputs.stream()
       .filter(input::isNotProjectingTo)
-      .map(output -> this.connect(input, output, 0).get(0))
+      .map(output -> this.connect(input, output, 0))
       .forEach(connections::add));
 
     gateNodes.stream()
