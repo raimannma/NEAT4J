@@ -194,13 +194,9 @@ public class Network {
 
     // Add common conn genes uniformly
     connections.stream()
-      .filter(connectionData -> connectionData[1] < size && connectionData[2] < size)
+      .filter(connectionData -> connectionData[1] < size) // node index must be lower than size
+      .filter(connectionData -> connectionData[2] < size) // node index must be lower than size
       .forEach(connectionData -> {
-        // ConnectionData
-        // [0] -> weight value
-        // [1] -> node from index
-        // [2] -> node to index
-        // [3] -> gate node index
         final Connection connection = offspring.connect(
           offspring.nodes.get((int) (double) connectionData[1]),
           offspring.nodes.get((int) (double) connectionData[2])
@@ -222,19 +218,10 @@ public class Network {
   private static @NotNull Map<Integer, Double[]> makeConnections(final @NotNull Network network) {
     final Map<Integer, Double[]> connections = new HashMap<>();
     Stream.concat(network.connections.stream(), network.selfConnections.stream()) // create stream with all connections
-      .forEach(connection -> {
-        // ConnectionData
-        // [0] -> weight value
-        // [1] -> node from index
-        // [2] -> node to index
-        // [3] -> gate node index
-        final Double[] data = new Double[4];
-        data[0] = connection.weight;
-        data[1] = (double) connection.from.index;
-        data[2] = (double) connection.to.index;
-        data[3] = connection.gateNode == null ? Double.NaN : connection.gateNode.index;
-        connections.put(Connection.getInnovationID(connection.from.index, connection.to.index), data);
-      });
+      .forEach(connection -> connections.put(
+        Connection.getInnovationID(connection.from.index, connection.to.index),
+        connection.getConnectionData()
+      ));
     return connections;
   }
 

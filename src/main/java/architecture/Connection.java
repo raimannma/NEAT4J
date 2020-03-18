@@ -2,6 +2,7 @@ package architecture;
 
 import com.google.gson.JsonObject;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The type Connection.
@@ -60,6 +61,29 @@ public class Connection {
       * (a + b)
       * (a + b + 1)
       + b);
+  }
+
+
+  /**
+   * Stores connection data in an array.
+   * Used for crossover.
+   * <p>
+   * ConnectionData
+   * [0] weight value
+   * [1] node from index
+   * [2] node to index
+   * [3] gate node index
+   *
+   * @return array containing information about the connection
+   */
+  @NotNull
+  Double[] getConnectionData() {
+    final Double[] data = new Double[4];
+    data[0] = this.weight;
+    data[1] = (double) this.from.index;
+    data[2] = (double) this.to.index;
+    data[3] = this.gateNode != null ? this.gateNode.index : Double.NaN;
+    return data;
   }
 
   /**
