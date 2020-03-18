@@ -9,10 +9,24 @@ import java.util.stream.IntStream;
 import architecture.Network;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Selection methods.
+ */
 public abstract class Selection {
 
+  /**
+   * Select a genome from the population by applying a selection method.
+   *
+   * @param population the population
+   * @return the network
+   */
   public abstract Network select(List<Network> population);
 
+  /**
+   * Fitness-Proportionate-Selection.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Fitness_proportionate_selection">Wikipedia article</a>
+   */
   public final static class FitnessProportionate extends Selection {
     @Override
     public Network select(final @NotNull List<Network> population) {
@@ -32,15 +46,34 @@ public abstract class Selection {
     }
   }
 
+  /**
+   * Power-Selection.
+   */
   public final static class Power extends Selection {
+    /**
+     * The power value.
+     * <p>
+     * Minimum: 0
+     * <p>
+     * Lower value: more random
+     * Higher value: more fitter genomes gets selected
+     */
     private final int power;
 
+    /**
+     * Creates a new Power instance.
+     */
     public Power() {
       this(4);
     }
 
+    /**
+     * Creates a new Power instance.
+     *
+     * @param power the power
+     */
     public Power(final int power) {
-      this.power = power;
+      this.power = Math.max(0, power);
     }
 
     @Override
@@ -52,9 +85,24 @@ public abstract class Selection {
     }
   }
 
+  /**
+   * Tournament-Selection.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Tournament_selection">Wikipedia article</a>
+   */
   public final static class Tournament extends Selection {
+    /**
+     * The group size of one tournament.
+     * Minimum: 0
+     * Maximum: population size
+     */
     private final int size;
 
+    /**
+     * Creates a new Tournament-Selection instance.
+     *
+     * @param size the size
+     */
     public Tournament(final int size) {
       this.size = size;
     }
