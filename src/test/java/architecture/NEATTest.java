@@ -39,6 +39,14 @@ public class NEATTest {
       .stream()
       .map(node -> original.nodes.contains(node))
       .forEach(Assertions::assertTrue);
+    original.connections
+      .stream()
+      .map(connection -> copied.connections.contains(connection))
+      .forEach(Assertions::assertTrue);
+    copied.connections
+      .stream()
+      .map(connection -> original.connections.contains(connection))
+      .forEach(Assertions::assertTrue);
   }
 
   @Test
