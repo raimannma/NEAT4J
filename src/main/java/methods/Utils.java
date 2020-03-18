@@ -26,7 +26,7 @@ public enum Utils {
    * @return the random integer between min and max
    */
   public static int randInt(final int min, final int max) {
-    return rand.nextInt(min, max);
+    return max > min ? rand.nextInt(min, max) : min;
   }
 
   /**
@@ -37,7 +37,7 @@ public enum Utils {
    * @return the random double between min and max
    */
   public static double randDouble(final double min, final double max) {
-    return rand.nextDouble(min, max);
+    return max > min ? rand.nextDouble(min, max) : min;
   }
 
   /**
@@ -47,7 +47,7 @@ public enum Utils {
    * @return the random double between 0 and max
    */
   public static double randDouble(final double max) {
-    return rand.nextDouble(max);
+    return max > 0 ? rand.nextDouble(max) : 0;
   }
 
   /**
@@ -68,7 +68,7 @@ public enum Utils {
    * @return the random integer between 0 and max
    */
   public static int randInt(final int max) {
-    return rand.nextInt(max);
+    return max > 0 ? rand.nextInt(max) : 0;
   }
 
   /**
