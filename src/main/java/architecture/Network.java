@@ -163,6 +163,7 @@ public class Network implements Cloneable {
   public static @NotNull Network fromJSON(final @NotNull JsonObject json) {
     final Network network = new Network(json.get("input").getAsInt(), json.get("output").getAsInt());
     network.dropout = json.get("dropout").getAsDouble();
+    network.score = json.get("score").getAsDouble();
     network.nodes = new ArrayList<>();
     network.connections = new ArrayList<>();
 
@@ -445,6 +446,7 @@ public class Network implements Cloneable {
     json.addProperty("input", this.input);
     json.addProperty("output", this.output);
     json.addProperty("dropout", this.dropout);
+    json.addProperty("score", this.score);
     final JsonArray nodes = new JsonArray();
     final JsonArray connections = new JsonArray();
 
