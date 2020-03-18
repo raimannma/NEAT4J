@@ -1,14 +1,12 @@
 package architecture;
 
 import static methods.Activation.LOGISTIC;
-import static methods.Utils.pickRandom;
 import static methods.Utils.randDouble;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import methods.Activation;
-import methods.Mutation;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -233,25 +231,6 @@ public class Node {
   public void gate(final @NotNull Connection connection) {
     connection.gateNode = this;
     this.gated.add(connection);
-  }
-
-  /**
-   * Mutates the node.
-   *
-   * @param method the Mutation method
-   * @throws IllegalArgumentException threw if mutation method not allowed
-   */
-  public void mutate(final Mutation method) throws IllegalArgumentException {
-    if (method == Mutation.MOD_ACTIVATION) {
-      // Mutate activation
-      this.activationType = pickRandom(method.allowed);
-    } else if (method == Mutation.MOD_BIAS) {
-      // Mutate bias
-      this.bias += randDouble(method.min, method.max);
-    } else {
-      // Throw error
-      throw new IllegalArgumentException("Mutation method not allowed for node-level mutation!");
-    }
   }
 
   /**
