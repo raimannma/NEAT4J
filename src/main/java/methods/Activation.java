@@ -172,6 +172,17 @@ public enum Activation {
     }
   },
   /**
+   * The SINC.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Sinc_function">Wikipedia article</a>
+   */
+  SINC {
+    @Override
+    public double calc(final double x) {
+      return x == 0 ? 1 : Math.sin(x) / x;
+    }
+  },
+  /**
    * The Tanh.
    *
    * @see <a href="https://en.wikipedia.org/wiki/Hyperbolic_functions#Hyperbolic_tangent">Wikipedia article</a>
