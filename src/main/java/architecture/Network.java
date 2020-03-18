@@ -78,9 +78,12 @@ public class Network {
     this.selfConnections = new ArrayList<>();
 
     this.dropout = 0;
-    IntStream.range(0, this.input + this.output)
-      .mapToObj(i -> new Node(i < input ? Node.NodeType.INPUT : Node.NodeType.OUTPUT))
-      .forEach(this.nodes::add);
+    for (int i = 0; i < this.input; i++) {
+      this.nodes.add(new Node(Node.NodeType.INPUT));
+    }
+    for (int i = 0; i < this.output; i++) {
+      this.nodes.add(new Node(Node.NodeType.OUTPUT));
+    }
 
     // Create simplest Network with input and output size matching parameters
     final double initWeight = this.input * Math.sqrt((double) 2 / this.input);
@@ -464,22 +467,22 @@ public class Network {
    * @return the activation values of the output nodes
    */
   private double[] activate(final double[] input) {
-    if (input.length != this.nodes.stream().filter(node -> node.type == Node.NodeType.INPUT).count()) {
+    if (input.length != this.input) {
       throw new IllegalStateException("Dataset input size should be same as network input size!");
     }
 
     final List<Double> output = new ArrayList<>();
     int inputIndex = 0;
     for (final Node node : this.nodes) {
-      if (node.type == Node.NodeType.INPUT) {
+      if (node.type == Node.NodeType.INPUT && this.input > inputIndex) {
         // input node
         node.activate(input[inputIndex++]);
-      } else if (node.type == Node.NodeType.HIDDEN) {
-        // hidden node
-        node.activate();
-      } else {
+      } else if (node.type == Node.NodeType.OUTPUT) {
         // output node
         output.add(node.activate());
+      } else {
+        // hidden node
+        node.activate();
       }
     }
     return output.stream().mapToDouble(i -> i).toArray(); // convert list to array
