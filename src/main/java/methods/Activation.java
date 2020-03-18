@@ -19,6 +19,28 @@ public enum Activation {
     }
   },
   /**
+   * The ArcTan.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Inverse_trigonometric_functions">Wikipedia article</a>
+   */
+  ARC_TAN {
+    @Override
+    public double calc(final double x) {
+      return Math.atan(x);
+    }
+  },
+  /**
+   * The ArcTan.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Inverse_trigonometric_functions">Wikipedia article</a>
+   */
+  AR_SINH {
+    @Override
+    public double calc(final double x) {
+      return Math.log(x + Math.sqrt(x * x + 1));
+    }
+  },
+  /**
    * The Bent identity.
    */
   BENT_IDENTITY {
@@ -138,6 +160,15 @@ public enum Activation {
     @Override
     public double calc(final double x) {
       return x / (1 + Math.abs(x));
+    }
+  },
+  /**
+   * The SoftPlus.
+   */
+  SOFT_PLUS {
+    @Override
+    public double calc(final double x) {
+      return Math.log(1 + Math.exp(x));
     }
   },
   /**
