@@ -4,6 +4,7 @@ import static methods.Mutation.SUB_NODE;
 import static methods.Utils.pickRandom;
 import static methods.Utils.randBoolean;
 import static methods.Utils.randDouble;
+import static methods.Utils.randInt;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
@@ -121,9 +122,7 @@ public class Network {
     final int size1 = network1.nodes.size(); // num nodes of parent 1
     final int size2 = network2.nodes.size(); // num nodes of parent 2
     if (equal || score1 == score2) {
-      final int max = Math.max(size1, size2); // max size
-      final int min = Math.min(size1, size2); // min size
-      size = (int) Math.floor(randDouble() * (max - min + 1) + min); // select random size between min and max
+      size = randInt(Math.min(size1, size2), Math.max(size1, size2)); // select random size between min and max
     } else if (score1 > score2) {
       size = size1;
     } else {
