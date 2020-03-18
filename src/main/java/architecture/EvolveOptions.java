@@ -22,7 +22,7 @@ public class EvolveOptions {
    */
   private int populationSize;
   /**
-   * The Elitism.
+   * The number of elitsits.
    */
   private int elitism;
   /**
@@ -34,11 +34,11 @@ public class EvolveOptions {
    */
   private int mutationAmount;
   /**
-   * The Selection.
+   * The selection type.
    */
   private Selection selection;
   /**
-   * The Mutations.
+   * Allowed mutations.
    */
   private Mutation[] mutations;
   /**
