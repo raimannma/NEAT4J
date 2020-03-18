@@ -8,5 +8,4 @@
   <img src="https://img.shields.io/github/contributors/raimannma/NEAT4J">
 </a>
 
-
-Java API: https://raimannma.github.io/NEAT4J/
+[Javadocs](https://raimannma.github.io/NEAT4J/)
