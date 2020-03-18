@@ -5,6 +5,7 @@ package methods;
  * <p>
  * Hold all activation function and can calculate the activation value for a given input and activation method.
  *
+ * @author Manuel Raimann
  * @see <a href="https://en.wikipedia.org/wiki/Activation_function">Wikipedia article</a>
  */
 public enum Activation {

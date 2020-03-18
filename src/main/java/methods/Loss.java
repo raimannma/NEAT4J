@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
  * <p>
  * Hold all loss functions and can calculate the loss value between given target values and calculated output values.
  *
+ * @author Manuel Raimann
  * @see <a href="https://en.wikipedia.org/wiki/Loss_functions_for_classification">Wikipedia article</a>
  */
 public enum Loss {

@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Selection methods.
+ *
+ * @author Manuel Raimann
  */
 public abstract class Selection {
 

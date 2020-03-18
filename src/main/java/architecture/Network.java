@@ -21,8 +21,10 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * The type Network.
+ *
+ * @author Manuel Raimann
  */
-public class Network implements Cloneable {
+public class Network {
   /**
    * The Input size.
    */

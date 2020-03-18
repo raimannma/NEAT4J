@@ -9,6 +9,8 @@ import methods.Selection;
 
 /**
  * The type Evolve options.
+ *
+ * @author Manuel Raimann
  */
 public class EvolveOptions {
   /**

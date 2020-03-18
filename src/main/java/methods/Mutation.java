@@ -14,6 +14,8 @@ import architecture.Node;
 
 /**
  * Mutation methods.
+ *
+ * @author Manuel Raimann
  */
 public enum Mutation {
   /**

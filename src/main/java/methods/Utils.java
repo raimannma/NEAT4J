@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
  * Utils.
  * <p>
  * Here are some useful functions.
+ *
+ * @author Manuel Raimann
  */
 public enum Utils {
   ;

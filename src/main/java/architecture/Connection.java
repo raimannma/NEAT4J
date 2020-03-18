@@ -5,6 +5,8 @@ import java.util.Objects;
 
 /**
  * The type Connection.
+ *
+ * @author Manuel Raimann
  */
 public class Connection {
   /**

@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * The type Neat.
+ *
+ * @author Manuel Raimann
  */
 class NEAT {
   /**
