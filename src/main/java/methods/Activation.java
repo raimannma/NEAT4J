@@ -3,7 +3,7 @@ package methods;
 /**
  * The enum Activation.
  * <p>
- * Hold all activations and can calculate the activation value for a given input and activation method.
+ * Hold all activation function and can calculate the activation value for a given input and activation method.
  *
  * @see <a href="https://en.wikipedia.org/wiki/Activation_function">Wikipedia article</a>
  */
@@ -152,7 +152,7 @@ public enum Activation {
   };
 
   /**
-   * Calc the activation value of given input and .
+   * Calculates the activation value of given input and .
    *
    * @param x the x
    * @return the double

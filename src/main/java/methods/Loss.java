@@ -2,7 +2,19 @@ package methods;
 
 import java.util.stream.IntStream;
 
+/**
+ * The enum Loss.
+ * <p>
+ * Hold all loss functions and can calculate the loss value between given target values and calculated output values.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Loss_functions_for_classification">Wikipedia article</a>
+ */
 public enum Loss {
+  /**
+   * The Cross entropy.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Cross_entropy">Wikipedia article</a>
+   */
   CROSS_ENTROPY {
     @Override
     public double calc(final double[] target, final double[] output) {
@@ -11,7 +23,13 @@ public enum Loss {
         .sum();
       return error / output.length;
     }
-  }, MSE {
+  },
+  /**
+   * The Mse.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Mean_squared_error">Wikipedia article</a>
+   */
+  MSE {
     @Override
     public double calc(final double[] target, final double[] output) {
       final double error = IntStream.range(0, output.length)
@@ -19,14 +37,24 @@ public enum Loss {
         .sum();
       return error / output.length;
     }
-  }, BINARY {
+  },
+  /**
+   * The Binary.
+   */
+  BINARY {
     @Override
     public double calc(final double[] target, final double[] output) {
       return IntStream.range(0, output.length)
         .mapToDouble(i -> Math.round(target[i] * 2) == Math.round(output[i] * 2) ? 0 : 1)
         .sum() / output.length;
     }
-  }, MAE {
+  },
+  /**
+   * The Mae.
+   *
+   * @see <a href="https://peltarion.com/knowledge-center/documentation/modeling-view/build-an-ai-model/loss-functions/mean-absolute-error">Peltarion article</a>
+   */
+  MAE {
     @Override
     public double calc(final double[] target, final double[] output) {
       final double error = IntStream.range(0, output.length)
@@ -34,7 +62,13 @@ public enum Loss {
         .sum();
       return error / output.length;
     }
-  }, MAPE {
+  },
+  /**
+   * The Mape.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Mean_absolute_percentage_error">Wikipedia article</a>
+   */
+  MAPE {
     @Override
     public double calc(final double[] target, final double[] output) {
       final double error = IntStream.range(0, output.length)
@@ -42,14 +76,26 @@ public enum Loss {
         .sum();
       return error / output.length;
     }
-  }, MSLE {
+  },
+  /**
+   * The Msle.
+   *
+   * @see <a href="https://peltarion.com/knowledge-center/documentation/modeling-view/build-an-ai-model/loss-functions/mean-squared-logarithmic-error-(msle)">Peltarion article</a>
+   */
+  MSLE {
     @Override
     public double calc(final double[] target, final double[] output) {
       return IntStream.range(0, output.length)
         .mapToDouble(i -> Math.log(Math.max(target[i], 1e-15)) - Math.log(Math.max(output[i], 1e-15)))
         .sum() / output.length;
     }
-  }, HINGE {
+  },
+  /**
+   * The Hinge.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Hinge_loss">Wikipedia article</a>
+   */
+  HINGE {
     @Override
     public double calc(final double[] target, final double[] output) {
       return IntStream.range(0, output.length)
@@ -58,5 +104,12 @@ public enum Loss {
     }
   };
 
+  /**
+   * Calculate the loss value for given target and output values.
+   *
+   * @param target the target values
+   * @param output the calculated output values
+   * @return the loss between target and output
+   */
   public abstract double calc(double[] target, double[] output);
 }
