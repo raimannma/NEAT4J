@@ -10,36 +10,21 @@ package methods;
  */
 public enum Activation {
   /**
-   * The Logistic activation.
-   *
-   * @see <a href="https://en.wikipedia.org/wiki/Logistic_function">Wikipedia article</a>
+   * The Absolute.
    */
-  LOGISTIC {
+  ABSOLUTE {
     @Override
     public double calc(final double x) {
-      return 1 / (1 + Math.exp(-x));
+      return Math.abs(x);
     }
   },
   /**
-   * The Tanh.
-   *
-   * @see <a href="https://en.wikipedia.org/wiki/Hyperbolic_functions#Hyperbolic_tangent">Wikipedia article</a>
+   * The Bent identity.
    */
-  TANH {
+  BENT_IDENTITY {
     @Override
     public double calc(final double x) {
-      return Math.tanh(x);
-    }
-  },
-  /**
-   * The Identity.
-   *
-   * @see <a href="https://en.wikipedia.org/wiki/Identity_function">Wikipedia article</a>
-   */
-  IDENTITY {
-    @Override
-    public double calc(final double x) {
-      return x;
+      return (Math.sqrt(Math.pow(x, 2) + 1) - 1) / 2 + x;
     }
   },
   /**
@@ -51,57 +36,6 @@ public enum Activation {
     @Override
     public double calc(final double x) {
       return x > 0 ? 1 : 0;
-    }
-  },
-  /**
-   * The Relu.
-   *
-   * @see <a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks)">Wikipedia article</a>
-   */
-  RELU {
-    @Override
-    public double calc(final double x) {
-      return x > 0 ? x : 0;
-    }
-  },
-  /**
-   * The Softsign.
-   */
-  SOFTSIGN {
-    @Override
-    public double calc(final double x) {
-      return x / (1 + Math.abs(x));
-    }
-  },
-  /**
-   * The Sinusoid.
-   *
-   * @see <a href="https://en.wikipedia.org/wiki/Sine_wave">Wikipedia article</a>
-   */
-  SINUSOID {
-    @Override
-    public double calc(final double x) {
-      return Math.sin(x);
-    }
-  },
-  /**
-   * The Gaussian.
-   *
-   * @see <a href="https://en.wikipedia.org/wiki/Gaussian_function">Wikipedia article</a>
-   */
-  GAUSSIAN {
-    @Override
-    public double calc(final double x) {
-      return Math.exp(-Math.pow(x, 2));
-    }
-  },
-  /**
-   * The Bent identity.
-   */
-  BENT_IDENTITY {
-    @Override
-    public double calc(final double x) {
-      return (Math.sqrt(Math.pow(x, 2) + 1) - 1) / 2 + x;
     }
   },
   /**
@@ -125,6 +59,17 @@ public enum Activation {
     }
   },
   /**
+   * The Gaussian.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Gaussian_function">Wikipedia article</a>
+   */
+  GAUSSIAN {
+    @Override
+    public double calc(final double x) {
+      return Math.exp(-Math.pow(x, 2));
+    }
+  },
+  /**
    * The Hard tanh.
    */
   HARD_TANH {
@@ -134,12 +79,14 @@ public enum Activation {
     }
   },
   /**
-   * The Absolute.
+   * The Identity.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Identity_function">Wikipedia article</a>
    */
-  ABSOLUTE {
+  IDENTITY {
     @Override
     public double calc(final double x) {
-      return Math.abs(x);
+      return x;
     }
   },
   /**
@@ -149,6 +96,59 @@ public enum Activation {
     @Override
     public double calc(final double x) {
       return 1 - x;
+    }
+  },
+  /**
+   * The Logistic activation.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Logistic_function">Wikipedia article</a>
+   */
+  LOGISTIC {
+    @Override
+    public double calc(final double x) {
+      return 1 / (1 + Math.exp(-x));
+    }
+  },
+  /**
+   * The Relu.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks)">Wikipedia article</a>
+   */
+  RELU {
+    @Override
+    public double calc(final double x) {
+      return x > 0 ? x : 0;
+    }
+  },
+  /**
+   * The Sinusoid.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Sine_wave">Wikipedia article</a>
+   */
+  SINUSOID {
+    @Override
+    public double calc(final double x) {
+      return Math.sin(x);
+    }
+  },
+  /**
+   * The Softsign.
+   */
+  SOFTSIGN {
+    @Override
+    public double calc(final double x) {
+      return x / (1 + Math.abs(x));
+    }
+  },
+  /**
+   * The Tanh.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Hyperbolic_functions#Hyperbolic_tangent">Wikipedia article</a>
+   */
+  TANH {
+    @Override
+    public double calc(final double x) {
+      return Math.tanh(x);
     }
   };
 
