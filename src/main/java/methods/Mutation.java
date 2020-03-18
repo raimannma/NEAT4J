@@ -1,6 +1,7 @@
 package methods;
 
 import static methods.Utils.pickRandom;
+import static methods.Utils.randBoolean;
 import static methods.Utils.randDouble;
 import static methods.Utils.randInt;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public enum Mutation {
       node.mutate(MOD_ACTIVATION);
       network.nodes.add(Math.max(0, Math.min(network.nodes.indexOf(connection.to), network.nodes.size() - network.output)), node);
 
-      if (connection.gateNode != null && randDouble() >= 0.5) {
+      if (connection.gateNode != null && randBoolean()) {
         network.gate(connection.gateNode, network.connect(connection.from, node));
       } else if (connection.gateNode != null) {
         network.gate(connection.gateNode, network.connect(node, connection.to));

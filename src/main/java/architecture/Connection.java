@@ -48,16 +48,16 @@ public class Connection {
   /**
    * Calculates the innovation id.
    *
-   * @param nodeIndexFrom   the nodeIndexFrom
-   * @param nodeIndexTarget the nodeIndexTarget
+   * @param a the a
+   * @param b the b
    * @return An Integer that uniquely represents a pair of Integers
    * @see <a href="https://en.wikipedia.org/wiki/Pairing_function">(Cantor pairing function)|Pairing function (Cantor pairing function)}</a>
    */
-  public static int getInnovationID(final int nodeIndexFrom, final int nodeIndexTarget) {
+  public static int getInnovationID(final int a, final int b) {
     return (int) Math.floor(0.5
-      * (nodeIndexFrom + nodeIndexTarget)
-      * (nodeIndexFrom + nodeIndexTarget + 1)
-      + nodeIndexTarget);
+      * (a + b)
+      * (a + b + 1)
+      + b);
   }
 
   /**

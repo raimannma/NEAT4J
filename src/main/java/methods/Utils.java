@@ -35,4 +35,8 @@ public enum Utils {
   public static double randDouble() {
     return rand.nextDouble();
   }
+
+  public static boolean randBoolean() {
+    return rand.nextBoolean();
+  }
 }
