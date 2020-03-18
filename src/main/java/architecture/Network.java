@@ -117,37 +117,35 @@ public class Network {
     final double score1 = Double.isNaN(network1.score) ? -Double.MAX_VALUE : network1.score;
     final double score2 = Double.isNaN(network2.score) ? -Double.MAX_VALUE : network2.score;
 
-    // Select size of fittest, if they aren't equal.
-    final int size; // size of offspring
-    final int size1 = network1.nodes.size(); // num nodes of parent 1
-    final int size2 = network2.nodes.size(); // num nodes of parent 2
-    if (equal || score1 == score2) {
-      size = randInt(Math.min(size1, size2), Math.max(size1, size2)); // select random size between min and max
-    } else if (score1 > score2) {
-      size = size1;
-    } else {
-      size = size2;
-    }
+    final int size1 = network1.nodes.size(); // size of parent 1
+    final int size2 = network2.nodes.size(); // size of parent 2
+    // size of offspring
+    final int size = equal || score1 == score2
+      ? randInt(Math.min(size1, size2), Math.max(size1, size2))// select random size between min and max
+      : score1 > score2 ? size1 : size2; // Select size of fittest.
 
     network1.setNodeIndices(); // set indices for network 1
     network2.setNodeIndices(); // set indices for network 2
 
     // Create nodes for the offspring
     for (int i = 0; i < size; i++) {
-      Node node; // first choice for the new node
-      final Node other; // second choice for the new node
+      final Node node; // first choice for the new node
       if (i < size - network1.output) {
+        // creating a input or hidden node
         if (randBoolean()) { // choose random
-          node = i < size1 ? network1.nodes.get(i) : null;
-          other = i < size2 ? network2.nodes.get(i) : null;
+          // try getting a input or hidden node from network 1, fallback to network 2
+          node = i < size1 && network1.nodes.get(i).type != Node.NodeType.OUTPUT
+            ? network1.nodes.get(i)
+            : network2.nodes.get(i);
         } else {
-          node = i < size2 ? network2.nodes.get(i) : null;
-          other = i < size1 ? network1.nodes.get(i) : null;
-        }
-        if (node == null || node.type == Node.NodeType.OUTPUT) {
-          node = other;
+          // try getting a input or hidden node from network 2, fallback to network 1
+          node = i < size2 && network2.nodes.get(i).type != Node.NodeType.OUTPUT
+            ? network2.nodes.get(i)
+            : network1.nodes.get(i);
         }
       } else {
+        // create a output node
+        // pick random output node
         node = randBoolean()
           ? network1.nodes.get(i + size1 - size)
           : network2.nodes.get(i + size2 - size);
