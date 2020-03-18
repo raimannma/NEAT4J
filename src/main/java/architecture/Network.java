@@ -168,24 +168,23 @@ public class Network {
 
     // List of innovation IDs from both parents
     final List<Integer> innovationIDs1 = new ArrayList<>(network1Connections.keySet());
-    final List<Integer> innovationIDs2 = new ArrayList<>(network2Connections.keySet());
-
-    for (int i = innovationIDs1.size() - 1; i >= 0; i--) {
-      if (network2Connections.get(innovationIDs1.get(i)) != null) {
+    for (final Integer innovationID : innovationIDs1) {
+      if (network2Connections.get(innovationID) != null) {
         //Choose random connection out of both networks
         connections.add(randBoolean()
-          ? network1Connections.get(innovationIDs1.get(i))
-          : network2Connections.get(innovationIDs1.get(i)));
+          ? network1Connections.get(innovationID)
+          : network2Connections.get(innovationID));
 
         // set to null, because removing is expensive
-        network2Connections.put(innovationIDs1.get(i), null);
+        network2Connections.put(innovationID, null);
       } else if (score1 >= score2 || equal) {
         // choose connection from better network, or if they are equal
-        connections.add(network1Connections.get(innovationIDs1.get(i)));
+        connections.add(network1Connections.get(innovationID));
       }
     }
 
     // Excess/disjoint gene
+    final List<Integer> innovationIDs2 = new ArrayList<>(network2Connections.keySet());
     if (score2 >= score1 || equal) {
       innovationIDs2.stream()
         .map(network2Connections::get)
