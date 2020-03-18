@@ -597,9 +597,9 @@ public class Network implements Cloneable {
    * @param connection the connection to remove the gate from
    */
   public void removeGate(final Connection connection) {
-    // assume that connection is gated
-    this.gates.remove(connection); // remove connection from gates list
-    connection.gateNode.removeGate(connection); // run node-level removeGate()
+    if (connection != null && connection.gateNode != null && this.gates.remove(connection)) {
+      connection.gateNode.removeGate(connection);
+    }
   }
 
   /**
