@@ -49,18 +49,16 @@ public class Connection {
   }
 
   /**
-   * Calculates the innovation id.
+   * Get innovation ID.
+   * Encode two integers into a single integer.
    *
-   * @param a the a
-   * @param b the b
+   * @param a the first integer
+   * @param b the second integer
    * @return An Integer that uniquely represents a pair of Integers
    * @see <a href="https://en.wikipedia.org/wiki/Pairing_function">(Cantor pairing function)|Pairing function (Cantor pairing function)}</a>
    */
   public static int getInnovationID(final int a, final int b) {
-    return (int) Math.floor(0.5
-      * (a + b)
-      * (a + b + 1)
-      + b);
+    return (int) Math.floor(0.5 * (a + b) * (a + b + 1) + b);
   }
 
 
