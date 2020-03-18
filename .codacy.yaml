@@ -1,0 +1,6 @@
+engines:
+  exclude_paths:
+    - 'docs/**/*'
+    - 'target/**/*'
+    - 'dist/**/*'
+    - 'github/**/*'
