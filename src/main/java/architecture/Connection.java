@@ -77,7 +77,7 @@ public class Connection {
    * @return array containing information about the connection
    */
   @NotNull
-  Double[] getConnectionData() {
+  protected Double[] getConnectionData() {
     final Double[] data = new Double[4];
     data[0] = this.weight;
     data[1] = (double) this.from.index;
