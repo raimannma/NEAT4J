@@ -3,6 +3,7 @@ package architecture;
 import static methods.Utils.pickRandom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.HashSet;
 import java.util.stream.IntStream;
 import methods.Mutation;
 import org.jetbrains.annotations.NotNull;
@@ -31,17 +32,10 @@ public class NEATTest {
     assertEquals(original.input, copied.input);
     assertEquals(original.output, copied.output);
 
-    assertEquals(original.nodes, copied.nodes);
-
-    // If there are more connections in one of them
-    // there weight must be equal to 0
-    if (original.connections.size() > copied.connections.size()) {
-      original.connections.removeAll(copied.connections);
-      assertEquals(0, original.connections.stream().filter(conn -> conn.weight != 0).count());
-    } else {
-      copied.connections.removeAll(original.connections);
-      assertEquals(0, copied.connections.stream().filter(conn -> conn.weight != 0).count());
-    }
+    assertEquals(new HashSet<>(original.nodes), new HashSet<>(copied.nodes));
+    assertEquals(new HashSet<>(original.connections), new HashSet<>(copied.connections));
+    assertEquals(new HashSet<>(original.selfConnections), new HashSet<>(copied.selfConnections));
+    assertEquals(new HashSet<>(original.gates), new HashSet<>(copied.gates));
   }
 
   @Test

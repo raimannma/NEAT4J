@@ -659,6 +659,11 @@ public class Network {
    * @return the resulting json object
    */
   public JsonObject toJSON() {
+
+    this.gates.removeIf(gate -> gate.gateNode == null || gate.weight == 0);
+    this.connections.removeIf(connection -> connection.weight == 0);
+    this.selfConnections.removeIf(connection -> connection.weight == 0);
+
     final JsonObject json = new JsonObject();
     json.addProperty("input", this.input);
     json.addProperty("output", this.output);
