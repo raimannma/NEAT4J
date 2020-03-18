@@ -1,142 +1,161 @@
 package methods;
 
+/**
+ * The enum Activation.
+ * <p>
+ * Hold all activations and can calculate the activation value for a given input and activation method.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Activation_function">Wikipedia article</a>
+ */
 public enum Activation {
+  /**
+   * The Logistic activation.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Logistic_function">Wikipedia article</a>
+   */
   LOGISTIC {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      final double fx = 1 / (1 + Math.exp(-x));
-      if (derivative) {
-        return fx * 1 - fx * fx;
-      } else {
-        return fx;
-      }
+    public double calc(final double x) {
+      return 1 / (1 + Math.exp(-x));
     }
-  }, TANH {
+  },
+  /**
+   * The Tanh.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Hyperbolic_functions#Hyperbolic_tangent">Wikipedia article</a>
+   */
+  TANH {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      if (derivative) {
-        return 1 - Math.pow(Math.tanh(x), 2);
-      } else {
-        return Math.tanh(x);
-      }
+    public double calc(final double x) {
+      return Math.tanh(x);
     }
-  }, IDENTITY {
+  },
+  /**
+   * The Identity.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Identity_function">Wikipedia article</a>
+   */
+  IDENTITY {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      if (derivative) {
-        return 1;
-      } else {
-        return x;
-      }
+    public double calc(final double x) {
+      return x;
     }
-  }, STEP {
+  },
+  /**
+   * The Binary Step.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Heaviside_step_function">Wikipedia article</a>
+   */
+  BINARY_STEP {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      if (derivative) {
-        return 0;
-      } else {
-        return x > 0 ? 1 : 0;
-      }
+    public double calc(final double x) {
+      return x > 0 ? 1 : 0;
     }
-  }, RELU {
+  },
+  /**
+   * The Relu.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks)">Wikipedia article</a>
+   */
+  RELU {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      if (derivative) {
-        return x > 0 ? 1 : 0;
-      } else {
-        return x > 0 ? x : 0;
-      }
+    public double calc(final double x) {
+      return x > 0 ? x : 0;
     }
-  }, SOFTSIGN {
+  },
+  /**
+   * The Softsign.
+   */
+  SOFTSIGN {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      final double d = 1 + Math.abs(x);
-      if (derivative) {
-        return x / Math.pow(d, 2);
-      } else {
-        return x / d;
-      }
+    public double calc(final double x) {
+      return x / (1 + Math.abs(x));
     }
-  }, SINUSOID {
+  },
+  /**
+   * The Sinusoid.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Sine_wave">Wikipedia article</a>
+   */
+  SINUSOID {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      if (derivative) {
-        return Math.cos(x);
-      } else {
-        return Math.sin(x);
-      }
+    public double calc(final double x) {
+      return Math.sin(x);
     }
-  }, GAUSSIAN {
+  },
+  /**
+   * The Gaussian.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Gaussian_function">Wikipedia article</a>
+   */
+  GAUSSIAN {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      final double d = Math.exp(-Math.pow(x, 2));
-      if (derivative) {
-        return -2 * x * d;
-      } else {
-        return d;
-      }
+    public double calc(final double x) {
+      return Math.exp(-Math.pow(x, 2));
     }
-  }, BENT_IDENTITY {
+  },
+  /**
+   * The Bent identity.
+   */
+  BENT_IDENTITY {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      final double d = Math.sqrt(Math.pow(x, 2) + 1);
-      if (derivative) {
-        return x / (2 * d) + 1;
-      } else {
-        return (d - 1) / 2 + x;
-      }
+    public double calc(final double x) {
+      return (Math.sqrt(Math.pow(x, 2) + 1) - 1) / 2 + x;
     }
-  }, BIPOLAR {
+  },
+  /**
+   * The Bipolar.
+   */
+  BIPOLAR {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      if (derivative) {
-        return 0;
-      } else {
-        return x > 0 ? 1 : -1;
-      }
+    public double calc(final double x) {
+      return x > 0 ? 1 : -1;
     }
-  }, BIPOLAR_SIGMOID {
+  },
+  /**
+   * The Bipolar sigmoid.
+   *
+   * @see <a href="https://en.wikipedia.org/wiki/Sigmoid_function">Wikipedia article</a>
+   */
+  BIPOLAR_SIGMOID {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      final double d = 2 / (1 + Math.exp(-x)) - 1;
-      if (derivative) {
-        return 0.5 - 0.5 * d * d;
-      } else {
-        return d;
-      }
+    public double calc(final double x) {
+      return 2 / (1 + Math.exp(-x)) - 1;
     }
-  }, HARD_TANH {
+  },
+  /**
+   * The Hard tanh.
+   */
+  HARD_TANH {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      if (derivative) {
-        return Math.abs(x) < 1 ? 1 : 0;
-      } else {
-        return Math.max(-1, Math.min(1, x));
-      }
+    public double calc(final double x) {
+      return Math.max(-1, Math.min(1, x));
     }
-  }, ABSOLUTE {
+  },
+  /**
+   * The Absolute.
+   */
+  ABSOLUTE {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      if (derivative) {
-        return x < 0 ? -1 : 1;
-      } else {
-        return Math.abs(x);
-      }
+    public double calc(final double x) {
+      return Math.abs(x);
     }
-  }, INVERSE {
+  },
+  /**
+   * The Inverse.
+   */
+  INVERSE {
     @Override
-    public double calc(final double x, final boolean derivative) {
-      if (derivative) {
-        return -1;
-      } else {
-        return 1 - x;
-      }
+    public double calc(final double x) {
+      return 1 - x;
     }
   };
 
-  public double calc(final double x) {
-    return this.calc(x, false);
-  }
-
-  public abstract double calc(double x, boolean derivative);
+  /**
+   * Calc the activation value of given input and .
+   *
+   * @param x the x
+   * @return the double
+   */
+  public abstract double calc(double x);
 }
