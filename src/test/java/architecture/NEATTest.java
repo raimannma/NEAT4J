@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.stream.IntStream;
 import methods.Mutation;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class NEATTest {
@@ -27,26 +26,22 @@ public class NEATTest {
       .mapToObj(i -> pickRandom(Mutation.ALL))
       .forEach(original::mutate);
 
-    final Network copied = Network.fromJSON(original.toJSON());
+    final Network copied = original.copy();
 
     assertEquals(original.input, copied.input);
     assertEquals(original.output, copied.output);
-    original.nodes
-      .stream()
-      .map(node -> copied.nodes.contains(node))
-      .forEach(Assertions::assertTrue);
-    copied.nodes
-      .stream()
-      .map(node -> original.nodes.contains(node))
-      .forEach(Assertions::assertTrue);
-    original.connections
-      .stream()
-      .map(connection -> copied.connections.contains(connection))
-      .forEach(Assertions::assertTrue);
-    copied.connections
-      .stream()
-      .map(connection -> original.connections.contains(connection))
-      .forEach(Assertions::assertTrue);
+
+    assertEquals(original.nodes, copied.nodes);
+
+    // If there are more connections in one of them
+    // there weight must be equal to 0
+    if (original.connections.size() > copied.connections.size()) {
+      original.connections.removeAll(copied.connections);
+      assertEquals(0, original.connections.stream().filter(conn -> conn.weight != 0).count());
+    } else {
+      copied.connections.removeAll(original.connections);
+      assertEquals(0, copied.connections.stream().filter(conn -> conn.weight != 0).count());
+    }
   }
 
   @Test
