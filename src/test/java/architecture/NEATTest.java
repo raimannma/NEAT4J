@@ -10,6 +10,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class NEATTest {
+  private static double learnSet(final @NotNull Network network, final double[][] inputs, final double[][] outputs) {
+    final EvolveOptions options = new EvolveOptions();
+    options.setMutations(Mutation.ALL);
+    options.setPopulationSize(1000);
+    options.setElitism(10);
+    options.setMutationRate(0.7);
+    options.setError(0.05);
+    return network.evolve(inputs, outputs, options);
+  }
+
   @Test
   public void testJSON() {
     final Network original = new Network(2, 2);
@@ -25,50 +35,44 @@ public class NEATTest {
       .stream()
       .map(node -> copied.nodes.contains(node))
       .forEach(Assertions::assertTrue);
+    copied.nodes
+      .stream()
+      .map(node -> original.nodes.contains(node))
+      .forEach(Assertions::assertTrue);
   }
 
   @Test
   public void testAND() {
-    final double[][] inputs = new double[][] {
-      new double[] {0, 0},
-      new double[] {0, 1},
-      new double[] {1, 0},
-      new double[] {1, 1},
+    final double[][] inputs = new double[][]{
+      new double[]{0, 0},
+      new double[]{0, 1},
+      new double[]{1, 0},
+      new double[]{1, 1},
     };
-    final double[][] outputs = new double[][] {
-      new double[] {0},
-      new double[] {0},
-      new double[] {0},
-      new double[] {1},
+    final double[][] outputs = new double[][]{
+      new double[]{0},
+      new double[]{0},
+      new double[]{0},
+      new double[]{1},
     };
 
     final Network network = new Network(2, 1);
     assertTrue(learnSet(network, inputs, outputs) <= 0.05);
   }
 
-  private static double learnSet(final @NotNull Network network, final double[][] inputs, final double[][] outputs) {
-    final EvolveOptions options = new EvolveOptions();
-    options.setMutations(Mutation.ALL);
-    options.setPopulationSize(1000);
-    options.setElitism(10);
-    options.setMutationRate(0.7);
-    options.setError(0.05);
-    return network.evolve(inputs, outputs, options);
-  }
-
   @Test
   public void testXOR() {
-    final double[][] inputs = new double[][] {
-      new double[] {0, 0},
-      new double[] {0, 1},
-      new double[] {1, 0},
-      new double[] {1, 1},
+    final double[][] inputs = new double[][]{
+      new double[]{0, 0},
+      new double[]{0, 1},
+      new double[]{1, 0},
+      new double[]{1, 1},
     };
-    final double[][] outputs = new double[][] {
-      new double[] {0},
-      new double[] {1},
-      new double[] {1},
-      new double[] {0},
+    final double[][] outputs = new double[][]{
+      new double[]{0},
+      new double[]{1},
+      new double[]{1},
+      new double[]{0},
     };
 
     final Network network = new Network(2, 1);
@@ -77,17 +81,17 @@ public class NEATTest {
 
   @Test
   public void testXNOR() {
-    final double[][] inputs = new double[][] {
-      new double[] {0, 0},
-      new double[] {0, 1},
-      new double[] {1, 0},
-      new double[] {1, 1},
+    final double[][] inputs = new double[][]{
+      new double[]{0, 0},
+      new double[]{0, 1},
+      new double[]{1, 0},
+      new double[]{1, 1},
     };
-    final double[][] outputs = new double[][] {
-      new double[] {1},
-      new double[] {0},
-      new double[] {0},
-      new double[] {1},
+    final double[][] outputs = new double[][]{
+      new double[]{1},
+      new double[]{0},
+      new double[]{0},
+      new double[]{1},
     };
 
     final Network network = new Network(2, 1);
@@ -96,13 +100,13 @@ public class NEATTest {
 
   @Test
   public void testNot() {
-    final double[][] inputs = new double[][] {
-      new double[] {0},
-      new double[] {1},
+    final double[][] inputs = new double[][]{
+      new double[]{0},
+      new double[]{1},
     };
-    final double[][] outputs = new double[][] {
-      new double[] {1},
-      new double[] {0},
+    final double[][] outputs = new double[][]{
+      new double[]{1},
+      new double[]{0},
     };
 
     final Network network = new Network(1, 1);
@@ -111,17 +115,17 @@ public class NEATTest {
 
   @Test
   public void testNAND() {
-    final double[][] inputs = new double[][] {
-      new double[] {0, 0},
-      new double[] {0, 1},
-      new double[] {1, 0},
-      new double[] {1, 1},
+    final double[][] inputs = new double[][]{
+      new double[]{0, 0},
+      new double[]{0, 1},
+      new double[]{1, 0},
+      new double[]{1, 1},
     };
-    final double[][] outputs = new double[][] {
-      new double[] {1},
-      new double[] {1},
-      new double[] {1},
-      new double[] {0},
+    final double[][] outputs = new double[][]{
+      new double[]{1},
+      new double[]{1},
+      new double[]{1},
+      new double[]{0},
     };
 
     final Network network = new Network(2, 1);
@@ -130,17 +134,17 @@ public class NEATTest {
 
   @Test
   public void testNOR() {
-    final double[][] inputs = new double[][] {
-      new double[] {0, 0},
-      new double[] {0, 1},
-      new double[] {1, 0},
-      new double[] {1, 1},
+    final double[][] inputs = new double[][]{
+      new double[]{0, 0},
+      new double[]{0, 1},
+      new double[]{1, 0},
+      new double[]{1, 1},
     };
-    final double[][] outputs = new double[][] {
-      new double[] {1},
-      new double[] {0},
-      new double[] {0},
-      new double[] {0},
+    final double[][] outputs = new double[][]{
+      new double[]{1},
+      new double[]{0},
+      new double[]{0},
+      new double[]{0},
     };
 
     final Network network = new Network(2, 1);
