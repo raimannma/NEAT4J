@@ -243,8 +243,6 @@ public class Network {
     // clearing the network
     network.nodes.clear();
     network.connections.clear();
-    network.selfConnections.clear();
-    network.gates.clear();
 
     // Filling the network
     // add nodes to the network
