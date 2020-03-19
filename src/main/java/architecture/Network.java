@@ -240,6 +240,9 @@ public class Network {
     network.dropout = json.get("dropout").getAsDouble(); // set dropout probability
     network.score = json.get("score").getAsDouble(); // set score value
 
+    network.nodes.clear();
+    network.connections.clear();
+
     // add nodes and connections to the network
     final JsonArray nodes = json.get("nodes").getAsJsonArray();
     final JsonArray connections = json.get("connections").getAsJsonArray();
@@ -253,7 +256,8 @@ public class Network {
       );
       connection.weight = connJSON.get("weight").getAsDouble(); // set connection weight
 
-      if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
+
+      if (connJSON.has("gateNode")) {
         network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection);
       }
     }
@@ -670,7 +674,9 @@ public class Network {
         final JsonObject toJSON = connection.toJSON(); // run Connection.toJSON()
         toJSON.addProperty("from", connection.from.index); // add from index
         toJSON.addProperty("to", connection.to.index); // add to index
-        toJSON.addProperty("gateNode", connection.gateNode != null ? connection.gateNode.index : -1); // add gate node, if it exists
+        if (connection.gateNode != null) {
+          toJSON.addProperty("gateNode", connection.gateNode.index);// add gate node, if it exists
+        }
         jsonConnections.add(toJSON); // add to json array of all connections
       });
 
