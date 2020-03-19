@@ -27,7 +27,7 @@ public class NEATTest {
       .mapToObj(i -> pickRandom(Mutation.ALL))
       .forEach(original::mutate);
 
-    final Network copied = Network.fromJSON(original.toJSON());
+    final Network copied = original.copy();
 
     assertEquals(original.input, copied.input);
     assertEquals(original.output, copied.output);

@@ -240,26 +240,34 @@ public class Network {
     network.dropout = json.get("dropout").getAsDouble(); // set dropout probability
     network.score = json.get("score").getAsDouble(); // set score value
 
+    // clearing the network
     network.nodes.clear();
     network.connections.clear();
+    network.selfConnections.clear();
+    network.gates.clear();
 
-    // add nodes and connections to the network
-    final JsonArray nodes = json.get("nodes").getAsJsonArray();
-    final JsonArray connections = json.get("connections").getAsJsonArray();
-    nodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
-    for (int i = 0; i < connections.size(); i++) {
-      final JsonObject connJSON = connections.get(i).getAsJsonObject(); // get connection json
+    // Filling the network
+    // add nodes to the network
+    final JsonArray jsonNodes = json.get("nodes").getAsJsonArray();
+    final JsonArray jsonConnections = json.get("connections").getAsJsonArray();
+    jsonNodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
+
+    // add connection to the network
+    for (int i = 0; i < jsonConnections.size(); i++) {
+      final JsonObject connJSON = jsonConnections.get(i).getAsJsonObject(); // get connection json
       // create connection by connecting "from" and "to" node
-      final Connection connection = network.connect(
-        network.nodes.get(connJSON.get("from").getAsInt()), // get connection input node
-        network.nodes.get(connJSON.get("to").getAsInt()) // get connection output node
-      );
-      connection.weight = connJSON.get("weight").getAsDouble(); // set connection weight
-
-
-      if (connJSON.has("gateNode")) {
+      final Node from = network.nodes.get(connJSON.get("from").getAsInt()); // get connection input node
+      final Node to = network.nodes.get(connJSON.get("to").getAsInt()); // get connection output node
+      if (!from.isNotProjectingTo(to)) {
+        // if there is already a connection
+        // continue
+        continue;
+      }
+      final Connection connection = network.connect(from, to);
+      if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
         network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection);
       }
+      connection.weight = connJSON.get("weight").getAsDouble(); // set connection weight
     }
     return network;
   }
@@ -674,9 +682,7 @@ public class Network {
         final JsonObject toJSON = connection.toJSON(); // run Connection.toJSON()
         toJSON.addProperty("from", connection.from.index); // add from index
         toJSON.addProperty("to", connection.to.index); // add to index
-        if (connection.gateNode != null) {
-          toJSON.addProperty("gateNode", connection.gateNode.index);// add gate node, if it exists
-        }
+        toJSON.addProperty("gateNode", connection.gateNode != null ? connection.gateNode.index : -1); // add gate node, if it exists
         jsonConnections.add(toJSON); // add to json array of all connections
       });
 

@@ -1,6 +1,5 @@
 package architecture;
 
-import com.google.gson.JsonObject;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,17 +81,6 @@ public class Connection {
     data[2] = (double) this.to.index;
     data[3] = this.gateNode != null ? this.gateNode.index : Double.NaN;
     return data;
-  }
-
-  /**
-   * Converts a node to JsonObject
-   *
-   * @return the connection as JsonObject
-   */
-  public JsonObject toJSON() {
-    final JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("weight", this.weight);
-    return jsonObject;
   }
 
   @Override
