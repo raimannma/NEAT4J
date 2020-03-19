@@ -677,7 +677,8 @@ public class Network {
     // creating connections json array
     Stream.concat(this.connections.stream(), this.selfConnections.stream()) // stream with all connections
       .forEach(connection -> { // iterate over all connections
-        final JsonObject toJSON = connection.toJSON(); // run Connection.toJSON()
+        final JsonObject toJSON = new JsonObject(); // run Connection.toJSON()
+        toJSON.addProperty("weight", connection.weight); // add from index
         toJSON.addProperty("from", connection.from.index); // add from index
         toJSON.addProperty("to", connection.to.index); // add to index
         toJSON.addProperty("gateNode", connection.gateNode != null ? connection.gateNode.index : -1); // add gate node, if it exists
