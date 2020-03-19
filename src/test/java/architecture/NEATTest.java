@@ -3,10 +3,10 @@ package architecture;
 import static methods.Utils.pickRandom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.HashSet;
 import java.util.stream.IntStream;
 import methods.Mutation;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class NEATTest {
@@ -31,22 +31,10 @@ public class NEATTest {
 
     assertEquals(original.input, copied.input);
     assertEquals(original.output, copied.output);
-    original.nodes
-      .stream()
-      .map(node -> copied.nodes.contains(node))
-      .forEach(Assertions::assertTrue);
-    copied.nodes
-      .stream()
-      .map(node -> original.nodes.contains(node))
-      .forEach(Assertions::assertTrue);
-    original.connections
-      .stream()
-      .map(connection -> copied.connections.contains(connection))
-      .forEach(Assertions::assertTrue);
-    copied.connections
-      .stream()
-      .map(connection -> original.connections.contains(connection))
-      .forEach(Assertions::assertTrue);
+    assertEquals(new HashSet<>(original.nodes), new HashSet<>(copied.nodes));
+    assertEquals(new HashSet<>(original.connections), new HashSet<>(copied.connections));
+    assertEquals(new HashSet<>(original.selfConnections), new HashSet<>(copied.selfConnections));
+    assertEquals(new HashSet<>(original.gates), new HashSet<>(copied.gates));
   }
 
   @Test
