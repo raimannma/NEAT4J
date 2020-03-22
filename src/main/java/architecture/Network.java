@@ -577,12 +577,12 @@ public class Network {
 				.filter(conn -> conn.from.equals(from))
 				.filter(conn -> conn.to.equals(to))
 				.findAny()
-				.orElseThrow();
+				.orElse(null);
 
 			this.connections.remove(connection); // remove connection from list
 		}
 
-		if (connection.gateNode != null) {
+		if (connection != null && connection.gateNode != null) {
 			// if connection has gate
 			// remove it
 			this.removeGate(connection);
