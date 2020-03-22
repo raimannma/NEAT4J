@@ -100,11 +100,6 @@ public class Connection {
 		return data;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.to, this.from, this.weight, this.gateNode, this.gain);
-	}
-
 	public JsonObject toJSON() {
 		//assume node.index been set
 		final JsonObject jsonObject = new JsonObject();
@@ -127,17 +122,20 @@ public class Connection {
 			return false;
 		}
 		final Connection that = (Connection) o;
-		return this.weight == that.weight
-			&& this.from.equals(that.from)
-			&& this.to.equals(that.to);
+		return Objects.equals(this.to, that.to) && Objects.equals(this.from, that.from);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.to, this.from);
 	}
 
 	@Override
 	public String toString() {
 		return "architecture.Connection{" +
-			"to=" + this.to +
+			"from=" + this.from.index +
+			", to=" + this.to.index +
 			", weight=" + this.weight +
-			", from=" + this.from +
 			'}';
 	}
 
