@@ -86,10 +86,6 @@ public class EvolveOptions {
 	 */
 	private int iterations;
 	/**
-	 * The Network.
-	 */
-	private Network network;
-	/**
 	 * The Log.
 	 */
 	private int log;
@@ -103,14 +99,13 @@ public class EvolveOptions {
 		this.loss = Loss.MSE;
 		this.amount = 1;
 		this.iterations = -1;
-		this.network = null;
 		this.clear = false;
-		this.populationSize = 500;
-		this.elitism = 0;
-		this.mutationRate = 0.3;
+		this.populationSize = 100;
+		this.elitism = 10;
+		this.mutationRate = 0.4;
 		this.mutationAmount = 1;
 		this.selection = new Selection.Power();
-		this.mutations = Mutation.FFW;
+		this.mutations = Mutation.ALL;
 		this.template = null;
 		this.maxNodes = Integer.MAX_VALUE;
 		this.maxConnections = Integer.MAX_VALUE;
@@ -443,24 +438,6 @@ public class EvolveOptions {
 	}
 
 	/**
-	 * Gets network.
-	 *
-	 * @return the network
-	 */
-	public Network getNetwork() {
-		return this.network;
-	}
-
-	/**
-	 * Sets network.
-	 *
-	 * @param network the network
-	 */
-	public void setNetwork(final Network network) {
-		this.network = network;
-	}
-
-	/**
 	 * Gets log.
 	 *
 	 * @return the log
@@ -481,6 +458,6 @@ public class EvolveOptions {
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(this.mutations)
-			+ 31 * Objects.hash(this.fitnessFunction, this.populationSize, this.elitism, this.mutationRate, this.mutationAmount, this.selection, this.template, this.maxNodes, this.maxConnections, this.maxGates, this.equal, this.clear, this.error, this.growth, this.amount, this.loss, this.iterations, this.network, this.log);
+			+ 31 * Objects.hash(this.fitnessFunction, this.populationSize, this.elitism, this.mutationRate, this.mutationAmount, this.selection, this.template, this.maxNodes, this.maxConnections, this.maxGates, this.equal, this.clear, this.error, this.growth, this.amount, this.loss, this.iterations, this.log);
 	}
 }
