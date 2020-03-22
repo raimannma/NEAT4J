@@ -1,6 +1,8 @@
 package methods;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
 import java.util.SplittableRandom;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,14 +74,14 @@ public enum Utils {
 	}
 
 	/**
-	 * Chooses a random element from the given list.
+	 * Chooses a random element from the given collection.
 	 *
-	 * @param <T>  the type of the list elements
-	 * @param list the input list
-	 * @return the random element from the input list
+	 * @param <T>        the type of the collection elements
+	 * @param collection the input collection
+	 * @return the random element from the input collection
 	 */
-	public static <T> T pickRandom(final @NotNull List<T> list) {
-		return list.get(randInt(list.size()));
+	public static <T> T pickRandom(final @NotNull Collection<T> collection) {
+		return new ArrayList<>(collection).get(randInt(collection.size()));
 	}
 
 	/**
@@ -98,5 +100,38 @@ public enum Utils {
 	 */
 	public static boolean randBoolean() {
 		return rand.nextBoolean();
+	}
+
+	/**
+	 * Checks if two sets are equal
+	 * <p>
+	 * DOES NOT CHECK ORDER !
+	 *
+	 * @param set  first set
+	 * @param set1 second set
+	 * @param <T>  Generic type parameter
+	 * @return are both sets equal?
+	 */
+	public static <T> boolean setsEqual(final Set<T> set, final Set<T> set1) {
+		upperLoop:
+		for (final T elem : set) {
+			for (final T t : set1) {
+				if (elem.equals(t)) {
+					continue upperLoop;
+				}
+			}
+			return false;
+		}
+
+		upperLoop:
+		for (final T elem : set1) {
+			for (final T t : set) {
+				if (elem.equals(t)) {
+					continue upperLoop;
+				}
+			}
+			return false;
+		}
+		return true;
 	}
 }

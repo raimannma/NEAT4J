@@ -4,8 +4,10 @@ import static methods.Activation.LOGISTIC;
 import static methods.Utils.randDouble;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import methods.Activation;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,19 +21,19 @@ public class Node {
 	/**
 	 * Incoming connections.
 	 */
-	public final List<Connection> in;
+	public final Set<Connection> in;
 	/**
 	 * Outgoing connections.
 	 */
-	public final List<Connection> out;
-	/**
-	 * Connection to the node itself.
-	 */
-	public final Connection self;
+	public final Set<Connection> out;
 	/**
 	 * Gated connections.
 	 */
 	public final List<Connection> gated;
+	/**
+	 * Connection to the node itself.
+	 */
+	public Connection self;
 	/**
 	 * The Activation type.
 	 */
@@ -85,9 +87,10 @@ public class Node {
 		this.activation = 0;
 		this.state = 0;
 		this.mask = 1;
+		this.index = -1;
 
-		this.in = new ArrayList<>();
-		this.out = new ArrayList<>();
+		this.in = new HashSet<>();
+		this.out = new HashSet<>();
 		this.gated = new ArrayList<>();
 		this.self = new Connection(this, this, 0);
 	}
@@ -105,6 +108,7 @@ public class Node {
 		node.type = NodeType.valueOf(jsonObject.get("type").getAsString());
 		node.activationType = Activation.valueOf(jsonObject.get("activationType").getAsString());
 		node.mask = jsonObject.get("mask").getAsDouble();
+		node.index = jsonObject.get("index").getAsInt();
 		return node;
 	}
 
@@ -244,6 +248,7 @@ public class Node {
 		jsonObject.addProperty("type", this.type.name());
 		jsonObject.addProperty("activationType", this.activationType.name());
 		jsonObject.addProperty("mask", this.mask);
+		jsonObject.addProperty("index", this.index);
 		return jsonObject;
 	}
 
@@ -260,10 +265,11 @@ public class Node {
 		if (o == null || this.getClass() != o.getClass()) {
 			return false;
 		}
-		final Node node = (Node) o;
-		return node.bias == this.bias &&
-			this.activationType == node.activationType &&
-			this.type == node.type;
+		final Node that = (Node) o;
+		return this.index != -1 && this.index == that.index
+			|| that.bias == this.bias
+			&& this.activationType == that.activationType
+			&& this.mask == that.mask;
 	}
 
 	@Override
