@@ -438,7 +438,7 @@ public class Network {
 				return (sum - genome.getGrowthScore(growth)) / amount;
 			});
 		}
-		options.setNetwork(this); // set network to start evolution from
+		options.setTemplate(this); // set this network as template
 
 		final NEAT neat = new NEAT(this.input, this.output, options); // create NEAT instance
 
