@@ -264,10 +264,11 @@ public class Node {
 		if (o == null || this.getClass() != o.getClass()) {
 			return false;
 		}
-		final Node node = (Node) o;
-		return node.bias == this.bias &&
-			this.activationType == node.activationType &&
-			this.type == node.type;
+		final Node that = (Node) o;
+		return that.bias == this.bias
+			&& this.activationType == that.activationType
+			&& this.mask == that.mask
+			&& this.type == that.type;
 	}
 
 	@Override
