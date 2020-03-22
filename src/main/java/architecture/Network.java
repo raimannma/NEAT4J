@@ -10,9 +10,11 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -46,15 +48,15 @@ public class Network {
 	/**
 	 * The Connections of the network.
 	 */
-	public List<Connection> connections;
+	public Set<Connection> connections;
 	/**
 	 * The Self connections of the network.
 	 */
-	public List<Connection> selfConnections;
+	public Set<Connection> selfConnections;
 	/**
 	 * The Gates of the network.
 	 */
-	public List<Connection> gates;
+	public Set<Connection> gates;
 	/**
 	 * The Dropout probability.
 	 */
@@ -73,9 +75,9 @@ public class Network {
 		this.score = Double.NaN;
 
 		this.nodes = new ArrayList<>();
-		this.connections = new ArrayList<>();
-		this.gates = new ArrayList<>();
-		this.selfConnections = new ArrayList<>();
+		this.connections = new HashSet<>();
+		this.gates = new HashSet<>();
+		this.selfConnections = new HashSet<>();
 
 		this.dropout = 0;
 		for (int i = 0; i < this.input; i++) {
@@ -114,8 +116,8 @@ public class Network {
 
 		// create offspring
 		final Network offspring = new Network(network1.input, network1.output);
-		offspring.connections = new ArrayList<>();
-		offspring.nodes = new ArrayList<>();
+		offspring.connections.clear();
+		offspring.nodes.clear();
 
 		final double score1 = Double.isNaN(network1.score) ? -Double.MAX_VALUE : network1.score;
 		final double score2 = Double.isNaN(network2.score) ? -Double.MAX_VALUE : network2.score;
@@ -209,6 +211,7 @@ public class Network {
 					offspring.gate(offspring.nodes.get((int) (double) connectionData[3]), connection);
 				}
 			});
+		offspring.setNodeIndices();
 		return offspring;
 	}
 
@@ -251,22 +254,24 @@ public class Network {
 		jsonNodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
 
 		// add connection to the network
-		for (int i = 0; i < jsonConnections.size(); i++) {
-			final JsonObject connJSON = jsonConnections.get(i).getAsJsonObject(); // get connection json
-			// create connection by connecting "from" and "to" node
-			final Node from = network.nodes.get(connJSON.get("from").getAsInt()); // get connection input node
-			final Node to = network.nodes.get(connJSON.get("to").getAsInt()); // get connection output node
-			if (!from.isNotProjectingTo(to)) {
-				// if there is already a connection
-				// continue
-				continue;
+		jsonConnections.forEach(connJSON -> {
+			final Connection connection = Connection.fromJSON(connJSON.getAsJsonObject(), network.nodes); // get connection from json
+
+			if (connection.isSelfConnection()) {
+				connection.from.self = connection; // set self connection in node
+				network.selfConnections.add(connection); // add connection to self connections list
+			} else {
+				connection.from.out.add(connection); // set connection to "from" node
+				connection.to.in.add(connection); // set connection to "to" node
+
+				network.connections.add(connection); // add connection to connections list
 			}
-			final Connection connection = network.connect(from, to);
-			if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
-				network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection);
+
+			if (connection.isGated()) {
+				connection.gateNode.gated.add(connection); // set connections as gated in gate node
+				network.gates.add(connection); // add connection to gates list
 			}
-			connection.weight = connJSON.get("weight").getAsDouble(); // set connection weight
-		}
+		});
 		return network;
 	}
 
@@ -307,7 +312,7 @@ public class Network {
 	/**
 	 * Sets node indices.
 	 */
-	private void setNodeIndices() {
+	public void setNodeIndices() {
 		// node index equals to position in this.nodes list
 		IntStream.range(0, this.nodes.size()).forEach(i -> this.nodes.get(i).index = i);
 	}
@@ -557,6 +562,7 @@ public class Network {
 		}
 
 		this.nodes.remove(node); // remove node from list
+		this.setNodeIndices();
 	}
 
 	/**
@@ -657,33 +663,39 @@ public class Network {
 	 * @return the resulting json object
 	 */
 	public JsonObject toJSON() {
+		// add no self connections from self connections list to connections list
+		this.connections.addAll(this.selfConnections.stream().filter(conn -> !conn.isSelfConnection()).collect(Collectors.toSet()));
+		// add self connections from connections list to self connections list
+		this.selfConnections.addAll(this.connections.stream().filter(Connection::isSelfConnection).collect(Collectors.toSet()));
+
+		// remove self connections from connections list
+		this.connections.removeIf(Connection::isSelfConnection);
+		// remove no self connections from self connections list
+		this.selfConnections.removeIf(conn -> !conn.isSelfConnection());
+
+		// remove gates without a representing connection in connections list or self connections list
+		this.gates.removeIf(gate -> !this.connections.contains(gate) && !this.selfConnections.contains(gate));
+
+		// set gateNode to null for all connections except the ones in gates list
+		Stream.concat(this.connections.stream(), this.selfConnections.stream())
+			.filter(conn -> !this.gates.contains(conn))
+			.forEach(conn -> conn.gateNode = null);
+
 		final JsonObject json = new JsonObject();
-		json.addProperty("input", this.input);
-		json.addProperty("output", this.output);
-		json.addProperty("dropout", this.dropout);
-		json.addProperty("score", this.score);
+		json.addProperty("input", this.input); // add input property
+		json.addProperty("output", this.output); // add output property
+		json.addProperty("dropout", this.dropout); // add dropout property
+		json.addProperty("score", this.score); // add score property
+
 		final JsonArray jsonNodes = new JsonArray();
 		final JsonArray jsonConnections = new JsonArray();
 
 		this.setNodeIndices(); // set node indices
+		this.nodes.stream().map(Node::toJSON).forEach(jsonNodes::add); // add nodes to json array
 
-		// creating nodes json array
-		this.nodes.forEach(node -> {
-			final JsonObject nodeJSON = node.toJSON(); // run Node.toJSON()
-			nodeJSON.addProperty("index", node.index); // add node index to json
-			jsonNodes.add(nodeJSON); // add to json array of all nodes
-		});
-
-		// creating connections json array
-		Stream.concat(this.connections.stream(), this.selfConnections.stream()) // stream with all connections
-			.forEach(connection -> { // iterate over all connections
-				final JsonObject toJSON = new JsonObject(); // run Connection.toJSON()
-				toJSON.addProperty("weight", connection.weight); // add from index
-				toJSON.addProperty("from", connection.from.index); // add from index
-				toJSON.addProperty("to", connection.to.index); // add to index
-				toJSON.addProperty("gateNode", connection.gateNode != null ? connection.gateNode.index : -1); // add gate node, if it exists
-				jsonConnections.add(toJSON); // add to json array of all connections
-			});
+		this.gates.removeIf(gate -> !gate.isGated()); // remove connection from gates list, if it isn't gated
+		this.connections.stream().map(Connection::toJSON).forEach(jsonConnections::add); // add connections to json array
+		this.selfConnections.stream().map(Connection::toJSON).forEach(jsonConnections::add); // add self connections to json array
 
 		json.add("nodes", jsonNodes); // add nodes json array
 		json.add("connections", jsonConnections); /// add connections json array

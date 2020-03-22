@@ -1,9 +1,9 @@
 package architecture;
 
 import static methods.Utils.pickRandom;
+import static methods.Utils.setsEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.HashSet;
 import java.util.stream.IntStream;
 import methods.Mutation;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +13,7 @@ public class NEATTest {
 	private static double learnSet(final @NotNull Network network, final double[][] inputs, final double[][] outputs) {
 		final EvolveOptions options = new EvolveOptions();
 		options.setMutations(Mutation.ALL);
-		options.setPopulationSize(1000);
+		options.setPopulationSize(100);
 		options.setElitism(10);
 		options.setMutationRate(0.7);
 		options.setError(0.05);
@@ -22,8 +22,8 @@ public class NEATTest {
 
 	@Test
 	public void testJSON() {
-		final Network original = new Network(2, 2);
-		IntStream.range(0, 10)
+		final Network original = new Network(30, 30);
+		IntStream.range(0, 200)
 			.mapToObj(i -> pickRandom(Mutation.ALL))
 			.forEach(original::mutate);
 
@@ -31,10 +31,10 @@ public class NEATTest {
 
 		assertEquals(original.input, copied.input);
 		assertEquals(original.output, copied.output);
-		assertEquals(new HashSet<>(original.nodes), new HashSet<>(copied.nodes));
-		assertEquals(new HashSet<>(original.connections), new HashSet<>(copied.connections));
-		assertEquals(new HashSet<>(original.selfConnections), new HashSet<>(copied.selfConnections));
-		assertEquals(new HashSet<>(original.gates), new HashSet<>(copied.gates));
+		assertEquals(original.nodes, copied.nodes);
+		assertTrue(setsEqual(original.connections, copied.connections));
+		assertTrue(setsEqual(original.selfConnections, copied.selfConnections));
+		assertTrue(setsEqual(original.gates, copied.gates));
 	}
 
 	@Test

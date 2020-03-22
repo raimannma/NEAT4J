@@ -1,5 +1,7 @@
 package architecture;
 
+import com.google.gson.JsonObject;
+import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,6 +62,32 @@ public class Connection {
 		return (int) Math.floor(0.5 * (a + b) * (a + b + 1) + b);
 	}
 
+	/**
+	 * Convert a JsonObject to a connection.
+	 *
+	 * @param jsonObject the json object which holds the information
+	 * @return the connection created from the information of the json object
+	 */
+	public static Connection fromJSON(final JsonObject jsonObject, final List<Node> nodes) {
+		final int fromIndex = jsonObject.get("from").getAsInt(); // get from index from JSON
+		final int toIndex = jsonObject.get("to").getAsInt(); // get to index from JSON
+
+		final Node from = nodes.stream().filter(node -> node.index == fromIndex).findAny().orElseThrow(); // get from node by searching for the index in nodes list
+		final Node to = nodes.stream().filter(node -> node.index == toIndex).findAny().orElseThrow(); // get to node by searching for the index in nodes list
+
+		final double weight = jsonObject.get("weight").getAsDouble(); // get weight from JSON
+
+		final Connection connection = new Connection(from, to, weight); // create new connection with from, to and weight
+
+		if (jsonObject.has("gateNode")) {
+			final int gateNodeIndex = jsonObject.get("gateNode").getAsInt(); // get gate node index from JSON
+			connection.gateNode = nodes.stream().filter(node -> node.index == gateNodeIndex).findAny().orElseThrow(); // get gate node by searching for the index in the nodes list
+
+			connection.gain = jsonObject.get("gain").getAsDouble(); // get gain from JSON
+		}
+
+		return connection;
+	}
 
 	/**
 	 * Stores connection data in an array.
@@ -83,9 +111,23 @@ public class Connection {
 		return data;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.to, this.from, this.weight, this.gateNode, this.gain);
+
+	/**
+	 * Converts the connection to a JsonObject that can later be converted back.
+	 *
+	 * @return the created JsonObject
+	 */
+	public JsonObject toJSON() {
+		//assume node.index been set
+		final JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("from", this.from.index); // add index of from node
+		jsonObject.addProperty("to", this.to.index); // add index of to index
+		jsonObject.addProperty("weight", this.weight); // add weight
+		if (this.isGated()) {
+			jsonObject.addProperty("gateNode", this.gateNode.index); // add index of gate node
+			jsonObject.addProperty("gain", this.gain); // add gain
+		}
+		return jsonObject;
 	}
 
 	@Override
@@ -97,17 +139,29 @@ public class Connection {
 			return false;
 		}
 		final Connection that = (Connection) o;
-		return this.weight == that.weight
-			&& this.from.toJSON().toString().equals(that.from.toJSON().toString())
-			&& this.to.toJSON().toString().equals(that.to.toJSON().toString());
+		return this.from.index == that.from.index && this.to.index == that.to.index;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.to.index, this.from.index);
 	}
 
 	@Override
 	public String toString() {
 		return "architecture.Connection{" +
-			"to=" + this.to +
+			"from=" + this.from.index +
+			", to=" + this.to.index +
 			", weight=" + this.weight +
-			", from=" + this.from +
+			", isGated()=" + this.isGated() +
 			'}';
+	}
+
+	public boolean isSelfConnection() {
+		return this.from.equals(this.to);
+	}
+
+	public boolean isGated() {
+		return this.gateNode != null;
 	}
 }
