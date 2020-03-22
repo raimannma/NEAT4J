@@ -13,7 +13,7 @@ public class NEATTest {
 	private static double learnSet(final @NotNull Network network, final double[][] inputs, final double[][] outputs) {
 		final EvolveOptions options = new EvolveOptions();
 		options.setMutations(Mutation.ALL);
-		options.setPopulationSize(1000);
+		options.setPopulationSize(100);
 		options.setElitism(10);
 		options.setMutationRate(0.7);
 		options.setError(0.05);
