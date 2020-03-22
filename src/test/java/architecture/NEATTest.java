@@ -45,6 +45,8 @@ public class NEATTest {
 		originalGates.sort(Comparator.comparingDouble(conn -> conn.weight));
 		copiedGates.sort(Comparator.comparingDouble(conn -> conn.weight));
 
+		//TODO Change check method
+
 		assertEquals(original.input, copied.input);
 		assertEquals(original.output, copied.output);
 		assertEquals(original.nodes, copied.nodes);
