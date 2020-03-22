@@ -107,6 +107,7 @@ public class Node {
 		node.type = NodeType.valueOf(jsonObject.get("type").getAsString());
 		node.activationType = Activation.valueOf(jsonObject.get("activationType").getAsString());
 		node.mask = jsonObject.get("mask").getAsDouble();
+		node.index = jsonObject.get("index").getAsInt();
 		return node;
 	}
 
@@ -246,6 +247,7 @@ public class Node {
 		jsonObject.addProperty("type", this.type.name());
 		jsonObject.addProperty("activationType", this.activationType.name());
 		jsonObject.addProperty("mask", this.mask);
+		jsonObject.addProperty("index", this.index);
 		return jsonObject;
 	}
 
