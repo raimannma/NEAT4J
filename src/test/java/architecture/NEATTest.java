@@ -1,11 +1,11 @@
 package architecture;
 
+import static methods.Utils.collectionsEqual;
 import static methods.Utils.pickRandom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.stream.IntStream;
 import methods.Mutation;
-import methods.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -32,9 +32,9 @@ public class NEATTest {
 		assertEquals(original.input, copied.input);
 		assertEquals(original.output, copied.output);
 		assertEquals(original.nodes, copied.nodes);
-		assertTrue(Utils.collectionsEqual(original.connections, copied.connections));
-		assertTrue(Utils.collectionsEqual(original.selfConnections, copied.selfConnections));
-		assertTrue(Utils.collectionsEqual(original.gates, copied.gates));
+		assertTrue(collectionsEqual(original.connections, copied.connections));
+		assertTrue(collectionsEqual(original.selfConnections, copied.selfConnections));
+		assertTrue(collectionsEqual(original.gates, copied.gates));
 	}
 
 	@Test
