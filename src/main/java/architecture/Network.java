@@ -10,9 +10,11 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -46,15 +48,15 @@ public class Network {
 	/**
 	 * The Connections of the network.
 	 */
-	public List<Connection> connections;
+	public Set<Connection> connections;
 	/**
 	 * The Self connections of the network.
 	 */
-	public List<Connection> selfConnections;
+	public Set<Connection> selfConnections;
 	/**
 	 * The Gates of the network.
 	 */
-	public List<Connection> gates;
+	public Set<Connection> gates;
 	/**
 	 * The Dropout probability.
 	 */
@@ -73,9 +75,9 @@ public class Network {
 		this.score = Double.NaN;
 
 		this.nodes = new ArrayList<>();
-		this.connections = new ArrayList<>();
-		this.gates = new ArrayList<>();
-		this.selfConnections = new ArrayList<>();
+		this.connections = new HashSet<>();
+		this.gates = new HashSet<>();
+		this.selfConnections = new HashSet<>();
 
 		this.dropout = 0;
 		for (int i = 0; i < this.input; i++) {
@@ -114,8 +116,8 @@ public class Network {
 
 		// create offspring
 		final Network offspring = new Network(network1.input, network1.output);
-		offspring.connections = new ArrayList<>();
-		offspring.nodes = new ArrayList<>();
+		offspring.connections.clear();
+		offspring.nodes.clear();
 
 		final double score1 = Double.isNaN(network1.score) ? -Double.MAX_VALUE : network1.score;
 		final double score2 = Double.isNaN(network2.score) ? -Double.MAX_VALUE : network2.score;

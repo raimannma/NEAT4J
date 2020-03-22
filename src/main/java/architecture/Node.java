@@ -4,8 +4,10 @@ import static methods.Activation.LOGISTIC;
 import static methods.Utils.randDouble;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import methods.Activation;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,11 +21,11 @@ public class Node {
 	/**
 	 * Incoming connections.
 	 */
-	public final List<Connection> in;
+	public final Set<Connection> in;
 	/**
 	 * Outgoing connections.
 	 */
-	public final List<Connection> out;
+	public final Set<Connection> out;
 	/**
 	 * Connection to the node itself.
 	 */
@@ -86,8 +88,8 @@ public class Node {
 		this.state = 0;
 		this.mask = 1;
 
-		this.in = new ArrayList<>();
-		this.out = new ArrayList<>();
+		this.in = new HashSet<>();
+		this.out = new HashSet<>();
 		this.gated = new ArrayList<>();
 		this.self = new Connection(this, this, 0);
 	}
