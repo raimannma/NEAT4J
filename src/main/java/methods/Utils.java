@@ -100,4 +100,37 @@ public enum Utils {
 	public static boolean randBoolean() {
 		return rand.nextBoolean();
 	}
+
+	/**
+	 * Checks if two collections are equal
+	 * <p>
+	 * DOES NOT CHECK ORDER !
+	 *
+	 * @param collection  first collection
+	 * @param collection1 second collection
+	 * @param <T>         Generic type parameter
+	 * @return are both collections equal?
+	 */
+	public static <T> boolean collectionsEqual(final Collection<T> collection, final Collection<T> collection1) {
+		upperLoop:
+		for (final T elem : collection) {
+			for (final T t : collection1) {
+				if (elem.equals(t)) {
+					continue upperLoop;
+				}
+			}
+			return false;
+		}
+
+		upperLoop:
+		for (final T elem : collection1) {
+			for (final T t : collection) {
+				if (elem.equals(t)) {
+					continue upperLoop;
+				}
+			}
+			return false;
+		}
+		return true;
+	}
 }
