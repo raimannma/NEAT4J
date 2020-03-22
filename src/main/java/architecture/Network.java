@@ -254,20 +254,24 @@ public class Network {
 		jsonNodes.forEach(jsonNode -> network.nodes.add(Node.fromJSON(jsonNode.getAsJsonObject())));
 
 		// add connection to the network
-		for (int i = 0; i < jsonConnections.size(); i++) {
-			final JsonObject connJSON = jsonConnections.get(i).getAsJsonObject(); // get connection json
-			// create connection by connecting "from" and "to" node
-			final Node from = network.nodes.get(connJSON.get("from").getAsInt()); // get connection input node
-			final Node to = network.nodes.get(connJSON.get("to").getAsInt()); // get connection output node
+		jsonConnections.forEach(connJSON -> {
+			final Connection connection = Connection.fromJSON(connJSON.getAsJsonObject(), network.nodes); // get connection from json
 
-			final Connection connection = network.connect(from, to);
-			connection.weight = connJSON.get("weight").getAsDouble(); // set connection weight
-			if (connJSON.has("gateNode")) {
-				// if connection was gated
-				// gate the created connection
-				network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection);
+			if (connection.isSelfConnection()) {
+				connection.from.self = connection; // set self connection in node
+				network.selfConnections.add(connection); // add connection to self connections list
+			} else {
+				connection.from.out.add(connection); // set connection to "from" node
+				connection.to.in.add(connection); // set connection to "to" node
+
+				network.connections.add(connection); // add connection to connections list
 			}
-		}
+
+			if (connection.isGated()) {
+				connection.gateNode.gated.add(connection); // set connections as gated in gate node
+				network.gates.add(connection); // add connection to gates list
+			}
+		});
 		return network;
 	}
 
