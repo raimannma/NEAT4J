@@ -62,17 +62,28 @@ public class Connection {
 		return (int) Math.floor(0.5 * (a + b) * (a + b + 1) + b);
 	}
 
+	/**
+	 * Convert a JsonObject to a connection.
+	 *
+	 * @param jsonObject the json object which holds the information
+	 * @return the connection created from the information of the json object
+	 */
 	public static Connection fromJSON(final JsonObject jsonObject, final List<Node> nodes) {
-		final Node from = nodes.stream().filter(node -> node.index == jsonObject.get("from").getAsInt()).findAny().orElseThrow();
-		final Node to = nodes.stream().filter(node -> node.index == jsonObject.get("to").getAsInt()).findAny().orElseThrow();
-		final double weight = jsonObject.get("weight").getAsDouble();
-		final Connection connection = new Connection(from, to, weight);
+		final int fromIndex = jsonObject.get("from").getAsInt(); // get from index from JSON
+		final int toIndex = jsonObject.get("to").getAsInt(); // get to index from JSON
+
+		final Node from = nodes.stream().filter(node -> node.index == fromIndex).findAny().orElseThrow(); // get from node by searching for the index in nodes list
+		final Node to = nodes.stream().filter(node -> node.index == toIndex).findAny().orElseThrow(); // get to node by searching for the index in nodes list
+
+		final double weight = jsonObject.get("weight").getAsDouble(); // get weight from JSON
+
+		final Connection connection = new Connection(from, to, weight); // create new connection with from, to and weight
 
 		if (jsonObject.has("gateNode")) {
-			final Node gateNode = nodes.stream().filter(node -> node.index == jsonObject.get("gateNode").getAsInt()).findAny().orElseThrow();
-			final double gain = jsonObject.get("gain").getAsDouble();
-			connection.gateNode = gateNode;
-			connection.gain = gain;
+			final int gateNodeIndex = jsonObject.get("gateNode").getAsInt(); // get gate node index from JSON
+			connection.gateNode = nodes.stream().filter(node -> node.index == gateNodeIndex).findAny().orElseThrow(); // get gate node by searching for the index in the nodes list
+
+			connection.gain = jsonObject.get("gain").getAsDouble(); // get gain from JSON
 		}
 
 		return connection;
@@ -100,15 +111,21 @@ public class Connection {
 		return data;
 	}
 
+
+	/**
+	 * Converts the connection to a JsonObject that can later be converted back.
+	 *
+	 * @return the created JsonObject
+	 */
 	public JsonObject toJSON() {
 		//assume node.index been set
 		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("from", this.from.index);
-		jsonObject.addProperty("to", this.to.index);
-		jsonObject.addProperty("weight", this.weight);
+		jsonObject.addProperty("from", this.from.index); // add index of from node
+		jsonObject.addProperty("to", this.to.index); // add index of to index
+		jsonObject.addProperty("weight", this.weight); // add weight
 		if (this.isGated()) {
-			jsonObject.addProperty("gateNode", this.gateNode.index);
-			jsonObject.addProperty("gain", this.gain);
+			jsonObject.addProperty("gateNode", this.gateNode.index); // add index of gate node
+			jsonObject.addProperty("gain", this.gain); // add gain
 		}
 		return jsonObject;
 	}
