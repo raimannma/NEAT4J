@@ -307,7 +307,7 @@ public class Network {
 	/**
 	 * Sets node indices.
 	 */
-	private void setNodeIndices() {
+	public void setNodeIndices() {
 		// node index equals to position in this.nodes list
 		IntStream.range(0, this.nodes.size()).forEach(i -> this.nodes.get(i).index = i);
 	}

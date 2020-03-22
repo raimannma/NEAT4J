@@ -22,19 +22,29 @@ public class NEATTest {
 
 	@Test
 	public void testJSON() {
-		final Network original = new Network(2, 2);
-		IntStream.range(0, 10)
+		final Network original = new Network(10, 10);
+		IntStream.range(0, 20)
 			.mapToObj(i -> pickRandom(Mutation.ALL))
 			.forEach(original::mutate);
 
 		final Network copied = original.copy();
 
+		final List<Connection> originalConnections = new ArrayList<>(original.connections);
+		final List<Connection> copiedConnections = new ArrayList<>(copied.connections);
+		final List<Connection> originalSelfConnections = new ArrayList<>(original.selfConnections);
+		final List<Connection> copiedSelfConnections = new ArrayList<>(copied.selfConnections);
+
+		originalConnections.sort(Comparator.comparingDouble(conn -> conn.weight));
+		copiedConnections.sort(Comparator.comparingDouble(conn -> conn.weight));
+		originalSelfConnections.sort(Comparator.comparingDouble(conn -> conn.weight));
+		copiedSelfConnections.sort(Comparator.comparingDouble(conn -> conn.weight));
+
 		assertEquals(original.input, copied.input);
 		assertEquals(original.output, copied.output);
-		assertEquals(new HashSet<>(original.nodes), new HashSet<>(copied.nodes));
-		assertEquals(new HashSet<>(original.connections), new HashSet<>(copied.connections));
-		assertEquals(new HashSet<>(original.selfConnections), new HashSet<>(copied.selfConnections));
-		assertEquals(new HashSet<>(original.gates), new HashSet<>(copied.gates));
+		assertEquals(original.nodes, copied.nodes);
+		assertEquals(originalConnections, copiedConnections);
+		assertEquals(originalSelfConnections, copiedSelfConnections);
+		assertEquals(original.gates, copied.gates);
 	}
 
 	@Test
