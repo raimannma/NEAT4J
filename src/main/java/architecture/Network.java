@@ -346,17 +346,6 @@ public class Network {
 	}
 
 	/**
-	 * Evolve double.
-	 *
-	 * @param inputs  the inputs
-	 * @param outputs the outputs
-	 * @return the double
-	 */
-	private double evolve(final double[][] inputs, final double[][] outputs) {
-		return this.evolve(inputs, outputs, new EvolveOptions());
-	}
-
-	/**
 	 * Calculates growth score of this network.
 	 *
 	 * @param growth the growth rate
@@ -412,9 +401,6 @@ public class Network {
 	 * @return the error of the network after evolution
 	 */
 	public double evolve(final double[][] inputs, final double[][] outputs, final EvolveOptions options) {
-		if (options == null) {
-			return this.evolve(inputs, outputs);
-		}
 		if (inputs[0].length != this.input || outputs[0].length != this.output) {
 			// check dataset dimensions
 			throw new IllegalStateException("Dataset input/output size should be same as network input/output size!");
