@@ -144,4 +144,8 @@ public class Connection {
 	public boolean isSelfConnection() {
 		return this.from.equals(this.to);
 	}
+
+	public boolean isGated() {
+		return this.gateNode != null;
+	}
 }
