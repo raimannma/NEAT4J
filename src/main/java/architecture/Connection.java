@@ -140,4 +140,8 @@ public class Connection {
 			", from=" + this.from +
 			'}';
 	}
+
+	public boolean isSelfConnection() {
+		return this.from.equals(this.to);
+	}
 }
