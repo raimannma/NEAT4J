@@ -1,7 +1,7 @@
 package architecture;
 
-import static methods.Utils.collectionsEqual;
 import static methods.Utils.pickRandom;
+import static methods.Utils.setsEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.stream.IntStream;
@@ -22,8 +22,8 @@ public class NEATTest {
 
 	@Test
 	public void testJSON() {
-		final Network original = new Network(10, 10);
-		IntStream.range(0, 20)
+		final Network original = new Network(30, 30);
+		IntStream.range(0, 200)
 			.mapToObj(i -> pickRandom(Mutation.ALL))
 			.forEach(original::mutate);
 
@@ -32,9 +32,9 @@ public class NEATTest {
 		assertEquals(original.input, copied.input);
 		assertEquals(original.output, copied.output);
 		assertEquals(original.nodes, copied.nodes);
-		assertTrue(collectionsEqual(original.connections, copied.connections));
-		assertTrue(collectionsEqual(original.selfConnections, copied.selfConnections));
-		assertTrue(collectionsEqual(original.gates, copied.gates));
+		assertTrue(setsEqual(original.connections, copied.connections));
+		assertTrue(setsEqual(original.selfConnections, copied.selfConnections));
+		assertTrue(setsEqual(original.gates, copied.gates));
 	}
 
 	@Test
