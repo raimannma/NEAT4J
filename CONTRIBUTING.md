@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for considering contributing to Default!
+Thanks for considering contributing to NEAT4J!
 
 ## Opening issues
 
@@ -24,31 +24,25 @@ We love pull requests. Here’s a quick guide:
   git checkout -b fix-for-that-thing
   ```
 
-3.Commit a failing test for the bug:
-
-  ```bash
-  git commit -am "Adds a failing test to demonstrate that thing"
-  ```
-
-4.Commit a fix that makes the test pass:
+3.Commit a fix that makes the test pass:
 
   ```bash
   git commit -am "Adds a fix for that thing!"
   ```
 
-5.Run the tests:
+4.Run the tests:
 
   ```bash
   mvn clean install test
   ```
 
-6.If everything looks good, push to your fork:
+5.If everything looks good, push to your fork:
 
   ```bash
   git push origin fix-for-that-thing
   ```
 
-7.[Submit a pull request.](https://help.github.com/articles/creating-a-pull-request)
+6.[Submit a pull request.](https://help.github.com/articles/creating-a-pull-request)
 
 ## Adding new features
 
