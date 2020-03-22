@@ -66,6 +66,7 @@ public class Connection {
 	 * Convert a JsonObject to a connection.
 	 *
 	 * @param jsonObject the json object which holds the information
+	 * @param nodes      will be used to get the from, to and gate node from
 	 * @return the connection created from the information of the json object
 	 */
 	public static Connection fromJSON(final JsonObject jsonObject, final List<Node> nodes) {
