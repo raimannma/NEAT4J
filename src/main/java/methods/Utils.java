@@ -2,6 +2,7 @@ package methods;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 import java.util.SplittableRandom;
 import org.jetbrains.annotations.NotNull;
 
@@ -102,19 +103,19 @@ public enum Utils {
 	}
 
 	/**
-	 * Checks if two collections are equal
+	 * Checks if two sets are equal
 	 * <p>
 	 * DOES NOT CHECK ORDER !
 	 *
-	 * @param collection  first collection
-	 * @param collection1 second collection
-	 * @param <T>         Generic type parameter
-	 * @return are both collections equal?
+	 * @param set  first set
+	 * @param set1 second set
+	 * @param <T>  Generic type parameter
+	 * @return are both sets equal?
 	 */
-	public static <T> boolean collectionsEqual(final Collection<T> collection, final Collection<T> collection1) {
+	public static <T> boolean setsEqual(final Set<T> set, final Set<T> set1) {
 		upperLoop:
-		for (final T elem : collection) {
-			for (final T t : collection1) {
+		for (final T elem : set) {
+			for (final T t : set1) {
 				if (elem.equals(t)) {
 					continue upperLoop;
 				}
@@ -123,8 +124,8 @@ public enum Utils {
 		}
 
 		upperLoop:
-		for (final T elem : collection1) {
-			for (final T t : collection) {
+		for (final T elem : set1) {
+			for (final T t : set) {
 				if (elem.equals(t)) {
 					continue upperLoop;
 				}
