@@ -100,12 +100,12 @@ public class EvolveOptions {
 		this.amount = 1;
 		this.iterations = -1;
 		this.clear = false;
-		this.populationSize = 500;
-		this.elitism = 0;
-		this.mutationRate = 0.3;
+		this.populationSize = 100;
+		this.elitism = 10;
+		this.mutationRate = 0.4;
 		this.mutationAmount = 1;
 		this.selection = new Selection.Power();
-		this.mutations = Mutation.FFW;
+		this.mutations = Mutation.ALL;
 		this.template = null;
 		this.maxNodes = Integer.MAX_VALUE;
 		this.maxConnections = Integer.MAX_VALUE;
