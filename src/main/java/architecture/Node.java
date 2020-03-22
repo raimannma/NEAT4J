@@ -27,13 +27,13 @@ public class Node {
 	 */
 	public final Set<Connection> out;
 	/**
-	 * Connection to the node itself.
-	 */
-	public final Connection self;
-	/**
 	 * Gated connections.
 	 */
 	public final List<Connection> gated;
+	/**
+	 * Connection to the node itself.
+	 */
+	public Connection self;
 	/**
 	 * The Activation type.
 	 */
