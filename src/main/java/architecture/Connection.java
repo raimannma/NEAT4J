@@ -122,12 +122,12 @@ public class Connection {
 			return false;
 		}
 		final Connection that = (Connection) o;
-		return Objects.equals(this.to, that.to) && Objects.equals(this.from, that.from);
+		return this.from.index == that.from.index && this.to.index == that.to.index;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.to, this.from);
+		return Objects.hash(this.to.index, this.from.index);
 	}
 
 	@Override
