@@ -682,15 +682,15 @@ public class Network {
 			.forEach(conn -> conn.gateNode = null);
 
 		final JsonObject json = new JsonObject();
-		json.addProperty("input", this.input);
-		json.addProperty("output", this.output);
-		json.addProperty("dropout", this.dropout);
-		json.addProperty("score", this.score);
+		json.addProperty("input", this.input); // add input property
+		json.addProperty("output", this.output); // add output property
+		json.addProperty("dropout", this.dropout); // add dropout property
+		json.addProperty("score", this.score); // add score property
+
 		final JsonArray jsonNodes = new JsonArray();
 		final JsonArray jsonConnections = new JsonArray();
 
 		this.setNodeIndices(); // set node indices
-
 		this.nodes.stream().map(Node::toJSON).forEach(jsonNodes::add); // add nodes to json array
 
 		this.gates.removeIf(gate -> !gate.isGated()); // remove connection from gates list, if it isn't gated
