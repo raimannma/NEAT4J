@@ -3,11 +3,9 @@ package architecture;
 import static methods.Utils.pickRandom;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.stream.IntStream;
 import methods.Mutation;
+import methods.Utils;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -31,28 +29,12 @@ public class NEATTest {
 
 		final Network copied = original.copy();
 
-		final List<Connection> originalConnections = new ArrayList<>(original.connections);
-		final List<Connection> copiedConnections = new ArrayList<>(copied.connections);
-		final List<Connection> originalSelfConnections = new ArrayList<>(original.selfConnections);
-		final List<Connection> copiedSelfConnections = new ArrayList<>(copied.selfConnections);
-		final List<Connection> originalGates = new ArrayList<>(original.gates);
-		final List<Connection> copiedGates = new ArrayList<>(copied.gates);
-
-		originalConnections.sort(Comparator.comparingDouble(conn -> conn.weight));
-		copiedConnections.sort(Comparator.comparingDouble(conn -> conn.weight));
-		originalSelfConnections.sort(Comparator.comparingDouble(conn -> conn.weight));
-		copiedSelfConnections.sort(Comparator.comparingDouble(conn -> conn.weight));
-		originalGates.sort(Comparator.comparingDouble(conn -> conn.weight));
-		copiedGates.sort(Comparator.comparingDouble(conn -> conn.weight));
-
-		//TODO Change check method
-
 		assertEquals(original.input, copied.input);
 		assertEquals(original.output, copied.output);
 		assertEquals(original.nodes, copied.nodes);
-		assertEquals(originalConnections, copiedConnections);
-		assertEquals(originalSelfConnections, copiedSelfConnections);
-		assertEquals(originalGates, copiedGates);
+		assertTrue(Utils.collectionsEqual(original.connections, copied.connections));
+		assertTrue(Utils.collectionsEqual(original.selfConnections, copied.selfConnections));
+		assertTrue(Utils.collectionsEqual(original.gates, copied.gates));
 	}
 
 	@Test
