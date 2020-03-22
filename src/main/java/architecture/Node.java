@@ -266,10 +266,10 @@ public class Node {
 			return false;
 		}
 		final Node that = (Node) o;
-		return that.bias == this.bias
+		return this.index != -1 && this.index == that.index
+			|| that.bias == this.bias
 			&& this.activationType == that.activationType
-			&& this.mask == that.mask
-			&& this.type == that.type;
+			&& this.mask == that.mask;
 	}
 
 	@Override
