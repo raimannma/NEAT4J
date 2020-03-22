@@ -98,8 +98,8 @@ public class Connection {
 		}
 		final Connection that = (Connection) o;
 		return this.weight == that.weight
-			&& this.from.toJSON().toString().equals(that.from.toJSON().toString())
-			&& this.to.toJSON().toString().equals(that.to.toJSON().toString());
+			&& this.from.equals(that.from)
+			&& this.to.equals(that.to);
 	}
 
 	@Override
