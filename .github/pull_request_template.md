@@ -38,5 +38,4 @@ The title should have the following format:
 - [ ] I referenced the according Issue
   - [ ] I created an Issue
   - [ ] I put a link in the Section [Related Issue](#related-issue)
-- [ ] I tested my code with multiple browsers
 - [ ] My commit messages are good and understandable
