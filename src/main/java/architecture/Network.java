@@ -211,6 +211,7 @@ public class Network {
 					offspring.gate(offspring.nodes.get((int) (double) connectionData[3]), connection);
 				}
 			});
+		offspring.setNodeIndices();
 		return offspring;
 	}
 
@@ -559,6 +560,7 @@ public class Network {
 		}
 
 		this.nodes.remove(node); // remove node from list
+		this.setNodeIndices();
 	}
 
 	/**

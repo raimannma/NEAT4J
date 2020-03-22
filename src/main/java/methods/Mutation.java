@@ -38,7 +38,7 @@ public enum Mutation {
 			final Node node = new Node(Node.NodeType.HIDDEN);
 			node.activationType = pickRandom(MOD_ACTIVATION.allowed);
 			network.nodes.add(Math.max(0, Math.min(network.nodes.indexOf(connection.to), network.nodes.size() - network.output)), node);
-
+			network.setNodeIndices();
 			if (connection.gateNode != null) {
 				// if connection had gate node
 				// gate with the new node
