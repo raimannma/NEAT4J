@@ -87,6 +87,7 @@ public class Node {
 		this.activation = 0;
 		this.state = 0;
 		this.mask = 1;
+		this.index = -1;
 
 		this.in = new HashSet<>();
 		this.out = new HashSet<>();
