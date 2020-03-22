@@ -670,11 +670,8 @@ public class Network {
 		this.setNodeIndices(); // set node indices
 
 		// creating nodes json array
-		this.nodes.forEach(node -> {
-			final JsonObject nodeJSON = node.toJSON(); // run Node.toJSON()
-			nodeJSON.addProperty("index", node.index); // add node index to json
-			jsonNodes.add(nodeJSON); // add to json array of all nodes
-		});
+		// add to json array of all nodes
+		this.nodes.stream().map(Node::toJSON).forEach(jsonNodes::add);
 
 		// creating connections json array
 		Stream.concat(this.connections.stream(), this.selfConnections.stream()) // stream with all connections
