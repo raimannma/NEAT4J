@@ -259,16 +259,14 @@ public class Network {
 			// create connection by connecting "from" and "to" node
 			final Node from = network.nodes.get(connJSON.get("from").getAsInt()); // get connection input node
 			final Node to = network.nodes.get(connJSON.get("to").getAsInt()); // get connection output node
-			if (!from.isNotProjectingTo(to)) {
-				// if there is already a connection
-				// continue
-				continue;
-			}
+
 			final Connection connection = network.connect(from, to);
-			if (connJSON.has("gateNode") && connJSON.get("gateNode").getAsInt() != -1) {
+			connection.weight = connJSON.get("weight").getAsDouble(); // set connection weight
+			if (connJSON.has("gateNode")) {
+				// if connection was gated
+				// gate the created connection
 				network.gate(network.nodes.get(connJSON.get("gateNode").getAsInt()), connection);
 			}
-			connection.weight = connJSON.get("weight").getAsDouble(); // set connection weight
 		}
 		return network;
 	}
@@ -661,6 +659,24 @@ public class Network {
 	 * @return the resulting json object
 	 */
 	public JsonObject toJSON() {
+		// add no self connections from self connections list to connections list
+		this.connections.addAll(this.selfConnections.stream().filter(conn -> !conn.isSelfConnection()).collect(Collectors.toSet()));
+		// add self connections from connections list to self connections list
+		this.selfConnections.addAll(this.connections.stream().filter(Connection::isSelfConnection).collect(Collectors.toSet()));
+
+		// remove self connections from connections list
+		this.connections.removeIf(Connection::isSelfConnection);
+		// remove no self connections from self connections list
+		this.selfConnections.removeIf(conn -> !conn.isSelfConnection());
+
+		// remove gates without a representing connection in connections list or self connections list
+		this.gates.removeIf(gate -> !this.connections.contains(gate) && !this.selfConnections.contains(gate));
+
+		// set gateNode to null for all connections except the ones in gates list
+		Stream.concat(this.connections.stream(), this.selfConnections.stream())
+			.filter(conn -> !this.gates.contains(conn))
+			.forEach(conn -> conn.gateNode = null);
+
 		final JsonObject json = new JsonObject();
 		json.addProperty("input", this.input);
 		json.addProperty("output", this.output);
@@ -671,13 +687,11 @@ public class Network {
 
 		this.setNodeIndices(); // set node indices
 
-		// creating nodes json array
-		// add to json array of all nodes
-		this.nodes.stream().map(Node::toJSON).forEach(jsonNodes::add);
+		this.nodes.stream().map(Node::toJSON).forEach(jsonNodes::add); // add nodes to json array
 
-		// creating connections json array
-		this.connections.stream().map(Connection::toJSON).forEach(jsonConnections::add);
-		this.selfConnections.stream().map(Connection::toJSON).forEach(jsonConnections::add);
+		this.gates.removeIf(gate -> !gate.isGated()); // remove connection from gates list, if it isn't gated
+		this.connections.stream().map(Connection::toJSON).forEach(jsonConnections::add); // add connections to json array
+		this.selfConnections.stream().map(Connection::toJSON).forEach(jsonConnections::add); // add self connections to json array
 
 		json.add("nodes", jsonNodes); // add nodes json array
 		json.add("connections", jsonConnections); /// add connections json array
