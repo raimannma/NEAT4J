@@ -106,7 +106,7 @@ public class Connection {
 		jsonObject.addProperty("from", this.from.index);
 		jsonObject.addProperty("to", this.to.index);
 		jsonObject.addProperty("weight", this.weight);
-		if (this.gateNode != null) {
+		if (this.isGated()) {
 			jsonObject.addProperty("gateNode", this.gateNode.index);
 			jsonObject.addProperty("gain", this.gain);
 		}
@@ -136,6 +136,7 @@ public class Connection {
 			"from=" + this.from.index +
 			", to=" + this.to.index +
 			", weight=" + this.weight +
+			", isGated()=" + this.isGated() +
 			'}';
 	}
 
