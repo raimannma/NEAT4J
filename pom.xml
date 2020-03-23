@@ -27,7 +27,7 @@
 		<connection>scm:git:git://github.com/raimannma/NEAT4J.git</connection>
 		<developerConnection>scm:git:git@github.com:raimannma/raimannma.git</developerConnection>
 		<url>https://github.com/raimannma/NEAT4J</url>
-		<tag>HEAD</tag>
+		<tag>NEAT4J-1.13</tag>
 	</scm>
 	<distributionManagement>
 		<snapshotRepository>
@@ -109,7 +109,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
+				<version>3.2.0</version>
 				<executions>
 					<execution>
 						<id>attach-javadocs</id>
