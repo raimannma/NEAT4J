@@ -10,7 +10,6 @@
 
 [Javadocs](https://raimannma.github.io/NEAT4J/)
 
-
 This is an architecture-free neural network library, which uses the [instinct algorithm](https://towardsdatascience.com/neuro-evolution-on-steroids-82bd14ddc2f6) to evolve the best possible neural network.
 
 ## Getting Started
@@ -63,7 +62,7 @@ Please read [CONTRIBUTING.md](https://github.com/raimannma/NEAT4J/blob/master/CO
 
 ## Authors
 
-* **Manuel Raimann** - *Initial work* - [raimannma](https://github.com/raimannma)
+* [Manuel Raimann](https://github.com/raimannma) *Initial work*
 
 See also the list of [contributors](https://github.com/raimannma/NEAT4J/graphs/contributors) who participated in this project.
 
@@ -72,4 +71,4 @@ See also the list of [contributors](https://github.com/raimannma/NEAT4J/graphs/c
 This project is licensed under the MIT License - see the [LICENSE](https://github.com/raimannma/NEAT4J/blob/master/LICENSE) file for details
 
 ## Acknowledgments
-* Heavily inspired by [carrot](https://github.com/liquidcarrot/carrot)
+Heavily inspired by [carrot](https://github.com/liquidcarrot/carrot)
