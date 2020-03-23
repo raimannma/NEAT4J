@@ -8,7 +8,7 @@
 	<description>This is a neuroevolution library written in Java.</description>
 	<groupId>com.github.raimannma</groupId>
 	<artifactId>NEAT4J</artifactId>
-	<version>1.11-SNAPSHOT</version>
+	<version>1.12-SNAPSHOT</version>
 	<licenses>
 		<license>
 			<name>MIT License</name>
