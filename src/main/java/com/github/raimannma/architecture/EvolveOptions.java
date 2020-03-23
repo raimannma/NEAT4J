@@ -131,6 +131,7 @@ public class EvolveOptions {
 	 * Sets fitness function.
 	 *
 	 * @param fitnessFunction the fitness function
+	 * @return itself to function as builder class
 	 */
 	public EvolveOptions setFitnessFunction(final ToDoubleFunction<Network> fitnessFunction) {
 		this.fitnessFunction = fitnessFunction;
