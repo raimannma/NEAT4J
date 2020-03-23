@@ -1,12 +1,10 @@
-package methods;
+package com.github.raimannma.methods;
 
-import static methods.Utils.pickRandom;
-import static methods.Utils.randDouble;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
-import architecture.Network;
+import com.github.raimannma.architecture.Network;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -36,7 +34,7 @@ public abstract class Selection {
 			final double minimalFitness = Math.abs(scoreStream.min().orElseThrow());
 			final double totalFitness = scoreStream.sum();
 
-			final double random = randDouble(totalFitness + minimalFitness * population.size());
+			final double random = Utils.randDouble(totalFitness + minimalFitness * population.size());
 			double value = 0;
 			for (final Network genome : population) {
 				value += genome.score + minimalFitness;
@@ -44,7 +42,7 @@ public abstract class Selection {
 					return genome;
 				}
 			}
-			return pickRandom(population);
+			return Utils.pickRandom(population);
 		}
 	}
 
@@ -83,7 +81,7 @@ public abstract class Selection {
 			if (population.get(0).score < population.get(1).score) {
 				population.sort((o1, o2) -> Double.compare(o2.score, o1.score));
 			}
-			return population.get((int) Math.floor(Math.pow(randDouble(), this.power) * population.size()));
+			return population.get((int) Math.floor(Math.pow(Utils.randDouble(), this.power) * population.size()));
 		}
 	}
 
@@ -112,9 +110,9 @@ public abstract class Selection {
 		@Override
 		public Network select(final @NotNull List<Network> population) {
 			return IntStream.range(0, Math.min(population.size(), this.size))
-				.mapToObj(i -> pickRandom(population))
+				.mapToObj(i -> Utils.pickRandom(population))
 				.max(Comparator.comparingDouble(o -> o.score))
-				.orElse(pickRandom(population));
+				.orElse(Utils.pickRandom(population));
 		}
 	}
 }

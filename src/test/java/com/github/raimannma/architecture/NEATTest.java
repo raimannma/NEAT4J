@@ -1,11 +1,11 @@
-package architecture;
+package com.github.raimannma.architecture;
 
-import static methods.Utils.pickRandom;
-import static methods.Utils.setsEqual;
+import static com.github.raimannma.methods.Utils.pickRandom;
+import static com.github.raimannma.methods.Utils.setsEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.stream.IntStream;
-import methods.Mutation;
+import com.github.raimannma.methods.Mutation;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

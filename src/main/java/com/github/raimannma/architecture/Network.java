@@ -1,10 +1,10 @@
-package architecture;
+package com.github.raimannma.architecture;
 
-import static methods.Mutation.SUB_NODE;
-import static methods.Utils.pickRandom;
-import static methods.Utils.randBoolean;
-import static methods.Utils.randDouble;
-import static methods.Utils.randInt;
+import static com.github.raimannma.methods.Mutation.SUB_NODE;
+import static com.github.raimannma.methods.Utils.pickRandom;
+import static com.github.raimannma.methods.Utils.randBoolean;
+import static com.github.raimannma.methods.Utils.randDouble;
+import static com.github.raimannma.methods.Utils.randInt;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
@@ -18,8 +18,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import methods.Loss;
-import methods.Mutation;
+import com.github.raimannma.methods.Loss;
+import com.github.raimannma.methods.Mutation;
 import org.jetbrains.annotations.NotNull;
 
 /**

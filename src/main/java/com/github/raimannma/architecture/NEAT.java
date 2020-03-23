@@ -1,6 +1,6 @@
-package architecture;
+package com.github.raimannma.architecture;
 
-import static methods.Utils.pickRandom;
+import static com.github.raimannma.methods.Utils.pickRandom;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
@@ -11,9 +11,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.IntStream;
-import methods.Mutation;
-import methods.Selection;
-import methods.Utils;
+import com.github.raimannma.methods.Mutation;
+import com.github.raimannma.methods.Selection;
+import com.github.raimannma.methods.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**

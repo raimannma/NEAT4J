@@ -1,4 +1,4 @@
-package methods;
+package com.github.raimannma.methods;
 
 /**
  * The enum Activation.

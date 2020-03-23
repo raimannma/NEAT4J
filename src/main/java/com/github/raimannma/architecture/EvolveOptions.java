@@ -1,11 +1,11 @@
-package architecture;
+package com.github.raimannma.architecture;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.ToDoubleFunction;
-import methods.Loss;
-import methods.Mutation;
-import methods.Selection;
+import com.github.raimannma.methods.Loss;
+import com.github.raimannma.methods.Mutation;
+import com.github.raimannma.methods.Selection;
 
 /**
  * The type Evolve options.

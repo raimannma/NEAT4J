@@ -1,14 +1,13 @@
-package architecture;
+package com.github.raimannma.architecture;
 
-import static methods.Activation.LOGISTIC;
-import static methods.Utils.randDouble;
+import static com.github.raimannma.methods.Utils.randDouble;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import methods.Activation;
+import com.github.raimannma.methods.Activation;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -81,7 +80,7 @@ public class Node {
 	 */
 	public Node(final NodeType type) {
 		this.bias = type == NodeType.INPUT ? 0 : randDouble(-1, 1);
-		this.activationType = LOGISTIC;
+		this.activationType = Activation.LOGISTIC;
 		this.type = type;
 
 		this.activation = 0;
