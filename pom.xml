@@ -6,7 +6,7 @@
 
 	<groupId>com.github.raimannma</groupId>
 	<artifactId>NEAT4J</artifactId>
-	<version>1.14-SNAPSHOT</version>
+	<version>1.14</version>
 	<packaging>jar</packaging>
 
 	<name>NEAT</name>
@@ -117,7 +117,7 @@
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>
-						<phase>deploy</phase>
+						<phase>verify</phase>
 						<goals>
 							<goal>sign</goal>
 						</goals>

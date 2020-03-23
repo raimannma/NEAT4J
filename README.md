@@ -14,7 +14,18 @@ This is an architecture-free neural network library, which uses the [instinct al
 
 ## Getting Started
 
-You can simply use the jar file of the latest [release](https://github.com/raimannma/NEAT4J/releases) or build it from source (see below).
+Add it as Maven dependency:
+```
+<dependency>
+  <groupId>com.github.raimannma</groupId>
+  <artifactId>NEAT4J</artifactId>
+  <version>1.13</version>
+</dependency>
+```
+
+
+Or use the jar file from the latest [release](https://github.com/raimannma/NEAT4J/releases).
+How you can build your own jar file is described below.
 
 ### Examples
 
