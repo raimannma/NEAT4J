@@ -100,23 +100,22 @@ public class EvolveOptions {
 	 * Instantiates a new Evolve options.
 	 */
 	public EvolveOptions() {
-		this.error = Double.NaN;
-		this.growth = 0.0001;
-		this.loss = Loss.MSE;
-		this.amount = 1;
-		this.iterations = -1;
-		this.clear = false;
-		this.populationSize = 100;
-		this.elitism = 10;
-		this.mutationRate = 0.4;
-		this.mutationAmount = 1;
-		this.selection = new Selection.Power();
-		this.mutations = Mutation.ALL;
-		this.template = null;
-		this.maxNodes = Integer.MAX_VALUE;
-		this.maxConnections = Integer.MAX_VALUE;
-		this.maxGates = Integer.MAX_VALUE;
-		this.fitnessFunction = null;
+		this.setError(Double.NaN);
+		this.setGrowth(0.0001);
+		this.setLoss(Loss.MSE);
+		this.setAmount(1);
+		this.setIterations(-1);
+		this.setClear(false);
+		this.setPopulationSize(100);
+		this.setElitism(10);
+		this.setMutationRate(0.4);
+		this.setMutationAmount(1);
+		this.setSelection(new Selection.FitnessProportionate());
+		this.setMutations(Mutation.ALL);
+		this.setTemplate(null);
+		this.setMaxNodes(Integer.MAX_VALUE);
+		this.setMaxConnections(Integer.MAX_VALUE);
+		this.setMaxGates(Integer.MAX_VALUE);
 	}
 
 	/**
@@ -133,8 +132,9 @@ public class EvolveOptions {
 	 *
 	 * @param fitnessFunction the fitness function
 	 */
-	public void setFitnessFunction(final ToDoubleFunction<Network> fitnessFunction) {
+	public EvolveOptions setFitnessFunction(final ToDoubleFunction<Network> fitnessFunction) {
 		this.fitnessFunction = fitnessFunction;
+		return this;
 	}
 
 	/**
@@ -150,9 +150,11 @@ public class EvolveOptions {
 	 * Sets population size.
 	 *
 	 * @param populationSize the population size
+	 * @return itself to function as builder class
 	 */
-	public void setPopulationSize(final int populationSize) {
+	public EvolveOptions setPopulationSize(final int populationSize) {
 		this.populationSize = populationSize;
+		return this;
 	}
 
 	/**
@@ -168,9 +170,11 @@ public class EvolveOptions {
 	 * Sets elitism.
 	 *
 	 * @param elitism the elitism
+	 * @return itself to function as builder class
 	 */
-	public void setElitism(final int elitism) {
+	public EvolveOptions setElitism(final int elitism) {
 		this.elitism = elitism;
+		return this;
 	}
 
 	/**
@@ -186,9 +190,11 @@ public class EvolveOptions {
 	 * Sets mutation rate.
 	 *
 	 * @param mutationRate the mutation rate
+	 * @return itself to function as builder class
 	 */
-	public void setMutationRate(final double mutationRate) {
+	public EvolveOptions setMutationRate(final double mutationRate) {
 		this.mutationRate = mutationRate;
+		return this;
 	}
 
 	/**
@@ -204,9 +210,11 @@ public class EvolveOptions {
 	 * Sets mutation amount.
 	 *
 	 * @param mutationAmount the mutation amount
+	 * @return itself to function as builder class
 	 */
-	public void setMutationAmount(final int mutationAmount) {
+	public EvolveOptions setMutationAmount(final int mutationAmount) {
 		this.mutationAmount = mutationAmount;
+		return this;
 	}
 
 	/**
@@ -222,9 +230,11 @@ public class EvolveOptions {
 	 * Sets selection.
 	 *
 	 * @param selection the selection
+	 * @return itself to function as builder class
 	 */
-	public void setSelection(final Selection selection) {
+	public EvolveOptions setSelection(final Selection selection) {
 		this.selection = selection;
+		return this;
 	}
 
 	/**
@@ -240,9 +250,11 @@ public class EvolveOptions {
 	 * Sets mutations.
 	 *
 	 * @param mutations the mutations
+	 * @return itself to function as builder class
 	 */
-	public void setMutations(final Mutation[] mutations) {
+	public EvolveOptions setMutations(final Mutation[] mutations) {
 		this.mutations = mutations;
+		return this;
 	}
 
 	/**
@@ -258,9 +270,11 @@ public class EvolveOptions {
 	 * Sets template.
 	 *
 	 * @param template the template
+	 * @return itself to function as builder class
 	 */
-	public void setTemplate(final Network template) {
+	public EvolveOptions setTemplate(final Network template) {
 		this.template = template;
+		return this;
 	}
 
 	/**
@@ -276,9 +290,11 @@ public class EvolveOptions {
 	 * Sets max nodes.
 	 *
 	 * @param maxNodes the max nodes
+	 * @return itself to function as builder class
 	 */
-	public void setMaxNodes(final int maxNodes) {
+	public EvolveOptions setMaxNodes(final int maxNodes) {
 		this.maxNodes = maxNodes;
+		return this;
 	}
 
 	/**
@@ -294,9 +310,11 @@ public class EvolveOptions {
 	 * Sets max connections.
 	 *
 	 * @param maxConnections the max connections
+	 * @return itself to function as builder class
 	 */
-	public void setMaxConnections(final int maxConnections) {
+	public EvolveOptions setMaxConnections(final int maxConnections) {
 		this.maxConnections = maxConnections;
+		return this;
 	}
 
 	/**
@@ -312,9 +330,11 @@ public class EvolveOptions {
 	 * Sets max gates.
 	 *
 	 * @param maxGates the max gates
+	 * @return itself to function as builder class
 	 */
-	public void setMaxGates(final int maxGates) {
+	public EvolveOptions setMaxGates(final int maxGates) {
 		this.maxGates = maxGates;
+		return this;
 	}
 
 	/**
@@ -330,9 +350,11 @@ public class EvolveOptions {
 	 * Sets equal.
 	 *
 	 * @param equal the equal
+	 * @return itself to function as builder class
 	 */
-	public void setEqual(final boolean equal) {
+	public EvolveOptions setEqual(final boolean equal) {
 		this.equal = equal;
+		return this;
 	}
 
 	/**
@@ -348,9 +370,11 @@ public class EvolveOptions {
 	 * Sets clear.
 	 *
 	 * @param clear the clear
+	 * @return itself to function as builder class
 	 */
-	public void setClear(final boolean clear) {
+	public EvolveOptions setClear(final boolean clear) {
 		this.clear = clear;
+		return this;
 	}
 
 	/**
@@ -366,9 +390,11 @@ public class EvolveOptions {
 	 * Sets error.
 	 *
 	 * @param error the error
+	 * @return itself to function as builder class
 	 */
-	public void setError(final double error) {
+	public EvolveOptions setError(final double error) {
 		this.error = error;
+		return this;
 	}
 
 	/**
@@ -384,9 +410,11 @@ public class EvolveOptions {
 	 * Sets growth.
 	 *
 	 * @param growth the growth
+	 * @return itself to function as builder class
 	 */
-	public void setGrowth(final double growth) {
+	public EvolveOptions setGrowth(final double growth) {
 		this.growth = growth;
+		return this;
 	}
 
 	/**
@@ -402,9 +430,11 @@ public class EvolveOptions {
 	 * Sets amount.
 	 *
 	 * @param amount the amount
+	 * @return itself to function as builder class
 	 */
-	public void setAmount(final int amount) {
+	public EvolveOptions setAmount(final int amount) {
 		this.amount = amount;
+		return this;
 	}
 
 	/**
@@ -420,9 +450,11 @@ public class EvolveOptions {
 	 * Sets loss.
 	 *
 	 * @param loss the loss
+	 * @return itself to function as builder class
 	 */
-	public void setLoss(final Loss loss) {
+	public EvolveOptions setLoss(final Loss loss) {
 		this.loss = loss;
+		return this;
 	}
 
 	/**
@@ -438,9 +470,11 @@ public class EvolveOptions {
 	 * Sets iterations.
 	 *
 	 * @param iterations the iterations
+	 * @return itself to function as builder class
 	 */
-	public void setIterations(final int iterations) {
+	public EvolveOptions setIterations(final int iterations) {
 		this.iterations = iterations;
+		return this;
 	}
 
 	/**
@@ -456,9 +490,11 @@ public class EvolveOptions {
 	 * Sets log.
 	 *
 	 * @param log the log
+	 * @return itself to function as builder class
 	 */
-	public void setLog(final int log) {
+	public EvolveOptions setLog(final int log) {
 		this.log = log;
+		return this;
 	}
 
 	@Override
