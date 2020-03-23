@@ -6,7 +6,7 @@
 	<description>This is a neuroevolution library written in Java.</description>
 	<groupId>com.github.raimannma</groupId>
 	<artifactId>NEAT4J</artifactId>
-	<version>1.12</version>
+	<version>1.13-SNAPSHOT</version>
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -26,7 +26,7 @@
 		<connection>scm:git:git://github.com/raimannma/NEAT4J.git</connection>
 		<developerConnection>scm:git:git@github.com:raimannma/raimannma.git</developerConnection>
 		<url>https://github.com/raimannma/NEAT4J</url>
-		<tag>NEAT4J-1.12</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<distributionManagement>
 		<snapshotRepository>
