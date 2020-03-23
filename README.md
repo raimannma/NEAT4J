@@ -36,7 +36,7 @@ How you can build your own jar file is described below.
 
     final double[][] inputs = new double[][]{  
 	    new double[]{0, 0},  
-		new double[]{0, 1},  
+	    new double[]{0, 1},  
 	    new double[]{1, 0},  
 	    new double[]{1, 1},  
     };  
