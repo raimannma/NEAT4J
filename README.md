@@ -62,7 +62,7 @@ Please read [CONTRIBUTING.md](https://github.com/raimannma/NEAT4J/blob/master/CO
 
 ## Authors
 
-* [Manuel Raimann](https://github.com/raimannma) *Initial work*
+[Manuel Raimann](https://github.com/raimannma) *Initial work*
 
 See also the list of [contributors](https://github.com/raimannma/NEAT4J/graphs/contributors) who participated in this project.
 
