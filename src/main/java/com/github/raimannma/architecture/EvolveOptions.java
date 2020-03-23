@@ -14,79 +14,85 @@ import com.github.raimannma.methods.Selection;
  */
 public class EvolveOptions {
 	/**
-	 * The Fitness function.
+	 * Determines how "fit" a network is. A higher value means, that the network is fitter.
 	 */
 	private ToDoubleFunction<Network> fitnessFunction;
 	/**
-	 * The Population size.
+	 * Amount of networks in every population.
 	 */
 	private int populationSize;
 	/**
-	 * The number of elitsits.
+	 * Amount of networks that survive a evolution step without mutation (fittest ones get picked first).
 	 */
 	private int elitism;
 	/**
-	 * The Mutation rate.
+	 * The probability that one network gets mutated.
 	 */
 	private double mutationRate;
 	/**
-	 * The Mutation amount.
+	 * Amount of mutation steps a network does, if it gets mutated.
 	 */
 	private int mutationAmount;
 	/**
-	 * The selection type.
+	 * The way networks are selected for breeding the offspring.
 	 */
 	private Selection selection;
 	/**
-	 * Allowed mutations.
+	 * For mutating allowed methods.
 	 */
 	private Mutation[] mutations;
 	/**
-	 * The Template.
+	 * The template to start the first population from.
 	 */
 	private Network template;
 	/**
-	 * The Max nodes.
+	 * Maximum amount of nodes in a network.
 	 */
 	private int maxNodes;
 	/**
-	 * The Max connections.
+	 * Maximum amount of connections in a network.
 	 */
 	private int maxConnections;
 	/**
-	 * The Max gates.
+	 * Maximum amount of gates in a network.
 	 */
 	private int maxGates;
 	/**
-	 * The Equal.
+	 * Should the crossover function consider both parents as equally fit?
 	 */
 	private boolean equal;
 	/**
-	 * The Clear.
+	 * Clear the context of all nodes, useful for timeseries predictions.
 	 */
 	private boolean clear;
 	/**
-	 * The Error.
+	 * The target error. Evolution would stop, if this error rate has been reached.
 	 */
 	private double error;
 	/**
-	 * The Growth.
+	 * Set a penalty for large networks.
+	 * Should be a small number.
 	 */
 	private double growth;
 	/**
-	 * The Amount.
+	 * How often should the trainingset be tested for every network?
+	 * Should be 1 for feedforward problems.
+	 * Useful for time series dataset.
 	 */
 	private int amount;
 	/**
-	 * The Loss.
+	 * The loss function used to determine the fitness.
+	 * Unnecessary if you set your own fitness function.
 	 */
 	private Loss loss;
 	/**
-	 * The Iterations.
+	 * Amount of evolution iterations.
 	 */
 	private int iterations;
 	/**
-	 * The Log.
+	 * Log after "generation mod log == 0".
+	 * 1 -> Log after each generation
+	 * 10 -> Log every 10th generation
 	 */
 	private int log;
 
