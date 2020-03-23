@@ -2,7 +2,6 @@ package com.github.raimannma.methods;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import com.github.raimannma.architecture.Network;
 import org.jetbrains.annotations.NotNull;
@@ -30,9 +29,8 @@ public abstract class Selection {
 	public final static class FitnessProportionate extends Selection {
 		@Override
 		public Network select(final @NotNull List<Network> population) {
-			final DoubleStream scoreStream = population.stream().mapToDouble(network -> network.score);
-			final double minimalFitness = Math.abs(scoreStream.min().orElseThrow());
-			final double totalFitness = scoreStream.sum();
+			final double minimalFitness = population.stream().mapToDouble(network -> network.score).min().orElseThrow();
+			final double totalFitness = population.stream().mapToDouble(network -> network.score).sum();
 
 			final double random = Utils.randDouble(totalFitness + minimalFitness * population.size());
 			double value = 0;
