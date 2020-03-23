@@ -36,7 +36,7 @@ How you can build your own jar file is described below.
 
     final double[][] inputs = new double[][]{  
 	    new double[]{0, 0},  
-		new double[]{0, 1},  
+	    new double[]{0, 1},  
 	    new double[]{1, 0},  
 	    new double[]{1, 1},  
     };  
@@ -51,7 +51,7 @@ How you can build your own jar file is described below.
     
     final EvolveOptions options = new EvolveOptions();  
     options.setError(0.05); // set target error for evolution
-    // more options see here: https://raimannma.github.io/NEAT4J/architecture/EvolveOptions.html
+    // more options see here: https://raimannma.github.io/NEAT4J/com/github/raimannma/architecture/EvolveOptions.html
 
     network.evolve(inputs, outputs, options); // evolve the network
 
