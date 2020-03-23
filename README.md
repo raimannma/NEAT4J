@@ -19,7 +19,7 @@ Add it as Maven dependency:
 <dependency>
   <groupId>com.github.raimannma</groupId>
   <artifactId>NEAT4J</artifactId>
-  <version>1.13</version>
+  <version>1.14</version>
 </dependency>
 ```
 
