@@ -11,8 +11,8 @@ public abstract class Agent {
 	Agent(final int numStates, final int numActions) {
 		this.numStates = numStates;
 		this.numActions = numActions;
+		this.episode = 0;
 	}
-
 
 	public abstract double learn(double reward);
 }
