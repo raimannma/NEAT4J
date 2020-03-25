@@ -15,7 +15,7 @@ public class EvolveOptions {
 	/**
 	 * Determines how "fit" the networks are.
 	 * A higher value means, that the network is fitter.
-	 * <p>
+	 *
 	 * <pre>
 	 *                new Consumer{@literal <}List{@literal <}Network{@literal >}{@literal >}() {
 	 *                    {@literal @}Override
