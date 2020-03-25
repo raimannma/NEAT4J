@@ -8,14 +8,14 @@ public class Experience implements Comparable<Experience> {
 	protected double[] lastState;
 	protected int lastAction;
 	protected double lastReward;
-	protected int state;
+	protected double[] state;
 	protected int action;
 
-	public Experience(final int generation, final double[] lastState, final int lastAction, final double lastReward, final int state, final int action) {
+	public Experience(final int generation, final double[] lastState, final int lastAction, final double lastReward, final double[] state, final int action) {
 		this(generation, lastState, lastAction, lastReward, state, action, 0);
 	}
 
-	public Experience(final int generation, final double[] lastState, final int lastAction, final double lastReward, final int state, final int action, final double tdError) {
+	public Experience(final int generation, final double[] lastState, final int lastAction, final double lastReward, final double[] state, final int action, final double tdError) {
 		this.generation = generation;
 		this.tdError = tdError;
 		this.lastState = lastState;
