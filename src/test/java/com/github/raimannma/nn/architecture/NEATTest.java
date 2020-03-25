@@ -1,11 +1,10 @@
-package com.github.raimannma.architecture;
+package com.github.raimannma.nn.architecture;
 
 import static com.github.raimannma.nn.methods.Utils.pickRandom;
 import static com.github.raimannma.nn.methods.Utils.setsEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.stream.IntStream;
-import com.github.raimannma.nn.architecture.Network;
 import com.github.raimannma.nn.methods.EvolveOptions;
 import com.github.raimannma.nn.methods.Mutation;
 import org.jetbrains.annotations.NotNull;
