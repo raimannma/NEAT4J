@@ -1,8 +1,9 @@
 package com.github.raimannma.methods;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
-import java.util.function.ToDoubleFunction;
+import java.util.function.Consumer;
 import com.github.raimannma.architecture.Network;
 
 /**
@@ -12,9 +13,26 @@ import com.github.raimannma.architecture.Network;
  */
 public class EvolveOptions {
 	/**
-	 * Determines how "fit" a network is. A higher value means, that the network is fitter.
+	 * Determines how "fit" the networks are.
+	 * A higher value means, that the network is fitter.
+	 * <p>
+	 * <pre>
+	 *                new Consumer{@literal <}List{@literal <}Network{@literal >}{@literal >}() {
+	 *                    {@literal @}Override
+	 *                    public void accept(List{@literal <}Network{@literal >} population) {
+	 * 			population
+	 * 			.parallelStream()
+	 *                        .forEach(genome -{@literal >} {
+	 *                              final double sum = IntStream.range(0, amount)
+	 *                                  .mapToDouble(i -{@literal >} -genome.test(inputs, outputs, loss))
+	 * 			          .sum();
+	 * 			      genome.score = (sum - genome.getGrowthScore(growth)) / amount;
+	 *                        });
+	 *                    }
+	 *                }
+	 * </pre>
 	 */
-	private ToDoubleFunction<Network> fitnessFunction;
+	private Consumer<List<Network>> fitnessFunction;
 	/**
 	 * Amount of networks in every population.
 	 */
@@ -89,8 +107,8 @@ public class EvolveOptions {
 	private int iterations;
 	/**
 	 * Log after "generation mod log == 0".
-	 * 1 -> Log after each generation
-	 * 10 -> Log every 10th generation
+	 * 1 - Log after each generation
+	 * 10 - Log every 10th generation
 	 */
 	private int log;
 
@@ -121,7 +139,7 @@ public class EvolveOptions {
 	 *
 	 * @return the fitness function
 	 */
-	public ToDoubleFunction<Network> getFitnessFunction() {
+	public Consumer<List<Network>> getFitnessFunction() {
 		return this.fitnessFunction;
 	}
 
@@ -131,7 +149,7 @@ public class EvolveOptions {
 	 * @param fitnessFunction the fitness function
 	 * @return itself to function as builder class
 	 */
-	public EvolveOptions setFitnessFunction(final ToDoubleFunction<Network> fitnessFunction) {
+	public EvolveOptions setFitnessFunction(final Consumer<List<Network>> fitnessFunction) {
 		this.fitnessFunction = fitnessFunction;
 		return this;
 	}
