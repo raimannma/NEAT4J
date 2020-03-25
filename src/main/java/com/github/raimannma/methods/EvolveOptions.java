@@ -15,20 +15,21 @@ public class EvolveOptions {
 	/**
 	 * Determines how "fit" the networks are.
 	 * A higher value means, that the network is fitter.
-	 *
+	 * <p>
 	 * <pre>
-	 *     {@code
-	 *      new Consumer<>() {
-	 *          @Override
-	 *          public void accept(final List<Network> population) {
-	 * 			    population
-	 *              .parallelStream()
-	 * 				.forEach(genome -> {
-	 * 			        // calculate score for each genome (Network)
-	 * 					genome.score = someGenomeScoreValue;
-	 *              });
-	 *          }
-	 *     };
+	 *                new Consumer{@literal <}List{@literal <}Network{@literal >}{@literal >}() {
+	 *                    {@literal @}Override
+	 *                    public void accept(List{@literal <}Network{@literal >} population) {
+	 * 			population
+	 * 			.parallelStream()
+	 *                        .forEach(genome -{@literal >} {
+	 *                              final double sum = IntStream.range(0, amount)
+	 *                                  .mapToDouble(i -{@literal >} -genome.test(inputs, outputs, loss))
+	 * 			          .sum();
+	 * 			      genome.score = (sum - genome.getGrowthScore(growth)) / amount;
+	 *                        });
+	 *                    }
+	 *                }
 	 * </pre>
 	 */
 	private Consumer<List<Network>> fitnessFunction;
@@ -106,8 +107,8 @@ public class EvolveOptions {
 	private int iterations;
 	/**
 	 * Log after "generation mod log == 0".
-	 * 1 -> Log after each generation
-	 * 10 -> Log every 10th generation
+	 * 1 - Log after each generation
+	 * 10 - Log every 10th generation
 	 */
 	private int log;
 
