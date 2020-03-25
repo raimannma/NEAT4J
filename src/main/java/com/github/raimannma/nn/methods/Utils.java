@@ -146,4 +146,14 @@ public enum Utils {
 		}
 		return index;
 	}
+
+	public static double max(final double[] arr) {
+		double val = arr[0];
+		for (final double v : arr) {
+			if (v > val) {
+				val = v;
+			}
+		}
+		return val;
+	}
 }
