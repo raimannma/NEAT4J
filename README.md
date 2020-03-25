@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/github/contributors/raimannma/NEAT4J">
 </a>
 
-[Javadocs](https://raimannma.github.io/NEAT4J/)
+[Javadocs](https://raimannma.github.io/NEAT4J/1.15-SNAPSHOT/)
 
 This is an architecture-free neural network library, which uses the [instinct algorithm](https://towardsdatascience.com/neuro-evolution-on-steroids-82bd14ddc2f6) to evolve the best possible neural network.
 
