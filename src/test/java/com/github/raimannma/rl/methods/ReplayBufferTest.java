@@ -29,10 +29,10 @@ class ReplayBufferTest {
 			final Experience experience = new Experience(i, null, 0, 0, null, 0, randDouble());
 			replayBuffer.addExperience(experience);
 
-			int lastGeneration = replayBuffer.buffer.first().generation;
+			int lastGeneration = replayBuffer.buffer.first().episode;
 			for (final Experience exp : replayBuffer.buffer) {
-				assertTrue(exp.generation >= lastGeneration);
-				lastGeneration = exp.generation;
+				assertTrue(exp.episode >= lastGeneration);
+				lastGeneration = exp.episode;
 			}
 		}
 	}
