@@ -1,8 +1,9 @@
 package com.github.raimannma.methods;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
-import java.util.function.ToDoubleFunction;
+import java.util.function.Consumer;
 import com.github.raimannma.architecture.Network;
 
 /**
@@ -12,9 +13,10 @@ import com.github.raimannma.architecture.Network;
  */
 public class EvolveOptions {
 	/**
-	 * Determines how "fit" a network is. A higher value means, that the network is fitter.
+	 * Determines how "fit" the networks are.
+	 * A higher value means, that the network is fitter.
 	 */
-	private ToDoubleFunction<Network> fitnessFunction;
+	private Consumer<List<Network>> fitnessFunction;
 	/**
 	 * Amount of networks in every population.
 	 */
@@ -121,7 +123,7 @@ public class EvolveOptions {
 	 *
 	 * @return the fitness function
 	 */
-	public ToDoubleFunction<Network> getFitnessFunction() {
+	public Consumer<List<Network>> getFitnessFunction() {
 		return this.fitnessFunction;
 	}
 
@@ -131,7 +133,7 @@ public class EvolveOptions {
 	 * @param fitnessFunction the fitness function
 	 * @return itself to function as builder class
 	 */
-	public EvolveOptions setFitnessFunction(final ToDoubleFunction<Network> fitnessFunction) {
+	public EvolveOptions setFitnessFunction(final Consumer<List<Network>> fitnessFunction) {
 		this.fitnessFunction = fitnessFunction;
 		return this;
 	}

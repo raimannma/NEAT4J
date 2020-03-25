@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.ToDoubleFunction;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import com.github.raimannma.methods.EvolveOptions;
 import com.github.raimannma.methods.Mutation;
@@ -34,7 +34,7 @@ class NEAT {
 	/**
 	 * The Fitness function.
 	 */
-	private final ToDoubleFunction<Network> fitnessFunction;
+	private final Consumer<List<Network>> fitnessFunction;
 	/**
 	 * The Equal.
 	 */
@@ -180,15 +180,8 @@ class NEAT {
 		if (this.clear) {
 			this.population.forEach(Network::clear);
 		}
-		this.population
-			.parallelStream() //parallel
-			.forEach(genome -> {
-				// calculate score with the given fitness function
-				genome.score = this.fitnessFunction.applyAsDouble(genome);
-				if (Double.isNaN(genome.score)) {
-					genome.score = -Double.MAX_VALUE;
-				}
-			});
+
+		this.fitnessFunction.accept(this.population);
 	}
 
 	/**
