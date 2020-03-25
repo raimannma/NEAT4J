@@ -1,4 +1,4 @@
-package com.github.raimannma.methods;
+package com.github.raimannma.nn.methods;
 
 import java.util.ArrayList;
 import java.util.Collection;

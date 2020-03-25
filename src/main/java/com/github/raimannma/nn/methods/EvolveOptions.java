@@ -1,10 +1,10 @@
-package com.github.raimannma.methods;
+package com.github.raimannma.nn.methods;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import com.github.raimannma.architecture.Network;
+import com.github.raimannma.nn.architecture.Network;
 
 /**
  * The type Evolve options.

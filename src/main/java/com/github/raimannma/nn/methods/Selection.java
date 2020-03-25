@@ -1,9 +1,9 @@
-package com.github.raimannma.methods;
+package com.github.raimannma.nn.methods;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
-import com.github.raimannma.architecture.Network;
+import com.github.raimannma.nn.architecture.Network;
 import org.jetbrains.annotations.NotNull;
 
 /**

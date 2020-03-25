@@ -1,6 +1,5 @@
-package com.github.raimannma.architecture;
+package com.github.raimannma.nn.architecture;
 
-import static com.github.raimannma.methods.Utils.pickRandom;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
@@ -11,10 +10,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
-import com.github.raimannma.methods.EvolveOptions;
-import com.github.raimannma.methods.Mutation;
-import com.github.raimannma.methods.Selection;
-import com.github.raimannma.methods.Utils;
+import com.github.raimannma.nn.methods.EvolveOptions;
+import com.github.raimannma.nn.methods.Mutation;
+import com.github.raimannma.nn.methods.Selection;
+import com.github.raimannma.nn.methods.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -223,7 +222,7 @@ class NEAT {
 	private @NotNull Mutation selectMutationMethod(final Network genome) {
 		Mutation mutationMethod;
 		do {
-			mutationMethod = pickRandom(this.mutation);
+			mutationMethod = Utils.pickRandom(this.mutation);
 		} while ((mutationMethod == Mutation.ADD_NODE && genome.nodes.size() >= this.maxNodes)
 			|| (mutationMethod == Mutation.ADD_CONN && genome.connections.size() >= this.maxConnections)
 			|| (mutationMethod == Mutation.ADD_GATE && genome.gates.size() >= this.maxGates));

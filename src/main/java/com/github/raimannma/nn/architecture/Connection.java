@@ -1,4 +1,4 @@
-package com.github.raimannma.architecture;
+package com.github.raimannma.nn.architecture;
 
 import com.google.gson.JsonObject;
 import java.util.List;

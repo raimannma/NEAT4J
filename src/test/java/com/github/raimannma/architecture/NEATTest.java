@@ -1,12 +1,13 @@
 package com.github.raimannma.architecture;
 
-import static com.github.raimannma.methods.Utils.pickRandom;
-import static com.github.raimannma.methods.Utils.setsEqual;
+import static com.github.raimannma.nn.methods.Utils.pickRandom;
+import static com.github.raimannma.nn.methods.Utils.setsEqual;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.stream.IntStream;
-import com.github.raimannma.methods.EvolveOptions;
-import com.github.raimannma.methods.Mutation;
+import com.github.raimannma.nn.architecture.Network;
+import com.github.raimannma.nn.methods.EvolveOptions;
+import com.github.raimannma.nn.methods.Mutation;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

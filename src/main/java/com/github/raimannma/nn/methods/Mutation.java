@@ -1,12 +1,12 @@
-package com.github.raimannma.methods;
+package com.github.raimannma.nn.methods;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import com.github.raimannma.architecture.Connection;
-import com.github.raimannma.architecture.Network;
-import com.github.raimannma.architecture.Node;
+import com.github.raimannma.nn.architecture.Connection;
+import com.github.raimannma.nn.architecture.Network;
+import com.github.raimannma.nn.architecture.Node;
 
 /**
  * Mutation methods.

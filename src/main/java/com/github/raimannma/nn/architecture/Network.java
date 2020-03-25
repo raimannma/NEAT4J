@@ -1,10 +1,10 @@
-package com.github.raimannma.architecture;
+package com.github.raimannma.nn.architecture;
 
-import static com.github.raimannma.methods.Mutation.SUB_NODE;
-import static com.github.raimannma.methods.Utils.pickRandom;
-import static com.github.raimannma.methods.Utils.randBoolean;
-import static com.github.raimannma.methods.Utils.randDouble;
-import static com.github.raimannma.methods.Utils.randInt;
+import static com.github.raimannma.nn.methods.Mutation.SUB_NODE;
+import static com.github.raimannma.nn.methods.Utils.pickRandom;
+import static com.github.raimannma.nn.methods.Utils.randBoolean;
+import static com.github.raimannma.nn.methods.Utils.randDouble;
+import static com.github.raimannma.nn.methods.Utils.randInt;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
@@ -18,9 +18,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import com.github.raimannma.methods.EvolveOptions;
-import com.github.raimannma.methods.Loss;
-import com.github.raimannma.methods.Mutation;
+import com.github.raimannma.nn.methods.EvolveOptions;
+import com.github.raimannma.nn.methods.Loss;
+import com.github.raimannma.nn.methods.Mutation;
 import org.jetbrains.annotations.NotNull;
 
 /**

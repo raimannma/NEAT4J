@@ -1,13 +1,13 @@
-package com.github.raimannma.architecture;
+package com.github.raimannma.nn.architecture;
 
-import static com.github.raimannma.methods.Utils.randDouble;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import com.github.raimannma.methods.Activation;
+import com.github.raimannma.nn.methods.Activation;
+import com.github.raimannma.nn.methods.Utils;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -79,7 +79,7 @@ public class Node {
 	 * @param type the type
 	 */
 	public Node(final NodeType type) {
-		this.bias = type == NodeType.INPUT ? 0 : randDouble(-1, 1);
+		this.bias = type == NodeType.INPUT ? 0 : Utils.randDouble(-1, 1);
 		this.activationType = Activation.LOGISTIC;
 		this.type = type;
 
