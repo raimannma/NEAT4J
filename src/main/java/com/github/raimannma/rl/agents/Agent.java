@@ -6,7 +6,7 @@ public abstract class Agent {
 	public int numStates;
 	public int numActions;
 	public int episode;
-	public ReplayBuffer buffer;
+	public ReplayBuffer replayBuffer;
 
 	Agent(final int numStates, final int numActions) {
 		this.numStates = numStates;
