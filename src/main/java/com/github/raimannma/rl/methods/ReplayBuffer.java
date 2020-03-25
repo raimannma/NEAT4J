@@ -13,7 +13,7 @@ public class ReplayBuffer {
 		this.maxSize = size;
 	}
 
-	void addExperience(final Experience experience) {
+	public void addExperience(final Experience experience) {
 		this.buffer.add(experience);
 		if (this.buffer.size() > this.maxSize) {
 			this.buffer.pollFirst();
