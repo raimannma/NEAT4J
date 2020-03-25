@@ -15,6 +15,21 @@ public class EvolveOptions {
 	/**
 	 * Determines how "fit" the networks are.
 	 * A higher value means, that the network is fitter.
+	 *
+	 * <pre>
+	 *     {@code
+	 *      new Consumer<>() {
+	 *          @Override
+	 *          public void accept(final List<Network> population) {
+	 * 			    population
+	 *              .parallelStream()
+	 * 				.forEach(genome -> {
+	 * 			        // calculate score for each genome (Network)
+	 * 					genome.score = someGenomeScoreValue;
+	 *              });
+	 *          }
+	 *     };
+	 * </pre>
 	 */
 	private Consumer<List<Network>> fitnessFunction;
 	/**

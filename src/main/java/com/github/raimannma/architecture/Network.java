@@ -418,14 +418,15 @@ public class Network {
 		}
 		if (options.getFitnessFunction() == null) {
 			// if user doesn't specified a fitness function -> create default fitness function
-			options.setFitnessFunction(population -> population
-				.parallelStream()
-				.forEach(genome -> {
-					final double sum = IntStream.range(0, amount)
-						.mapToDouble(i -> -genome.test(inputs, outputs, loss))
-						.sum();
-					genome.score = (sum - genome.getGrowthScore(growth)) / amount;
-				})
+			options.setFitnessFunction(
+				population -> population
+					.parallelStream()
+					.forEach(genome -> {
+						final double sum = IntStream.range(0, amount)
+							.mapToDouble(i -> -genome.test(inputs, outputs, loss))
+							.sum();
+						genome.score = (sum - genome.getGrowthScore(growth)) / amount;
+					})
 			);
 		}
 		options.setTemplate(this); // set this network as template
