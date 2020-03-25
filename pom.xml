@@ -75,6 +75,7 @@
 							<packages>com.github.raimannma.architecture:com.github.raimannma.methods</packages>
 						</group>
 					</groups>
+					<show>private</show>
 				</configuration>
 				<executions>
 					<execution>
