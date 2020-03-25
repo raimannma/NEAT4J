@@ -1,7 +1,14 @@
 package com.github.raimannma.rl.agents;
 
-public interface DiscreteAgent extends Agent {
-	int act(double[] state);
+public abstract class DiscreteAgent extends Agent {
+	public int numActions;
+	public int numStates;
 
-	double learn(double reward);
+	DiscreteAgent(final int numStates, final int numActions) {
+		super(numStates, numActions);
+	}
+
+	abstract int act(double[] state);
+
+	abstract double learn(double reward);
 }

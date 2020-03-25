@@ -1,7 +1,14 @@
 package com.github.raimannma.rl.agents;
 
-public interface ContinuousAgent extends Agent {
-	double[] act(double[] state);
+public abstract class ContinuousAgent extends Agent {
+	public int numStates;
+	public int numActions;
 
-	double learn(double reward);
+	ContinuousAgent(final int numStates, final int numActions) {
+		super(numStates, numActions);
+	}
+
+	public abstract double[] act(double[] state);
+
+	public abstract double learn(double reward);
 }
