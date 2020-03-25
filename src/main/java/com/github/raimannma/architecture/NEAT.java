@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.IntStream;
+import com.github.raimannma.methods.EvolveOptions;
 import com.github.raimannma.methods.Mutation;
 import com.github.raimannma.methods.Selection;
 import com.github.raimannma.methods.Utils;

@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import com.github.raimannma.methods.EvolveOptions;
 import com.github.raimannma.methods.Loss;
 import com.github.raimannma.methods.Mutation;
 import org.jetbrains.annotations.NotNull;
