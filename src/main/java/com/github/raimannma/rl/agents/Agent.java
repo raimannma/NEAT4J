@@ -1,6 +1,6 @@
 package com.github.raimannma.rl.agents;
 
-public class Agent {
+public abstract class Agent {
 	public int numStates;
 	public int numActions;
 
@@ -8,4 +8,7 @@ public class Agent {
 		this.numStates = numStates;
 		this.numActions = numActions;
 	}
+
+
+	public abstract double learn(double reward);
 }
