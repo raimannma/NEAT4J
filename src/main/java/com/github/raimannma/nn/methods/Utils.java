@@ -134,4 +134,16 @@ public enum Utils {
 		}
 		return true;
 	}
+
+	public static int getMaxValueIndex(final double[] arr) {
+		int index = 0;
+		double val = arr[0];
+		for (int i = 0; i < arr.length; i++) {
+			if (arr[i] > val) {
+				index = i;
+				val = arr[i];
+			}
+		}
+		return index;
+	}
 }
