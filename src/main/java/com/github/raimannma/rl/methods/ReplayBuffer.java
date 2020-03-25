@@ -1,9 +1,8 @@
-package com.github.raimannma.rl;
+package com.github.raimannma.rl.methods;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-import com.github.raimannma.rl.methods.Sampler;
 
 public class ReplayBuffer {
 	private final int maxSize;

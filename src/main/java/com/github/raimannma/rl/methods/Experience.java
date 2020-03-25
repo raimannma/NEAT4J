@@ -1,4 +1,4 @@
-package com.github.raimannma.rl;
+package com.github.raimannma.rl.methods;
 
 import org.jetbrains.annotations.NotNull;
 

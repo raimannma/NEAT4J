@@ -1,10 +1,9 @@
-package com.github.raimannma.rl;
+package com.github.raimannma.rl.methods;
 
 import static com.github.raimannma.nn.methods.Utils.randDouble;
 import static com.github.raimannma.nn.methods.Utils.randInt;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Set;
-import com.github.raimannma.rl.methods.Sampler;
 import org.junit.jupiter.api.Test;
 
 class ReplayBufferTest {

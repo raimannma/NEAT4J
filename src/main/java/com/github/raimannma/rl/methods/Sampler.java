@@ -5,7 +5,6 @@ import static com.github.raimannma.nn.methods.Utils.randDouble;
 import java.util.ArrayList;
 import java.util.TreeSet;
 import com.github.raimannma.nn.methods.Utils;
-import com.github.raimannma.rl.Experience;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class Sampler {
