@@ -472,7 +472,7 @@ public class Network {
 	 * @param input the input data
 	 * @return the activation values of the output nodes
 	 */
-	private double[] activate(final double[] input) {
+	public double[] activate(final double[] input) {
 		if (input.length != this.input) {
 			throw new IllegalStateException("Dataset input size should be same as network input size!");
 		}
