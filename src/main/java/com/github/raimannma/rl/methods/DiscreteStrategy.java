@@ -3,10 +3,10 @@ package com.github.raimannma.rl.methods;
 import static com.github.raimannma.nn.methods.Utils.randDouble;
 import static com.github.raimannma.nn.methods.Utils.randInt;
 
-public abstract class DiscreteSampling {
+public abstract class DiscreteStrategy {
 	public abstract int sample(int action, int episode, int numActions);
 
-	public static final class EpsilonGreedy extends DiscreteSampling {
+	public static final class EpsilonGreedy extends DiscreteStrategy {
 		private final double epsilon;
 		private final double epsilonDecay;
 		private final double epsilonMin;
