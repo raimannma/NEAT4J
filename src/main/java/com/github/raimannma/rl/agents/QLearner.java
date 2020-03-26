@@ -85,7 +85,7 @@ public class QLearner extends DiscreteAgent {
 		return Double.NaN;
 	}
 
-	private double getQValue(final int stateIndex, final boolean isFinalState, final Double[] lastStateQValues) {
+	protected double getQValue(final int stateIndex, final boolean isFinalState, final Double[] lastStateQValues) {
 		final double lastQValue = lastStateQValues[this.currentExperience.getLastAction()];
 		return stateIndex != -1 && !isFinalState
 				? lastQValue + this.learningRate * (this.currentExperience.getLastReward() + this.gamma * Utils.max(convertToPrimitiveArray(this.actions.get(stateIndex))) - lastQValue)
