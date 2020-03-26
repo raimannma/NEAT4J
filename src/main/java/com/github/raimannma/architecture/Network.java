@@ -126,8 +126,8 @@ public class Network {
 		final int size2 = network2.nodes.size(); // size of parent 2
 		// size of offspring
 		final int size = equal || score1 == score2
-			? randInt(Math.min(size1, size2), Math.max(size1, size2))// select random size between min and max
-			: score1 > score2 ? size1 : size2; // Select size of fittest.
+				? randInt(Math.min(size1, size2), Math.max(size1, size2))// select random size between min and max
+				: score1 > score2 ? size1 : size2; // Select size of fittest.
 
 		network1.setNodeIndices(); // set indices for network 1
 		network2.setNodeIndices(); // set indices for network 2
@@ -140,20 +140,20 @@ public class Network {
 				if (randBoolean()) { // choose random
 					// try getting a input or hidden node from network 1, fallback to network 2
 					node = i < size1 && network1.nodes.get(i).type != Node.NodeType.OUTPUT
-						? network1.nodes.get(i)
-						: network2.nodes.get(i);
+							? network1.nodes.get(i)
+							: network2.nodes.get(i);
 				} else {
 					// try getting a input or hidden node from network 2, fallback to network 1
 					node = i < size2 && network2.nodes.get(i).type != Node.NodeType.OUTPUT
-						? network2.nodes.get(i)
-						: network1.nodes.get(i);
+							? network2.nodes.get(i)
+							: network1.nodes.get(i);
 				}
 			} else {
 				// create a output node
 				// pick random output node
 				node = randBoolean()
-					? network1.nodes.get(i + size1 - size)
-					: network2.nodes.get(i + size2 - size);
+						? network1.nodes.get(i + size1 - size)
+						: network2.nodes.get(i + size2 - size);
 			}
 
 			final Node newNode = new Node();
@@ -177,8 +177,8 @@ public class Network {
 			if (network2Connections.get(innovationID) != null) {
 				//Choose random connection out of both networks
 				connections.add(randBoolean()
-					? network1Connections.get(innovationID)
-					: network2Connections.get(innovationID));
+						? network1Connections.get(innovationID)
+						: network2Connections.get(innovationID));
 
 				// set to null, because removing is expensive
 				network2Connections.put(innovationID, null);
@@ -192,25 +192,25 @@ public class Network {
 		final List<Integer> innovationIDs2 = new ArrayList<>(network2Connections.keySet());
 		if (score2 >= score1 || equal) {
 			innovationIDs2.stream()
-				.map(network2Connections::get)
-				.filter(Objects::nonNull)
-				.forEach(connections::add);
+					.map(network2Connections::get)
+					.filter(Objects::nonNull)
+					.forEach(connections::add);
 		}
 
 		// Add common conn genes uniformly
 		connections.stream()
-			.filter(connectionData -> connectionData[1] < size) // node index must be lower than size
-			.filter(connectionData -> connectionData[2] < size) // node index must be lower than size
-			.forEach(connectionData -> {
-				final Connection connection = offspring.connect(
-					offspring.nodes.get((int) (double) connectionData[1]),
-					offspring.nodes.get((int) (double) connectionData[2])
-				);
-				connection.weight = connectionData[0];
-				if (!Double.isNaN(connectionData[3]) && connectionData[3] < size) {
-					offspring.gate(offspring.nodes.get((int) (double) connectionData[3]), connection);
-				}
-			});
+				.filter(connectionData -> connectionData[1] < size) // node index must be lower than size
+				.filter(connectionData -> connectionData[2] < size) // node index must be lower than size
+				.forEach(connectionData -> {
+					final Connection connection = offspring.connect(
+							offspring.nodes.get((int) (double) connectionData[1]),
+							offspring.nodes.get((int) (double) connectionData[2])
+					);
+					connection.weight = connectionData[0];
+					if (!Double.isNaN(connectionData[3]) && connectionData[3] < size) {
+						offspring.gate(offspring.nodes.get((int) (double) connectionData[3]), connection);
+					}
+				});
 		offspring.setNodeIndices();
 		return offspring;
 	}
@@ -224,10 +224,10 @@ public class Network {
 	private static @NotNull Map<Integer, Double[]> makeConnections(final @NotNull Network network) {
 		final Map<Integer, Double[]> connections = new HashMap<>();
 		Stream.concat(network.connections.stream(), network.selfConnections.stream()) // create stream with all connections
-			.forEach(connection -> connections.put(
-				Connection.getInnovationID(connection.from.index, connection.to.index),
-				connection.getConnectionData()
-			));
+				.forEach(connection -> connections.put(
+						Connection.getInnovationID(connection.from.index, connection.to.index),
+						connection.getConnectionData()
+				));
 		return connections;
 	}
 
@@ -353,10 +353,10 @@ public class Network {
 	 */
 	private double getGrowthScore(final double growth) {
 		return growth * (this.nodes.size()
-			+ this.connections.size()
-			+ this.gates.size()
-			- this.input
-			- this.output);
+				+ this.connections.size()
+				+ this.gates.size()
+				- this.input
+				- this.output);
 	}
 
 	/**
@@ -383,13 +383,13 @@ public class Network {
 			return this.test(inputs, outputs);
 		} else if (this.dropout != 0) {
 			this.nodes.stream()
-				.filter(node -> node.type == Node.NodeType.HIDDEN)
-				.forEach(node -> node.mask = 1 - this.dropout);
+					.filter(node -> node.type == Node.NodeType.HIDDEN)
+					.forEach(node -> node.mask = 1 - this.dropout);
 		}
 		return IntStream.range(0, inputs.length)
-			.mapToDouble(i -> loss.calc(outputs[i], this.activate(inputs[i])))
-			.sum()
-			/ inputs.length;
+				.mapToDouble(i -> loss.calc(outputs[i], this.activate(inputs[i])))
+				.sum()
+				/ inputs.length;
 	}
 
 	/**
@@ -414,13 +414,15 @@ public class Network {
 			throw new IllegalArgumentException("At least one of the following options must be specified: error, iterations");
 		} else if (Double.isNaN(options.getError())) {
 			targetError = -1; // run until iterations
+		} else if (options.getIterations() <= 0) {
+			options.setIterations(Integer.MAX_VALUE);
 		}
 		if (options.getFitnessFunction() == null) {
 			// if user doesn't specified a fitness function -> create default fitness function
 			options.setFitnessFunction(genome -> {
 				final double sum = IntStream.range(0, amount)
-					.mapToDouble(i -> -genome.test(inputs, outputs, loss))
-					.sum();
+						.mapToDouble(i -> -genome.test(inputs, outputs, loss))
+						.sum();
 				return (sum - genome.getGrowthScore(growth)) / amount;
 			});
 		}
@@ -433,7 +435,7 @@ public class Network {
 		Network bestGenome = null;
 
 		// start evolution loop
-		while (error < -targetError || neat.generation < options.getIterations()) {
+		while (error < -targetError && neat.generation < options.getIterations()) {
 			final Network fittest = neat.evolve(); // run one evolution step
 			error = fittest.score + fittest.getGrowthScore(growth); // calculate error of the fittest genome
 			if (fittest.score > bestScore) {
@@ -505,13 +507,13 @@ public class Network {
 
 		// nodes which are directly connected into this node
 		final List<Node> inputs = node.in.stream()
-			.map(connection -> connection.from)
-			.collect(Collectors.toList());
+				.map(connection -> connection.from)
+				.collect(Collectors.toList());
 
 		// nodes which are directly connected out of this node
 		final List<Node> outputs = node.out.stream()
-			.map(connection -> connection.to)
-			.collect(Collectors.toList());
+				.map(connection -> connection.to)
+				.collect(Collectors.toList());
 
 		// disconnect all inputs and outputs
 		inputs.forEach(input -> this.disconnect(input, node));
@@ -530,17 +532,17 @@ public class Network {
 		}
 
 		Stream.concat(node.in.stream(), node.out.stream())
-			.filter(connection -> SUB_NODE.keepGates) // Should keep gates?
-			.map(connection -> connection.gateNode)
-			.filter(Objects::nonNull)
-			.filter(gateNode -> !gateNode.equals(node)) // should be unequal to currently removing node
-			.takeWhile(gateNode -> !connections.isEmpty()) // as long as connections are available
-			.forEach(gateNode -> {
-				// gate connection and remove it
-				final Connection connection = pickRandom(connections); // pick random connection
-				this.gate(gateNode, connection); // gate this connection
-				connections.remove(connection); // remove connection from list
-			});
+				.filter(connection -> SUB_NODE.keepGates) // Should keep gates?
+				.map(connection -> connection.gateNode)
+				.filter(Objects::nonNull)
+				.filter(gateNode -> !gateNode.equals(node)) // should be unequal to currently removing node
+				.takeWhile(gateNode -> !connections.isEmpty()) // as long as connections are available
+				.forEach(gateNode -> {
+					// gate connection and remove it
+					final Connection connection = pickRandom(connections); // pick random connection
+					this.gate(gateNode, connection); // gate this connection
+					connections.remove(connection); // remove connection from list
+				});
 
 		// remove all gates
 		for (int i = node.gated.size() - 1; i >= 0; i--) {
@@ -564,10 +566,10 @@ public class Network {
 			this.selfConnections.remove(connection); // remove connection from list
 		} else {
 			connection = this.connections.stream()
-				.filter(conn -> conn.from.equals(from))
-				.filter(conn -> conn.to.equals(to))
-				.findAny()
-				.orElse(null);
+					.filter(conn -> conn.from.equals(from))
+					.filter(conn -> conn.to.equals(to))
+					.findAny()
+					.orElse(null);
 
 			this.connections.remove(connection); // remove connection from list
 		}
@@ -614,24 +616,24 @@ public class Network {
 		}
 		final Network network = (Network) o;
 		return this.input == network.input &&
-			this.output == network.output &&
-			Double.compare(network.dropout, this.dropout) == 0 &&
-			Objects.equals(this.nodes, network.nodes) &&
-			Objects.equals(this.connections, network.connections) &&
-			Objects.equals(this.gates, network.gates) &&
-			Objects.equals(this.selfConnections, network.selfConnections);
+				this.output == network.output &&
+				Double.compare(network.dropout, this.dropout) == 0 &&
+				Objects.equals(this.nodes, network.nodes) &&
+				Objects.equals(this.connections, network.connections) &&
+				Objects.equals(this.gates, network.gates) &&
+				Objects.equals(this.selfConnections, network.selfConnections);
 	}
 
 	@Override
 	public String toString() {
 		return "Network{" +
-			"input=" + this.input +
-			", output=" + this.output +
-			", gates=" + this.gates +
-			", nodes=" + this.nodes +
-			", connections=" + this.connections +
-			", selfConnections=" + this.selfConnections +
-			'}';
+				"input=" + this.input +
+				", output=" + this.output +
+				", gates=" + this.gates +
+				", nodes=" + this.nodes +
+				", connections=" + this.connections +
+				", selfConnections=" + this.selfConnections +
+				'}';
 	}
 
 	/**
@@ -664,8 +666,8 @@ public class Network {
 
 		// set gateNode to null for all connections except the ones in gates list
 		Stream.concat(this.connections.stream(), this.selfConnections.stream())
-			.filter(conn -> !this.gates.contains(conn))
-			.forEach(conn -> conn.gateNode = null);
+				.filter(conn -> !this.gates.contains(conn))
+				.forEach(conn -> conn.gateNode = null);
 
 		final JsonObject json = new JsonObject();
 		json.addProperty("input", this.input); // add input property
