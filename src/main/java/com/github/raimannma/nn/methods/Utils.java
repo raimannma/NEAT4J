@@ -156,4 +156,26 @@ public enum Utils {
 		}
 		return val;
 	}
+
+	public static double min(final double[] arr) {
+		double val = arr[0];
+		for (final double v : arr) {
+			if (v < val) {
+				val = v;
+			}
+		}
+		return val;
+	}
+
+	public static int getMinValueIndex(final double[] arr) {
+		int index = 0;
+		double val = arr[0];
+		for (int i = 0; i < arr.length; i++) {
+			if (arr[i] < val) {
+				index = i;
+				val = arr[i];
+			}
+		}
+		return index;
+	}
 }
