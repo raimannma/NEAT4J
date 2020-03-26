@@ -1,5 +1,7 @@
 package com.github.raimannma.rl.methods;
 
+import java.util.Arrays;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 public class Experience implements Comparable<Experience> {
@@ -79,6 +81,31 @@ public class Experience implements Comparable<Experience> {
 
 	public void setLastReward(final double lastReward) {
 		this.lastReward = lastReward;
+	}
+
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || this.getClass() != o.getClass()) {
+			return false;
+		}
+		final Experience that = (Experience) o;
+		return Double.compare(that.tdError, this.tdError) == 0 &&
+				this.lastAction == that.lastAction &&
+				this.action == that.action &&
+				Double.compare(that.lastReward, this.lastReward) == 0 &&
+				Arrays.equals(this.lastState, that.lastState) &&
+				Arrays.equals(this.state, that.state);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hash(this.tdError, this.lastAction, this.action, this.lastReward);
+		result = 31 * result + Arrays.hashCode(this.lastState);
+		result = 31 * result + Arrays.hashCode(this.state);
+		return result;
 	}
 
 	@Override
