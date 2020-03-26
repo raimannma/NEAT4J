@@ -14,7 +14,8 @@ class ReplayBufferTest {
 		final ReplayBuffer replayBuffer = new ReplayBuffer(size);
 
 		for (int i = 0; i < 1000; i++) {
-			final Experience experience = new Experience(i, null, 0, 0, null, 0, randDouble());
+			final Experience experience = new Experience();
+			experience.setTdError(randDouble());
 			replayBuffer.addExperience(experience);
 			assertTrue(replayBuffer.buffer.size() <= size);
 		}
@@ -26,13 +27,14 @@ class ReplayBufferTest {
 		final ReplayBuffer replayBuffer = new ReplayBuffer(size);
 
 		for (int i = 0; i < 1000; i++) {
-			final Experience experience = new Experience(i, null, 0, 0, null, 0, randDouble());
+			final Experience experience = new Experience();
+			experience.setTdError(randDouble());
 			replayBuffer.addExperience(experience);
 
-			int lastGeneration = replayBuffer.buffer.first().episode;
+			int lastGeneration = replayBuffer.buffer.first().getEpisode();
 			for (final Experience exp : replayBuffer.buffer) {
-				assertTrue(exp.episode >= lastGeneration);
-				lastGeneration = exp.episode;
+				assertTrue(exp.getEpisode() >= lastGeneration);
+				lastGeneration = exp.getEpisode();
 			}
 		}
 	}
@@ -44,7 +46,8 @@ class ReplayBufferTest {
 		final Sampler sampler = new Sampler.RandomSampler();
 
 		for (int i = 0; i < 1000; i++) {
-			final Experience experience = new Experience(i, null, 0, 0, null, 0, randDouble());
+			final Experience experience = new Experience();
+			experience.setTdError(randDouble());
 			replayBuffer.addExperience(experience);
 
 			final int batchSize = randInt(20, 100);
@@ -61,7 +64,8 @@ class ReplayBufferTest {
 		final Sampler sampler = new Sampler.PrioritisedSampler(randDouble());
 
 		for (int i = 0; i < 1000; i++) {
-			final Experience experience = new Experience(i, null, 0, 0, null, 0, randDouble());
+			final Experience experience = new Experience();
+			experience.setTdError(randDouble());
 			replayBuffer.addExperience(experience);
 
 			final int batchSize = randInt(10, 20);
@@ -79,7 +83,8 @@ class ReplayBufferTest {
 		final Sampler sampler = new Sampler.TournamentSampler(randInt(2, 4));
 
 		for (int i = 0; i < 1000; i++) {
-			final Experience experience = new Experience(i, null, 0, 0, null, 0, randDouble());
+			final Experience experience = new Experience();
+			experience.setTdError(randDouble());
 			replayBuffer.addExperience(experience);
 
 			final int batchSize = randInt(10, 20);
@@ -97,7 +102,8 @@ class ReplayBufferTest {
 		final Sampler sampler = new Sampler.PowerSampler(randInt(1, 10));
 
 		for (int i = 0; i < 1000; i++) {
-			final Experience experience = new Experience(i, null, 0, 0, null, 0, randDouble());
+			final Experience experience = new Experience();
+			experience.setTdError(randDouble());
 			replayBuffer.addExperience(experience);
 
 			final int batchSize = randInt(10, 20);
@@ -115,7 +121,8 @@ class ReplayBufferTest {
 		final Sampler sampler = new Sampler.FitnessProportionateSampler();
 
 		for (int i = 0; i < 1000; i++) {
-			final Experience experience = new Experience(i, null, 0, 0, null, 0, randDouble());
+			final Experience experience = new Experience();
+			experience.setTdError(randDouble());
 			replayBuffer.addExperience(experience);
 
 			final int batchSize = randInt(10, 20);
@@ -125,6 +132,4 @@ class ReplayBufferTest {
 			assertTrue(replayBuffer.buffer.containsAll(batch));
 		}
 	}
-
-
 }
