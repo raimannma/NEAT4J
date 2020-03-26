@@ -373,7 +373,7 @@ public enum Mutation {
 	/**
 	 * Contains all mutations that does not change the network structure.
 	 */
-	public static final Mutation[] NO_STRUCTURE = new Mutation[]{
+	public static final Mutation[] ONLY_WEIGHTS = new Mutation[]{
 			MOD_WEIGHT,
 			MOD_BIAS,
 			MOD_ACTIVATION,
