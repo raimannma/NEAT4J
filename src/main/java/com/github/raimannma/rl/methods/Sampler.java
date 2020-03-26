@@ -32,13 +32,13 @@ public abstract class Sampler {
 		public Experience select(final TreeSet<Experience> experiences) {
 
 			final double denominator = experiences.stream()
-				.mapToDouble(exp -> Math.abs(Math.pow(exp.tdError, this.alpha)))
+				.mapToDouble(exp -> Math.abs(Math.pow(exp.getTdError(), this.alpha)))
 				.sum();
 
 			double sum = 0;
 			final double rand = randDouble();
 			for (final Experience experience : experiences) {
-				sum += Math.abs(Math.pow(experience.tdError, this.alpha)) / denominator;
+				sum += Math.abs(Math.pow(experience.getTdError(), this.alpha)) / denominator;
 				if (rand < sum) {
 					return experience;
 				}
@@ -51,13 +51,13 @@ public abstract class Sampler {
 	public final static class FitnessProportionateSampler extends Sampler {
 		@Override
 		public Experience select(final @NotNull TreeSet<Experience> experiences) {
-			final double minimalFitness = experiences.stream().mapToDouble(experience -> experience.tdError).min().orElseThrow();
-			final double totalFitness = experiences.stream().mapToDouble(experience -> experience.tdError).sum();
+			final double minimalFitness = experiences.stream().mapToDouble(Experience::getTdError).min().orElseThrow();
+			final double totalFitness = experiences.stream().mapToDouble(Experience::getTdError).sum();
 
 			final double random = Utils.randDouble(totalFitness + minimalFitness * experiences.size());
 			double value = 0;
 			for (final Experience experience : experiences) {
-				value += experience.tdError + minimalFitness;
+				value += experience.getTdError() + minimalFitness;
 				if (random < value) {
 					return experience;
 				}
@@ -80,7 +80,7 @@ public abstract class Sampler {
 		@Override
 		public Experience select(final @NotNull TreeSet<Experience> experiences) {
 			final ArrayList<Experience> list = new ArrayList<>(experiences);
-			list.sort((o1, o2) -> Double.compare(o2.tdError, o1.tdError));
+			list.sort((o1, o2) -> Double.compare(o2.getTdError(), o1.getTdError()));
 			return list.get((int) Math.floor(Math.pow(Utils.randDouble(), this.power) * list.size()));
 		}
 	}
@@ -97,7 +97,7 @@ public abstract class Sampler {
 			Experience best = null;
 			for (int i = 0; i < Math.min(experiences.size(), this.size); i++) {
 				final Experience experience = pickRandom(experiences);
-				if (best == null || experience.tdError > best.tdError) {
+				if (best == null || experience.getTdError() > best.getTdError()) {
 					best = experience;
 				}
 			}
