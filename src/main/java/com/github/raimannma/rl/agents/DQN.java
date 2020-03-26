@@ -89,7 +89,7 @@ public class DQN extends DiscreteAgent {
 	public double learn(final double reward, final boolean isFinalState) {
 		this.episode++;
 		this.currentExperience.setLastReward(this.lastReward);
-		if (this.episode > 2 && this.currentExperience.getState() != null) {
+		if (this.episode > 2) {
 			final Set<Experience> batch = this.replayBuffer.getBatch(this.sampler, this.learningStepsPerEpisode);
 			batch.add(this.currentExperience.copy());
 
