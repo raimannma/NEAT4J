@@ -1,31 +1,79 @@
 package com.github.raimannma.rl.agents;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 import com.github.raimannma.nn.architecture.Network;
+import com.github.raimannma.nn.methods.EvolveOptions;
+import com.github.raimannma.nn.methods.Loss;
+import com.github.raimannma.nn.methods.Mutation;
+import com.github.raimannma.nn.methods.Selection;
 import com.github.raimannma.nn.methods.Utils;
 import com.github.raimannma.rl.methods.DiscreteStrategy;
 import com.github.raimannma.rl.methods.Experience;
+import com.github.raimannma.rl.methods.ReplayBuffer;
 import com.github.raimannma.rl.methods.Sampler;
 
 public class DQN extends DiscreteAgent {
+	private final Sampler sampler;
+	private final int learningStepsPerEpisode;
+	private final double gamma;
+	private final Experience currentExperience;
+	private final EvolveOptions evolveOptions;
+	private final Network qNetwork;
 	DiscreteStrategy strategy;
-	private Network qNetwork;
-	private Experience currentExperience;
-	private double learningRate;
-	private Sampler sampler;
-	private int learningStepsPerEpisode;
+	private double lastReward;
 
-	public DQN(final int numStates, final int numActions, final DiscreteStrategy strategy) {
+	public DQN(final int numStates, final int numActions) {
 		super(numStates, numActions);
+		this.gamma = 0;
+		this.lastReward = 0;
+		this.learningStepsPerEpisode = 20;
+		this.sampler = new Sampler.RandomSampler();
+		this.currentExperience = new Experience();
+		this.qNetwork = new Network(numStates, numActions);
+		this.evolveOptions = new EvolveOptions()
+				.setError(0)
+				//.setLog(1)
+				.setIterations(20)
+				.setMutations(Mutation.FFW)
+				.setPopulationSize(50)
+				.setSelection(new Selection.Power(5))
+				.setElitism(5)
+				.setTemplate(this.qNetwork);
+		this.strategy = new DiscreteStrategy.EpsilonGreedy(0.1, 0.99, 0.05);
+		final int bufferSize = 100;
+		this.replayBuffer = new ReplayBuffer(bufferSize);
 	}
 
-	private void study(final Set<Experience> experience) {
-		//TODO
+	private double study(final List<Experience> experiences) {
+		final double[][] inputs = new double[experiences.size()][this.numStates];
+		final double[][] outputs = new double[experiences.size()][this.numActions];
+
+		IntStream.range(0, experiences.size()).forEach(i -> {
+			final Experience experience = experiences.get(i);
+			final double[] lastStateActivation = this.qNetwork.activate(experience.getLastState());
+			final double[] temp = lastStateActivation.clone();
+			this.qNetwork.clear();
+			final double[] stateActivation = this.qNetwork.activate(experience.getState());
+
+			final double qValue = experience.getLastReward() + this.gamma * Utils.max(stateActivation);
+			lastStateActivation[experience.getLastAction()] = qValue;
+
+			inputs[i] = experience.getLastState();
+			outputs[i] = lastStateActivation;
+
+			experience.setTdError(Loss.MSE.calc(lastStateActivation, temp));
+		});
+		this.evolveOptions.setTemplate(this.qNetwork.copy());
+		return this.qNetwork.evolve(inputs, outputs, this.evolveOptions);
 	}
 
 	@Override
 	public int act(final double[] state) {
-		final int action = Utils.getMaxValueIndex(this.qNetwork.activate(state));
+		final double[] actions = this.qNetwork.activate(state);
+		final int action = Utils.getMaxValueIndex(actions);
 		final int sampledAction = this.strategy.sample(action, this.episode, this.numActions);
 
 		this.currentExperience.setEpisode(this.episode);
@@ -38,15 +86,18 @@ public class DQN extends DiscreteAgent {
 	}
 
 	@Override
-	public double learn(final double reward) {
+	public double learn(final double reward, final boolean isFinalState) {
 		this.episode++;
-		if (this.episode > 1) {
-
+		this.currentExperience.setLastReward(this.lastReward);
+		if (this.episode > 2 && this.currentExperience.getState() != null) {
 			final Set<Experience> batch = this.replayBuffer.getBatch(this.sampler, this.learningStepsPerEpisode);
-			batch.add(this.currentExperience);
-			this.study(batch);
+			batch.add(this.currentExperience.copy());
+
 			this.replayBuffer.addExperience(this.currentExperience.copy());
+
+			return this.study(new ArrayList<>(batch));
 		}
-		return 0;
+		this.lastReward = reward;
+		return Double.NaN;
 	}
 }
