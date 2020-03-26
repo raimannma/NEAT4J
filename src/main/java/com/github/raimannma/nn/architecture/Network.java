@@ -415,6 +415,8 @@ public class Network {
 			throw new IllegalArgumentException("At least one of the following options must be specified: error, iterations");
 		} else if (Double.isNaN(options.getError())) {
 			targetError = -1; // run until iterations
+		} else if (options.getIterations() <= 0) {
+			options.setIterations(Integer.MAX_VALUE);
 		}
 		if (options.getFitnessFunction() == null) {
 			// if user doesn't specified a fitness function -> create default fitness function
@@ -438,7 +440,7 @@ public class Network {
 		Network bestGenome = null;
 
 		// start evolution loop
-		while (error < -targetError || neat.generation < options.getIterations()) {
+		while (error < -targetError && neat.generation < options.getIterations()) {
 			final Network fittest = neat.evolve(); // run one evolution step
 			error = fittest.score + fittest.getGrowthScore(growth); // calculate error of the fittest genome
 			if (fittest.score > bestScore) {
