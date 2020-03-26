@@ -23,12 +23,10 @@ public class DQN extends DiscreteAgent {
 	private final EvolveOptions evolveOptions;
 	private final Network qNetwork;
 	DiscreteStrategy strategy;
-	private double lastReward;
 
 	public DQN(final int numStates, final int numActions) {
 		super(numStates, numActions);
 		this.gamma = 0;
-		this.lastReward = 0;
 		this.learningStepsPerEpisode = 20;
 		this.sampler = new Sampler.RandomSampler();
 		this.currentExperience = new Experience();
@@ -88,16 +86,15 @@ public class DQN extends DiscreteAgent {
 	@Override
 	public double learn(final double reward, final boolean isFinalState) {
 		this.episode++;
-		this.currentExperience.setLastReward(this.lastReward);
+		double error = Double.NaN;
 		if (this.episode > 2) {
 			final Set<Experience> batch = this.replayBuffer.getBatch(this.sampler, this.learningStepsPerEpisode);
 			batch.add(this.currentExperience.copy());
+			error = this.study(new ArrayList<>(batch));
 
 			this.replayBuffer.addExperience(this.currentExperience.copy());
-
-			return this.study(new ArrayList<>(batch));
 		}
-		this.lastReward = reward;
-		return Double.NaN;
+		this.currentExperience.setLastReward(reward);
+		return error;
 	}
 }
