@@ -1,9 +1,11 @@
 package com.github.raimannma.nn.methods;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 import java.util.SplittableRandom;
+import java.util.stream.IntStream;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -177,5 +179,22 @@ public enum Utils {
 			}
 		}
 		return index;
+	}
+
+	@NotNull
+	public static Double[] convertToNonPrimitiveArray(final double[] primitve) {
+		return Arrays.stream(primitve).boxed().toArray(Double[]::new);
+	}
+
+	@NotNull
+	public static double[] convertToPrimitiveArray(final Double[] nonPrimitive) {
+		return Arrays.stream(nonPrimitive).mapToDouble(v -> v).toArray();
+	}
+
+	public static int indexOf(final ArrayList<Double[]> list, final Double[] array) {
+		return IntStream.range(0, list.size())
+				.filter(i -> Arrays.equals(list.get(i), array))
+				.findFirst()
+				.orElse(-1);
 	}
 }
