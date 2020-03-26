@@ -8,7 +8,7 @@ public class ReplayBuffer {
 	private final int maxSize;
 	protected TreeSet<Experience> buffer;
 
-	ReplayBuffer(final int size) {
+	public ReplayBuffer(final int size) {
 		this.buffer = new TreeSet<>();
 		this.maxSize = size;
 	}
