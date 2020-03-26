@@ -197,4 +197,8 @@ public enum Utils {
 				.findFirst()
 				.orElse(-1);
 	}
+
+	public static <T> boolean contains(final Set<T> set, final T elem) {
+		return set.stream().anyMatch(elem::equals);
+	}
 }
