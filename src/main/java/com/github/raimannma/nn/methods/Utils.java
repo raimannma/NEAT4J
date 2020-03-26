@@ -191,7 +191,7 @@ public enum Utils {
 		return Arrays.stream(nonPrimitive).mapToDouble(v -> v).toArray();
 	}
 
-	public static int indexOf(final ArrayList<Double[]> list, final Double[] array) {
+	public static <T> int indexOf(final ArrayList<T[]> list, final T[] array) {
 		return IntStream.range(0, list.size())
 				.filter(i -> Arrays.equals(list.get(i), array))
 				.findFirst()
