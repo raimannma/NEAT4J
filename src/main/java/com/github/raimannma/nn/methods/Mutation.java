@@ -1,5 +1,6 @@
 package com.github.raimannma.nn.methods;
 
+import static com.github.raimannma.nn.methods.Utils.pickRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,20 +28,20 @@ public enum Mutation {
 			}
 
 			//disconnect a random connection to put the node in
-			final Connection connection = Utils.pickRandom(network.connections);
+			final Connection connection = pickRandom(network.connections);
 			network.disconnect(connection.from, connection.to);
 
 			// create a new hidden node and add it to network.nodes
 			final Node node = new Node(Node.NodeType.HIDDEN);
-			node.activationType = Utils.pickRandom(MOD_ACTIVATION.allowed);
+			node.activationType = pickRandom(MOD_ACTIVATION.allowed);
 			network.nodes.add(Math.max(0, Math.min(network.nodes.indexOf(connection.to), network.nodes.size() - network.output)), node);
 			network.setNodeIndices();
 			if (connection.gateNode != null) {
 				// if connection had gate node
 				// gate with the new node
 				network.gate(connection.gateNode, Utils.randBoolean()
-					? network.connect(connection.from, node)
-					: network.connect(node, connection.to));
+						? network.connect(connection.from, node)
+						: network.connect(node, connection.to));
 			}
 		}
 	},
@@ -54,14 +55,14 @@ public enum Mutation {
 		public void mutate(final Network network) {
 			// get all hidden nodes
 			final List<Node> hiddenNodes = network.nodes
-				.stream()
-				.filter(node -> node.type == Node.NodeType.HIDDEN)
-				.collect(Collectors.toList());
+					.stream()
+					.filter(node -> node.type == Node.NodeType.HIDDEN)
+					.collect(Collectors.toList());
 
 			if (!hiddenNodes.isEmpty()) {
 				// if there are hidden nodes
 				// remove a random node
-				network.remove(Utils.pickRandom(hiddenNodes));
+				network.remove(pickRandom(hiddenNodes));
 			}
 		}
 	},
@@ -84,7 +85,7 @@ public enum Mutation {
 				}
 			}
 			if (!availableNodes.isEmpty()) {
-				final Node[] pair = Utils.pickRandom(availableNodes);
+				final Node[] pair = pickRandom(availableNodes);
 				network.connect(pair[0], pair[1]);
 			}
 		}
@@ -98,15 +99,15 @@ public enum Mutation {
 		@Override
 		public void mutate(final Network network) {
 			final List<Connection> availableConnections = network.connections.stream()
-				.filter(conn -> !conn.from.in.isEmpty()) // from should have incoming connections
-				.filter(conn -> !conn.to.out.isEmpty()) // to should have outgoing connections
-				.filter(conn -> network.nodes.indexOf(conn.to) > network.nodes.indexOf(conn.from)) // should be forwarding
-				.collect(Collectors.toList());
+					.filter(conn -> !conn.from.in.isEmpty()) // from should have incoming connections
+					.filter(conn -> !conn.to.out.isEmpty()) // to should have outgoing connections
+					.filter(conn -> network.nodes.indexOf(conn.to) > network.nodes.indexOf(conn.from)) // should be forwarding
+					.collect(Collectors.toList());
 
 			if (!availableConnections.isEmpty()) {
 				// if there is a connection
 				// disconnect it
-				final Connection randomConn = Utils.pickRandom(availableConnections);
+				final Connection randomConn = pickRandom(availableConnections);
 				network.disconnect(randomConn.from, randomConn.to);
 			}
 		}
@@ -126,7 +127,7 @@ public enum Mutation {
 			if (!allConnections.isEmpty()) {
 				// if there are connections
 				// modify the weight of a random one
-				Utils.pickRandom(allConnections).weight += Utils.randDouble(this.min, this.max);
+				pickRandom(allConnections).weight += Utils.randDouble(this.min, this.max);
 			}
 		}
 	},
@@ -153,11 +154,11 @@ public enum Mutation {
 			if (this.mutateOutput) {
 				// if output nodes can also be mutated
 				// pick random hidden or output node and mutate activation
-				network.nodes.get(Utils.randInt(network.input, network.nodes.size())).activationType = Utils.pickRandom(MOD_ACTIVATION.allowed);
+				network.nodes.get(Utils.randInt(network.input, network.nodes.size())).activationType = pickRandom(MOD_ACTIVATION.allowed);
 			} else if (network.nodes.size() - network.output - network.input > 0) {
 				// if there were hidden nodes
 				// pick random hidden node and mutate activation
-				network.nodes.get(Utils.randInt(network.input, network.nodes.size() - network.output)).activationType = Utils.pickRandom(MOD_ACTIVATION.allowed);
+				network.nodes.get(Utils.randInt(network.input, network.nodes.size() - network.output)).activationType = pickRandom(MOD_ACTIVATION.allowed);
 			}
 		}
 	},
@@ -171,15 +172,15 @@ public enum Mutation {
 		@Override
 		public void mutate(final Network network) {
 			final List<Node> availableNodes =
-				network.nodes.stream()
-					.filter(node -> node.type != Node.NodeType.INPUT) // no input nodes allowed
-					.filter(node -> node.self.weight == 0) // only nodes without a self connection allowed
-					.collect(Collectors.toList());
+					network.nodes.stream()
+							.filter(node -> node.type != Node.NodeType.INPUT) // no input nodes allowed
+							.filter(node -> node.self.weight == 0) // only nodes without a self connection allowed
+							.collect(Collectors.toList());
 
 			if (!availableNodes.isEmpty()) {
 				// if there are available nodes
 				// pick a random and connect it to itself
-				final Node node = Utils.pickRandom(availableNodes);
+				final Node node = pickRandom(availableNodes);
 				network.connect(node, node);
 			}
 		}
@@ -196,7 +197,7 @@ public enum Mutation {
 			if (!network.selfConnections.isEmpty()) {
 				// if there are self connections
 				// pick a random and disconnect it
-				final Connection connection = Utils.pickRandom(network.selfConnections);
+				final Connection connection = pickRandom(network.selfConnections);
 				network.disconnect(connection.from, connection.to);
 			}
 		}
@@ -211,14 +212,14 @@ public enum Mutation {
 		@Override
 		public void mutate(final Network network) {
 			final List<Connection> availableConnections =
-				Stream.concat(network.connections.stream(), network.selfConnections.stream()) // all connections
-					.filter(connection -> connection.gateNode == null) // only connections without gate node are allowed
-					.collect(Collectors.toList());
+					Stream.concat(network.connections.stream(), network.selfConnections.stream()) // all connections
+							.filter(connection -> connection.gateNode == null) // only connections without gate node are allowed
+							.collect(Collectors.toList());
 
 			if (!availableConnections.isEmpty()) {
 				// if there are connections
 				// pick a random connection and gate it with a random hidden or output node
-				network.gate(network.nodes.get(Utils.randInt(network.input, network.nodes.size())), Utils.pickRandom(availableConnections));
+				network.gate(network.nodes.get(Utils.randInt(network.input, network.nodes.size())), pickRandom(availableConnections));
 			}
 		}
 	},
@@ -234,7 +235,7 @@ public enum Mutation {
 			if (!network.gates.isEmpty()) {
 				// if there are gates in the network
 				// pick a random and remove it
-				network.removeGate(Utils.pickRandom(network.gates));
+				network.removeGate(pickRandom(network.gates));
 			}
 		}
 	},
@@ -261,7 +262,7 @@ public enum Mutation {
 			if (!availableNodes.isEmpty()) {
 				// if there are pair of nodes
 				// pick a random one and connect them
-				final Node[] pair = Utils.pickRandom(availableNodes);
+				final Node[] pair = pickRandom(availableNodes);
 				network.connect(pair[0], pair[1]);
 			}
 		}
@@ -276,15 +277,15 @@ public enum Mutation {
 		@Override
 		public void mutate(final Network network) {
 			final List<Connection> availableConnections = network.connections.stream()
-				.filter(connection -> !connection.from.out.isEmpty()) // from should have outgoing connections
-				.filter(connection -> !connection.to.in.isEmpty()) // to should have incoming connections
-				.filter(connection -> network.nodes.indexOf(connection.from) > network.nodes.indexOf(connection.to)) // should be backwarding
-				.collect(Collectors.toList());
+					.filter(connection -> !connection.from.out.isEmpty()) // from should have outgoing connections
+					.filter(connection -> !connection.to.in.isEmpty()) // to should have incoming connections
+					.filter(connection -> network.nodes.indexOf(connection.from) > network.nodes.indexOf(connection.to)) // should be backwarding
+					.collect(Collectors.toList());
 
 			if (!availableConnections.isEmpty()) {
 				// if there are available connections
 				// pick a random and disconnect it
-				final Connection randomConn = Utils.pickRandom(availableConnections);
+				final Connection randomConn = pickRandom(availableConnections);
 				network.disconnect(randomConn.from, randomConn.to);
 			}
 		}
@@ -344,14 +345,38 @@ public enum Mutation {
 	 * Contains all feedforward mutations.
 	 */
 	public static final Mutation[] FFW = new Mutation[]{
-		ADD_CONN,
-		ADD_NODE,
-		MOD_ACTIVATION,
-		MOD_BIAS,
-		MOD_WEIGHT,
-		SUB_CONN,
-		SUB_NODE,
-		SWAP_NODES
+			ADD_CONN,
+			ADD_NODE,
+			MOD_ACTIVATION,
+			MOD_BIAS,
+			MOD_WEIGHT,
+			SUB_CONN,
+			SUB_NODE,
+			SWAP_NODES
+	};
+	/**
+	 * Contains all mutations that change the network structure.
+	 */
+	public static final Mutation[] ONLY_STRUCTURE = new Mutation[]{
+			ADD_NODE,
+			SUB_NODE,
+			ADD_CONN,
+			SUB_CONN,
+			ADD_SELF_CONN,
+			SUB_SELF_CONN,
+			ADD_GATE,
+			SUB_GATE,
+			ADD_BACK_CONN,
+			SUB_BACK_CONN,
+			SWAP_NODES
+	};
+	/**
+	 * Contains all mutations that does not change the network structure.
+	 */
+	public static final Mutation[] NO_STRUCTURE = new Mutation[]{
+			MOD_WEIGHT,
+			MOD_BIAS,
+			MOD_ACTIVATION,
 	};
 	/**
 	 * Should the output be mutated?
