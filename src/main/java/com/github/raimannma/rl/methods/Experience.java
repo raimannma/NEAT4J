@@ -11,8 +11,8 @@ public class Experience implements Comparable<Experience> {
 	private int episode;
 	private double lastReward;
 
-	public Experience(final int episode, final double[] lastState, final int lastAction, final double lastReward, final double[] state, final int action) {
-		this(episode, lastState, lastAction, lastReward, state, action, 0);
+	public Experience() {
+		this(0, null, 0, 0, null, 0, 0);
 	}
 
 	public Experience(final int episode, final double[] lastState, final int lastAction, final double lastReward, final double[] state, final int action, final double tdError) {
@@ -88,13 +88,13 @@ public class Experience implements Comparable<Experience> {
 
 	public Experience copy() {
 		return new Experience(
-			this.episode,
-			this.lastState.clone(),
-			this.lastAction,
-			this.lastReward,
-			this.state.clone(),
-			this.action,
-			this.tdError
+				this.episode,
+				this.lastState.clone(),
+				this.lastAction,
+				this.lastReward,
+				this.state.clone(),
+				this.action,
+				this.tdError
 		);
 	}
 }
