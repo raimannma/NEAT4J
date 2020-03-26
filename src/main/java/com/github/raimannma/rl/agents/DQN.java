@@ -8,7 +8,6 @@ import com.github.raimannma.nn.architecture.Network;
 import com.github.raimannma.nn.methods.EvolveOptions;
 import com.github.raimannma.nn.methods.Loss;
 import com.github.raimannma.nn.methods.Mutation;
-import com.github.raimannma.nn.methods.Selection;
 import com.github.raimannma.nn.methods.Utils;
 import com.github.raimannma.rl.methods.DiscreteStrategy;
 import com.github.raimannma.rl.methods.Experience;
@@ -33,12 +32,10 @@ public class DQN extends DiscreteAgent {
 		this.qNetwork = new Network(numStates, numActions);
 		this.evolveOptions = new EvolveOptions()
 				.setError(0)
-				//.setLog(1)
-				.setIterations(20)
-				.setMutations(Mutation.FFW)
-				.setPopulationSize(50)
-				.setSelection(new Selection.Power(5))
-				.setElitism(5)
+				.setIterations(50)
+				.setPopulationSize(500)
+				.setElitism(50)
+				.setMutations(Mutation.ONLY_WEIGHTS)
 				.setTemplate(this.qNetwork);
 		this.strategy = new DiscreteStrategy.EpsilonGreedy(0.1, 0.99, 0.05);
 		final int bufferSize = 100;
