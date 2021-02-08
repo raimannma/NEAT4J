@@ -1,9 +1,0 @@
-language: java
-sudo: false # faster builds
-
-dist: bionic
-
-jdk:
-  - openjdk13
-
-install: mvn install -Dgpg.skip=true
